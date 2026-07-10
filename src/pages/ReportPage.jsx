@@ -14,15 +14,16 @@ export default function ReportPage() {
   const report = getReport(id)
   const { appTheme } = useAppTheme()
 
-  const [settings, setSettings] = useState(() =>
-    loadSettings(id, {
+  const [settings, setSettings] = useState(() => {
+    const reportSettings = {
       colorIndex: report?.settings?.colorIndex ?? 0,
       fontIndex: report?.settings?.fontIndex ?? 0,
       chartStyleIndex: report?.settings?.chartStyleIndex ?? 2,
       widthMode: report?.settings?.widthMode ?? 'standard',
       fontScale: report?.settings?.fontScale ?? 'default',
-    }),
-  )
+    }
+    return shared ? reportSettings : loadSettings(id, reportSettings)
+  })
 
   useEffect(() => {
     applyTheme(settings, appTheme)
@@ -68,7 +69,7 @@ export default function ReportPage() {
         <ShareButton reportId={report.id} />
       </div>
       <ReportView report={report} settings={settings} />
-      <SettingsPanel settings={settings} onChange={handleChange} />
+      {!shared && <SettingsPanel settings={settings} onChange={handleChange} />}
     </>
   )
 }

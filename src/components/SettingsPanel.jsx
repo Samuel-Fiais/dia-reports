@@ -82,6 +82,7 @@ export default function SettingsPanel({ settings, onChange }) {
           ))}
         </div>
 
+        <div className="settings-section-label">Fontes</div>
         <div className="settings-fonts">
           {FONTS.map((font, i) => (
             <button
