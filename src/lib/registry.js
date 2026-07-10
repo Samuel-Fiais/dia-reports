@@ -1,15 +1,20 @@
-// Pasta comum de relatórios: basta salvar um .json em src/reports/
-// que ele aparece automaticamente no dashboard (import.meta.glob).
-const modules = import.meta.glob('../reports/*.json', { eager: true })
+// Pasta comum de relatórios agora é carregada em tempo de execução pela API.
+const API_BASE = '/api'
 
-export const reports = Object.entries(modules)
-  .map(([path, mod]) => {
-    const data = mod.default ?? mod
-    const file = path.split('/').pop().replace(/\.json$/, '')
-    return { ...data, id: data.id ?? file }
-  })
-  .sort((a, b) => new Date(b.date) - new Date(a.date))
+export let reports = []
 
-export function getReport(id) {
-  return reports.find((r) => r.id === id)
+export async function fetchReports() {
+  const res = await fetch(`${API_BASE}/reports`)
+  if (!res.ok) throw new Error('Failed to fetch reports')
+  const data = await res.json()
+  reports = data
+  return data
+}
+
+export async function getReport(slug) {
+  const res = await fetch(`${API_BASE}/reports/${slug}`)
+  if (res.status === 404) return null
+  if (!res.ok) throw new Error('Failed to fetch report')
+  const data = await res.json()
+  return data.content ? { ...data.content, id: data.slug } : null
 }

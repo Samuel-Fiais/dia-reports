@@ -1,20 +1,47 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { reports } from '../lib/registry.js'
+import { fetchReports } from '../lib/registry.js'
 import { applyTheme, formatReportDate, formatShortDate } from '../lib/theme.js'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 
 function countSections(report) {
+  if (typeof report.sections_length === 'number') return report.sections_length
   return (report.body ?? []).filter((b) => b.type === 'section').length
 }
 
 export default function Home() {
   const { appTheme, toggleAppTheme } = useAppTheme()
+  const [reports, setReports] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
     applyTheme({ colorIndex: 0, fontIndex: 0 }, appTheme)
     document.title = 'Relatórios'
   }, [appTheme])
+
+  useEffect(() => {
+    let cancelled = false
+
+    async function loadReports() {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await fetchReports()
+        if (!cancelled) setReports(data)
+      } catch (err) {
+        if (!cancelled) setError(err)
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    loadReports()
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   return (
     <div className="report ready">
@@ -50,9 +77,13 @@ export default function Home() {
 
         <div className="report-intro">
           <p>
-            <strong>{reports.length} relatório{reports.length === 1 ? '' : 's'} na pasta comum.</strong>{' '}
-            Cada arquivo <code>.json</code> salvo em <code>src/reports/</code> aparece aqui
-            automaticamente. Clique em um relatório para abri-lo.
+            <strong>
+              {loading
+                ? 'Carregando relatórios.'
+                : `${reports.length} ${reports.length === 1 ? 'relatório disponível' : 'relatórios disponíveis'}.`}
+            </strong>{' '}
+            Os relatórios agora são carregados pela API em tempo de execução. Clique em um
+            relatório para abri-lo.
           </p>
         </div>
 
@@ -64,7 +95,17 @@ export default function Home() {
               <h2 className="section-heading">Todos os relatórios</h2>
             </div>
             <div className="section-items report-card-grid">
-              {reports.map((report) => (
+              {loading && (
+                <p className="report-card-empty">
+                  Carregando relatórios...
+                </p>
+              )}
+              {!loading && error && (
+                <p className="report-card-empty">
+                  Não foi possível carregar os relatórios agora. Tente novamente em instantes.
+                </p>
+              )}
+              {!loading && !error && reports.map((report) => (
                 <Link key={report.id} to={`/report/${report.id}`} className="report-card">
                   <div className="report-card-meta">
                     <span className="report-card-from">{report.from ?? 'Relatório'}</span>
@@ -82,18 +123,16 @@ export default function Home() {
                     <span className="item-badge">
                       {countSections(report)} seç{countSections(report) === 1 ? 'ão' : 'ões'}
                     </span>
-                    {report.metrics?.length > 0 && (
-                      <span className="item-badge">{report.metrics.length} métricas</span>
+                    {(report.metrics?.length > 0 || report.metrics_length > 0) && (
+                      <span className="item-badge">{report.metrics?.length ?? report.metrics_length} métricas</span>
                     )}
                     <span className="report-card-open">Abrir →</span>
                   </div>
                 </Link>
               ))}
-              {reports.length === 0 && (
+              {!loading && !error && reports.length === 0 && (
                 <p className="report-card-empty">
-                  Nenhum relatório encontrado. Adicione um arquivo <code>.json</code> em{' '}
-                  <code>src/reports/</code> seguindo o padrão documentado em{' '}
-                  <code>REPORT-SCHEMA.md</code>.
+                  Nenhum relatório encontrado na API.
                 </p>
               )}
             </div>

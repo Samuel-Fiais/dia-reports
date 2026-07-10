@@ -11,8 +11,10 @@ export default function ReportPage() {
   const { id } = useParams()
   const [searchParams] = useSearchParams()
   const shared = searchParams.get('shared') === '1'
-  const report = getReport(id)
   const { appTheme } = useAppTheme()
+  const [report, setReport] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const [settings, setSettings] = useState(() => {
     const reportSettings = {
@@ -26,12 +28,86 @@ export default function ReportPage() {
   })
 
   useEffect(() => {
+    let cancelled = false
+
+    async function loadReport() {
+      try {
+        setLoading(true)
+        setError(null)
+        const data = await getReport(id)
+        if (cancelled) return
+        setReport(data)
+        setSettings(
+          loadSettings(id, {
+            colorIndex: data?.settings?.colorIndex ?? 0,
+            fontIndex: data?.settings?.fontIndex ?? 0,
+            chartStyleIndex: data?.settings?.chartStyleIndex ?? 2,
+            widthMode: data?.settings?.widthMode ?? 'standard',
+            fontScale: data?.settings?.fontScale ?? 'default',
+          }),
+        )
+      } catch (err) {
+        if (!cancelled) {
+          setReport(null)
+          setError(err)
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+
+    loadReport()
+
+    return () => {
+      cancelled = true
+    }
+  }, [id])
+
+  useEffect(() => {
     applyTheme(settings, appTheme)
   }, [settings, appTheme])
 
   useEffect(() => {
     if (report?.title) document.title = report.title
   }, [report])
+
+  if (loading) {
+    return (
+      <div className="report ready">
+        <div className="report-wrap">
+          <header className="report-header">
+            <div className="report-header-left">
+              <span className="report-from">Carregando relatório</span>
+            </div>
+          </header>
+          <h1 className="report-headline">Carregando...</h1>
+          <div className="report-intro">
+            <p>Buscando os dados do relatório.</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="report ready">
+        <div className="report-wrap">
+          <header className="report-header">
+            <div className="report-header-left">
+              <span className="report-from">Erro ao carregar</span>
+            </div>
+          </header>
+          <h1 className="report-headline">Não foi possível abrir</h1>
+          <div className="report-intro">
+            <p>
+              A API não respondeu como esperado. <Link to="/">Voltar ao dashboard</Link>.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   if (!report) {
     return (
