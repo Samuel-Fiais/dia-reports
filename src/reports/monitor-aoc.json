@@ -1,0 +1,133 @@
+{
+  "id": "monitor-aoc",
+  "title": "Análise do Monitor AOC U27B3A para Programação",
+  "from": "Análise de Compra",
+  "date": "2026-07-10T15:32:13Z",
+  "settings": { "colorIndex": 0, "fontIndex": 2, "chartStyleIndex": 0 },
+  "headline": ["Monitor AOC U27B3A:", "vale a pena para dev?"],
+  "intro": [
+    "**Sim, vale — com uma ressalva.** Para um programador full stack, o AOC U27B3A a R$1.099 é uma das melhores compras de custo-benefício em 4K hoje. Uma tela 27\" 4K IPS com esse painel e esse preço é raro. O 4K a 27\" te dá densidade de pixel (~163 PPI) excelente para texto e código nítido. O único ponto fraco real são os alto-falantes, que os próprios compradores classificam como sofríveis — mas isso não importa para quem usa fone ou caixas dedicadas."
+  ],
+  "metrics": [
+    { "value": "R$1.099", "label": "Preço atual", "note": "15% OFF de R$1.299", "span": 3 },
+    { "value": "163 PPI", "label": "Densidade", "note": "4K em 27\"", "span": 3 },
+    { "value": "4.8/5", "label": "Avaliação", "note": "79 opiniões", "span": 3 },
+    { "value": "60 Hz", "label": "Taxa", "note": "suficiente p/ dev", "span": 3 }
+  ],
+  "body": [
+    {
+      "type": "section",
+      "heading": "I. Por que faz sentido para um dev full stack",
+      "items": [
+        {
+          "title": "1. Nitidez de texto",
+          "badge": "Ponto forte",
+          "blocks": [
+            { "type": "paragraph", "text": "**É aqui que o 4K a 27\" brilha para código.** Com 3840×2160 numa tela de 27\", você tem ~163 pixels por polegada — o dobro da densidade de um 1440p e quase 3× a de um Full HD. Fontes de terminal e editor ficam com bordas suaves, praticamente \"retina\"." },
+            { "type": "bullets", "items": [
+              "Mais linhas de código visíveis sem apertar a fonte.",
+              "Escala de 150% no macOS/Windows entrega o melhor equilíbrio nitidez × espaço.",
+              "Um comprador confirmou: pareado a um MacBook com tela Retina, a qualidade é \"muito acima da média\"."
+            ] }
+          ]
+        },
+        {
+          "title": "2. Cores profissionais",
+          "badge": "Ponto forte",
+          "blocks": [
+            { "type": "paragraph", "text": "**125% sRGB e 97% DCI-P3, 10 bits (1,07 bi de cores).** Cobertura de cor de nível profissional — relevante se você faz front-end, trabalha com design, CSS ou precisa que as cores no navegador batam com o design system." },
+            { "type": "bullets", "items": [
+              "Painel IPS com ângulo de visão de 178° e antirreflexo.",
+              "Low Blue Light + Flicker-Free reduzem fadiga em jornadas longas."
+            ] }
+          ]
+        },
+        {
+          "title": "3. Espaço de tela real",
+          "badge": "Prático",
+          "blocks": [
+            { "type": "paragraph", "text": "**4K te dá área útil de sobra para janelas lado a lado.** Editor + terminal + navegador + docs sem sobreposição. Um comprador que hesitava entre 27\" e 32\" escolheu o 27\" e afirmou ter feito a escolha certa: \"uma tela maior numa mesa de trabalho tende a atrapalhar mais do que ajudar\"." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "II. O que observar antes de comprar",
+      "items": [
+        {
+          "title": "1. Alto-falantes",
+          "badge": "Ponto fraco",
+          "blocks": [
+            { "type": "paragraph", "text": "**O único defeito consistente nas avaliações.** 2×2W de qualidade \"radinho de pilha\", nas palavras de um comprador. Irrelevante se você já usa fone ou caixa dedicada — que é o caso da maioria dos devs. Não compre por causa do som embutido." }
+          ]
+        },
+        {
+          "title": "2. Sem USB-C",
+          "badge": "Limitação",
+          "blocks": [
+            { "type": "paragraph", "text": "**Conexão só via HDMI 2.0 (×2) e DisplayPort 1.2.** Não há USB-C com power delivery. Se você usa MacBook e queria um cabo único que carrega + transmite vídeo, este monitor não faz isso — vai precisar de HDMI/DP e do carregador separado. Para desktop com GPU dedicada, é irrelevante." }
+          ]
+        },
+        {
+          "title": "3. Ergonomia e taxa",
+          "badge": "Aceitável",
+          "blocks": [
+            { "type": "paragraph", "text": "**Ajuste só de inclinação (-5° a +20°); sem altura, giro ou pivô.** A base é elogiada, mas se você quer regular altura, considere um suporte/braço VESA (o monitor tem furação 100×100). Os 60Hz são suficientes para trabalho — só limitam jogos competitivos." },
+            { "type": "bullets", "items": [
+              "Atenção relatada por compradores: o cabo DisplayPort às vezes não vem na caixa, apesar de anunciado."
+            ] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "III. Como se compara aos concorrentes",
+      "items": [
+        {
+          "title": "Tabela comparativa",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["Monitor", "Tela", "Painel", "Taxa", "Preço"],
+              "rows": [
+                ["**AOC U27B3A**", "27\" 4K", "IPS 97% DCI-P3", "60Hz", "R$1.099"],
+                ["LG UltraFine 27US500-W", "27\" 4K", "IPS 90% DCI-P3, HDR10", "60Hz", "R$1.349"],
+                ["Dell P2725H", "27\" Full HD", "IPS (ergonômico completo)", "100Hz", "R$1.559"],
+                ["Gowlolk 28\" 4K", "28\" 4K", "IPS com som", "60Hz", "R$925"],
+                ["Z-edge U27P4K", "27\" 4K", "IPS", "60Hz", "R$1.161"],
+                ["LG 32UR500 UltraFine", "32\" 4K", "VA", "60Hz", "R$1.517"]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "Leitura da comparação",
+          "blocks": [
+            { "type": "paragraph", "text": "**O AOC vence em cor por preço.** O LG UltraFine 27US500 é o rival mais direto — marca melhor e HDR10, mas cobre menos DCI-P3 (90% vs 97%) e custa R$250 a mais. O Dell P2725H tem ergonomia impecável e a confiabilidade da marca, mas é só Full HD — perde feio em nitidez de texto, que é o que mais importa para código. Os genéricos (Gowlolk, Z-edge) são mais baratos, porém com marca e suporte incertos." },
+            { "type": "bullets", "items": [
+              "**Se cor + nitidez por menos dinheiro é a prioridade:** AOC U27B3A.",
+              "**Se você quer marca premium e HDR:** LG UltraFine, pagando mais.",
+              "**Se ergonomia total (altura/pivô) é inegociável:** Dell, abrindo mão do 4K.",
+              "**Se quer tela maior:** 32\" 4K (LG 32UR500), mas painel VA tem cor/ângulo inferiores ao IPS."
+            ] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "IV. Veredito",
+      "items": [
+        {
+          "title": "Recomendação",
+          "badge": "Comprar",
+          "blocks": [
+            { "type": "paragraph", "text": "**Para você, programador full stack, vale a pena.** A R$1.099, entrega o que mais importa no dia a dia de código — texto ultra nítido, cores precisas e área de tela farta — por um preço difícil de bater. O som ruim não te afeta se você usa fone. As únicas coisas que fariam eu recomendar outro modelo: se você precisa de carregamento por USB-C (aí busque um monitor com USB-C PD) ou de ajuste de altura sem braço VESA (aí o Dell, ou compre um suporte de ~R$150). Fora esses casos, é uma compra sólida e bem avaliada." }
+          ]
+        }
+      ]
+    }
+  ]
+}

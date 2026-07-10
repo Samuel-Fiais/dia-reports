@@ -1,0 +1,789 @@
+{
+  "id": "exemplo-completo",
+  "title": "Catálogo completo de componentes",
+  "from": "Dia Reports · Referência",
+  "date": "2026-07-10T18:19:55Z",
+  "settings": {
+    "colorIndex": 6,
+    "fontIndex": 2,
+    "chartStyleIndex": 2,
+    "widthMode": "standard",
+    "fontScale": "default"
+  },
+  "headline": [
+    "Catálogo de Componentes",
+    "Tipos, Variantes e Propriedades"
+  ],
+  "cover": {
+    "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 900'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='%232b2a25'/><stop offset='0.55' stop-color='%23554b3a'/><stop offset='1' stop-color='%23151412'/></linearGradient></defs><rect width='1600' height='900' fill='url(%23g)'/><circle cx='1170' cy='220' r='390' fill='%23c9a869' opacity='.26'/><circle cx='350' cy='760' r='330' fill='%23fff' opacity='.07'/><path d='M0 650L1600 210' stroke='%23f5d327' stroke-width='4' opacity='.7'/></svg>",
+    "alt": "Composição abstrata em tons escuros e dourados",
+    "eyebrow": "Dia",
+    "accent": "#f5d327",
+    "caption": "Documento vivo de referência. Cada exemplo abaixo é um JSON válido que pode ser copiado e adaptado.",
+    "credit": "Catálogo interno · versão 3.0"
+  },
+  "intro": [
+    "**Este relatório demonstra todos os componentes suportados pelo renderizador.** Tipos equivalentes aparecem juntos e variantes são explicadas no mesmo item.",
+    "Em qualquer texto, use `**negrito**`, `*itálico*`, `` `código` `` e `[links](https://example.com)`. Propriedades marcadas como opcionais podem ser omitidas. Blocos com `details` abrem um modal de aprofundamento."
+  ],
+  "metrics": [
+    { "value": "13", "label": "Famílias principais", "note": "organizadas por finalidade", "span": 3 },
+    { "value": "80+", "label": "Tipos e aliases", "note": "no switch central", "span": 3 },
+    { "value": "16", "label": "Famílias avançadas", "note": "centenas de variantes", "span": 3 },
+    { "value": "100%", "label": "Declarativo", "note": "configurado por JSON", "span": 3 }
+  ],
+  "body": [
+    {
+      "type": "table-of-contents",
+      "heading": "Índice do catálogo",
+      "description": "`table-of-contents` lê automaticamente todos os blocos `section` do corpo. Propriedades: `heading` e `description`."
+    },
+    {
+      "type": "report-metadata",
+      "heading": "Metadados deste catálogo",
+      "description": "`report-metadata` aceita `author`, `version`, `status`, `updated`, `period` e `extra: [{ label, value }]`.",
+      "author": "Equipe Dia Reports",
+      "version": "3.0",
+      "status": "Referência",
+      "updated": "10 jul 2026",
+      "period": "Componentes disponíveis",
+      "extra": [
+        { "label": "Formato", "value": "JSON declarativo" },
+        { "label": "Temas", "value": "Claro e escuro" }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "01. Estrutura do relatório, texto e listas",
+      "items": [
+        {
+          "title": "Estrutura raiz e `section`",
+          "description": "A raiz aceita `id`, `title`, `from`, `date`, `settings`, `headline`, `cover`, `intro`, `metrics` e `body`. Em `settings`, use `widthMode` e `fontScale`. Cada item pode criar uma grade Notion-like com `columns` (1–6); dentro dela, cada bloco usa `span` para ocupar uma ou mais colunas, ou `span: \"full\"` para largura total. Uma `section` usa `heading` e `items`.",
+          "badge": "Fundação",
+          "blocks": [
+            {
+              "type": "code",
+              "code": "{\n  \"id\": \"meu-relatorio\",\n  \"headline\": [\"Linha 1\", \"Linha 2\"],\n  \"body\": [{\n    \"type\": \"section\",\n    \"heading\": \"Resultados\",\n    \"items\": [{ \"title\": \"Resumo\", \"blocks\": [] }]\n  }]\n}"
+            }
+          ]
+        },
+        {
+          "title": "`paragraph` e formatação inline",
+          "description": "Propriedade obrigatória: `text`. O conteúdo aceita negrito, itálico, código e links em Markdown inline.",
+          "blocks": [
+            {
+              "type": "paragraph",
+              "text": "**Resultado principal:** a adoção cresceu *18%* após ativar o fluxo `onboarding-v2`. Consulte a [metodologia](https://example.com/metodologia)."
+            }
+          ]
+        },
+        {
+          "title": "`bullets` — variantes simples e numerada",
+          "description": "Propriedades: `items: string[]` e `style: \"number\"` para lista ordenada. Sem `style`, renderiza marcadores.",
+          "blocks": [
+            { "type": "bullets", "items": ["Descoberta principal", "Evidência complementar", "Próxima ação"] },
+            { "type": "bullets", "style": "number", "items": ["Coletar dados", "Validar hipótese", "Publicar conclusão"] }
+          ]
+        },
+        {
+          "title": "`table` — dados tabulares",
+          "description": "Propriedades: `columns: string[]` e `rows: any[][]`. Cada linha deve acompanhar a ordem das colunas.",
+          "blocks": [
+            {
+              "type": "table",
+              "columns": ["Canal", "Sessões", "Conversão", "Receita"],
+              "rows": [
+                ["Orgânico", "18.420", "6,8%", "R$ 184 mil"],
+                ["Pago", "12.780", "4,9%", "R$ 126 mil"],
+                ["Indicação", "4.310", "9,2%", "R$ 78 mil"]
+              ]
+            }
+          ]
+        },
+        {
+          "title": "`code`, `divider` e `callout`",
+          "description": "`code` usa `code`; `divider` aceita `label`; `callout` aceita `kind`, `label` e `text`. Kinds usuais: `note`, `info`, `warning`, `success` e `danger`.",
+          "blocks": [
+            { "type": "code", "code": "{ \"type\": \"callout\", \"kind\": \"warning\", \"text\": \"Revise a fonte\" }" },
+            { "type": "divider", "label": "Variações de callout" },
+            { "type": "callout", "kind": "note", "label": "Nota", "text": "Contexto complementar que não interrompe a leitura." },
+            { "type": "callout", "kind": "warning", "label": "Atenção", "text": "Os valores do último dia ainda são parciais." },
+            { "type": "callout", "kind": "success", "label": "Concluído", "text": "A validação cruzada foi executada com sucesso." }
+          ]
+        },
+        {
+          "title": "`definition` e `glossary`",
+          "description": "`definition` usa `term` e `text`. `glossary` usa `items: [{ term, text }]`.",
+          "blocks": [
+            { "type": "definition", "term": "Receita recorrente", "text": "Receita contratada que se repete enquanto a assinatura permanecer ativa." },
+            {
+              "type": "glossary",
+              "items": [
+                { "term": "MRR", "text": "Receita recorrente mensal." },
+                { "term": "ARR", "text": "Receita recorrente anualizada." },
+                { "term": "Churn", "text": "Cancelamento de clientes ou receita." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "quote-break",
+      "text": "Blocos de corpo como `quote-break` criam pausas editoriais entre seções.",
+      "cite": "Propriedades: text e cite"
+    },
+    {
+      "type": "section",
+      "heading": "02. Gráficos, figuras e mídia",
+      "items": [
+        {
+          "title": "`chart` — linha e área",
+          "description": "Propriedades: `variant` (`line`, padrão), `labels`, `datasets: [{ label, data, fill? }]`, `height`, `figure` e `caption`. O estilo de preenchimento vem de `settings.chartStyleIndex`.",
+          "blocks": [
+            {
+              "type": "chart",
+              "variant": "line",
+              "height": 250,
+              "labels": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+              "datasets": [
+                { "label": "Ativos", "data": [820, 910, 1040, 1190, 1280, 1420] },
+                { "label": "Pagantes", "data": [210, 245, 288, 330, 376, 420], "fill": false }
+              ],
+              "figure": "Fig. 1",
+              "caption": "Séries múltiplas exibem legenda automaticamente. `fill: false` remove a área."
+            }
+          ]
+        },
+        {
+          "title": "`chart` — barras",
+          "description": "Use `variant: \"bar\"`. `labels` define o eixo X e cada objeto de `datasets` cria uma série.",
+          "blocks": [
+            {
+              "type": "chart",
+              "variant": "bar",
+              "height": 230,
+              "labels": ["Produto", "Serviços", "Parceiros", "Outros"],
+              "datasets": [
+                { "label": "Q1", "data": [72, 48, 31, 12] },
+                { "label": "Q2", "data": [88, 55, 36, 14] }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "`chart` — rosca e pizza",
+          "description": "Variantes `doughnut` e `pie`. Normalmente use um dataset; cada valor recebe uma intensidade monocromática.",
+          "blocks": [
+            { "type": "chart", "variant": "doughnut", "height": 220, "labels": ["Starter", "Pro", "Enterprise"], "datasets": [{ "data": [48, 37, 15] }] },
+            { "type": "chart", "variant": "pie", "height": 220, "labels": ["Direto", "Orgânico", "Pago"], "datasets": [{ "data": [22, 51, 27] }] }
+          ]
+        },
+        {
+          "title": "`distribution` e `waterfall-chart`",
+          "description": "`distribution` é alias de gráfico com `variant: \"bar\"` por padrão. `waterfall-chart` usa `items: [{ label, value?, isTotal? }]`, além de `height`, `figure` e `caption`.",
+          "blocks": [
+            { "type": "distribution", "height": 210, "labels": ["0–20", "21–40", "41–60", "61–80", "81–100"], "datasets": [{ "label": "Contas", "data": [8, 17, 31, 24, 11] }] },
+            {
+              "type": "waterfall-chart",
+              "height": 230,
+              "items": [
+                { "label": "Base", "value": 100 },
+                { "label": "Novos", "value": 34 },
+                { "label": "Expansão", "value": 18 },
+                { "label": "Churn", "value": -22 },
+                { "label": "Final", "isTotal": true }
+              ],
+              "caption": "Ponte de receita em R$ mil."
+            }
+          ]
+        },
+        {
+          "title": "`image`, `gallery` e `before-after-image`",
+          "description": "`image`: `src`, `alt`, `figure`, `caption`. `gallery`: `items: [{ src, alt, caption }]`. `before-after-image`: `before`, `after`, `beforeLabel`, `afterLabel`, `caption`.",
+          "blocks": [
+            {
+              "type": "image",
+              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 420'><rect width='900' height='420' fill='%23ded8ca'/><circle cx='250' cy='210' r='125' fill='%237b715e'/><rect x='430' y='95' width='300' height='230' rx='8' fill='%23aaa08d'/></svg>",
+              "alt": "Composição geométrica de exemplo",
+              "figure": "Fig. 2",
+              "caption": "Imagens aceitam data URI ou URL pública."
+            },
+            {
+              "type": "gallery",
+              "items": [
+                { "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 260'><rect width='400' height='260' fill='%23c8bda9'/><circle cx='200' cy='130' r='75' fill='%235f5749'/></svg>", "alt": "Círculo", "caption": "Conceito A" },
+                { "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 260'><rect width='400' height='260' fill='%23a9b2ae'/><path d='M80 210L200 40l120 170z' fill='%234c5652'/></svg>", "alt": "Triângulo", "caption": "Conceito B" }
+              ]
+            },
+            {
+              "type": "before-after-image",
+              "before": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 280'><rect width='500' height='280' fill='%23d8d3c8'/><rect x='70' y='70' width='360' height='140' fill='%239c9588'/></svg>",
+              "after": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 280'><rect width='500' height='280' fill='%23c8c2b3'/><circle cx='250' cy='140' r='92' fill='%235d594f'/></svg>",
+              "beforeLabel": "Antes",
+              "afterLabel": "Depois",
+              "caption": "Comparação visual lado a lado."
+            }
+          ]
+        },
+        {
+          "title": "`embed`, `video` e `file-attachment`",
+          "description": "`embed`: `src`, `title`, `ratio`, `caption`. `video`: `src`, `poster`, `caption`. `file-attachment`: `href`, `name`, `format`, `size`, `download`.",
+          "blocks": [
+            { "type": "embed", "src": "about:blank", "title": "Conteúdo incorporado", "ratio": "16 / 5", "caption": "Use uma URL que permita exibição em iframe." },
+            { "type": "video", "src": "", "poster": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 360'><rect width='900' height='360' fill='%232b2a25'/><path d='M410 100l160 80-160 80z' fill='%23f3f1ea'/></svg>", "caption": "Informe uma URL de vídeo compatível com HTML5 em `src`." },
+            { "type": "file-attachment", "href": "data:text/plain,Exemplo%20Dia%20Reports", "name": "dados-da-analise.csv", "format": "CSV", "size": "24 KB", "download": true }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "image-break",
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1400 420'><rect width='1400' height='420' fill='%23282622'/><path d='M0 340C320 100 520 480 850 180s430-20 550-100v340H0z' fill='%23a28e68' opacity='.55'/></svg>",
+      "alt": "Faixa abstrata",
+      "caption": "`image-break` é um bloco de corpo com `src`, `alt` e `caption`."
+    },
+    {
+      "type": "section",
+      "heading": "03. Citações, conversa e conteúdo editorial",
+      "items": [
+        {
+          "title": "`quote` e alias `blockquote` — editorial",
+          "description": "`quote` aceita `variant: \"editorial\"`, `text`, `cite` ou `author`. `blockquote` força essa variante.",
+          "blocks": [
+            { "type": "quote", "variant": "editorial", "text": "Os melhores relatórios deixam evidente o que mudou, por que importa e o que acontece agora.", "cite": "Princípio editorial" },
+            { "type": "blockquote", "text": "Aliases preservam compatibilidade sem duplicar a implementação.", "author": "Dia Reports" }
+          ]
+        },
+        {
+          "title": "`quote` variante Slack e alias `slack`",
+          "description": "Propriedades: `variant`, `name`/`author`, `channel`, `time`/`timestamp`, `avatar`, `text` e `href`.",
+          "blocks": [
+            { "type": "quote", "variant": "slack", "name": "Marina Costa", "channel": "#produto", "time": "09:42", "text": "A ativação subiu logo após simplificarmos o segundo passo.", "href": "https://example.com/thread" },
+            { "type": "slack", "author": "Rafael Lima", "channel": "#dados", "timestamp": "10:18", "text": "Validei a série contra a fonte primária; os totais conferem." }
+          ]
+        },
+        {
+          "title": "`quote` variante e alias `email`",
+          "description": "Propriedades: `fromAddr`/`author`, `to`, `subject`, `date` e `text`.",
+          "blocks": [
+            { "type": "email", "fromAddr": "diretoria@example.com", "to": "time@example.com", "subject": "Decisão sobre o lançamento", "date": "10 jul 2026", "text": "Aprovamos o rollout gradual para 25% da base na próxima semana." }
+          ]
+        },
+        {
+          "title": "`quote` variante e alias `testimonial`",
+          "description": "Propriedades: `text`, `author` e `role`.",
+          "blocks": [
+            { "type": "testimonial", "text": "O relatório passou a orientar a reunião em vez de apenas registrar o que já sabíamos.", "author": "Joana Ribeiro", "role": "VP de Operações" }
+          ]
+        },
+        {
+          "title": "`conversation`",
+          "description": "Propriedade: `messages: [{ author, time?, text }]`.",
+          "blocks": [
+            {
+              "type": "conversation",
+              "messages": [
+                { "author": "Ana", "time": "14:02", "text": "O pico coincide com a nova campanha?" },
+                { "author": "Bruno", "time": "14:04", "text": "Sim. O grupo exposto cresceu **31%**, contra 8% no controle." },
+                { "author": "Ana", "time": "14:06", "text": "Vamos registrar isso como hipótese, ainda não como causalidade." }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "04. Interatividade e conteúdo expansível",
+      "items": [
+        {
+          "title": "`todo` — checklist persistente",
+          "description": "Propriedade: `items: [{ id?, text, done? }]`. O estado é persistido em `localStorage` usando a posição do bloco no relatório.",
+          "blocks": [
+            { "type": "todo", "items": [{ "id": "review", "text": "Revisar os números", "done": true }, { "id": "sources", "text": "Adicionar fontes" }, { "id": "publish", "text": "Publicar a versão final" }] }
+          ]
+        },
+        {
+          "title": "`accordion`, `faq`, `details` e `appendix`",
+          "description": "Todos usam `items: [{ title/question, text/answer, open? }]`. `open: true` abre o item inicialmente.",
+          "blocks": [
+            { "type": "accordion", "items": [{ "title": "Como atualizar os dados?", "text": "Substitua os valores no JSON e recarregue o relatório.", "open": true }] },
+            { "type": "faq", "items": [{ "question": "Posso usar Markdown?", "answer": "Sim, nos campos processados por `renderInline`." }] },
+            { "type": "details", "items": [{ "title": "Detalhes metodológicos", "text": "A amostra exclui contas internas e testes automatizados." }] },
+            { "type": "appendix", "items": [{ "title": "Apêndice A — filtros", "text": "Período: 1º de abril a 30 de junho de 2026." }] }
+          ]
+        },
+        {
+          "title": "`tabs` — horizontal e vertical",
+          "description": "Propriedades: `orientation: \"vertical\"` opcional e `tabs: [{ label, text?, items?, blocks? }]`. Cada aba pode renderizar quaisquer blocos.",
+          "blocks": [
+            {
+              "type": "tabs",
+              "tabs": [
+                { "label": "Resumo", "text": "A receita terminou o trimestre **12% acima** do plano." },
+                { "label": "Drivers", "items": ["Expansão da base Pro", "Redução de churn", "Aumento de ticket"] },
+                { "label": "Métrica", "blocks": [{ "type": "progress", "label": "Meta anual", "value": 64, "note": "R$ 3,2 mi de R$ 5 mi" }] }
+              ]
+            },
+            {
+              "type": "tabs",
+              "orientation": "vertical",
+              "tabs": [
+                { "label": "Brasil", "text": "Principal região, com 68% da receita." },
+                { "label": "LatAm", "text": "Região em expansão, com crescimento de 27%." }
+              ]
+            }
+          ]
+        },
+        {
+          "title": "`drilldown` e propriedade `details`",
+          "description": "`drilldown` usa `label` e `details`. Muitos cartões e linhas aceitam `details: { eyebrow?, title, text?, fields?, blocks? }` para abrir o mesmo modal.",
+          "blocks": [
+            {
+              "type": "drilldown",
+              "label": "Abrir análise completa",
+              "details": {
+                "eyebrow": "Drilldown",
+                "title": "Detalhes da conversão",
+                "text": "A melhora veio sobretudo do segmento recorrente.",
+                "fields": [{ "label": "Amostra", "value": "18.420 sessões" }],
+                "blocks": [{ "type": "callout", "kind": "note", "text": "O modal também aceita uma lista de blocos." }]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "05. Tempo, planejamento e execução",
+      "items": [
+        {
+          "title": "`progress` e `timeline`",
+          "description": "`progress`: `label`, `value` entre 0–100 e `note`. `timeline`: `items: [{ date?, title?, text? }]`.",
+          "blocks": [
+            { "type": "progress", "label": "Migração concluída", "value": 72, "note": "18 de 25 serviços" },
+            { "type": "timeline", "items": [{ "date": "02 jul", "title": "Diagnóstico", "text": "Mapeamento das dependências." }, { "date": "08 jul", "title": "Piloto", "text": "Primeiros três serviços migrados." }, { "date": "22 jul", "title": "Rollout", "text": "Expansão gradual para produção." }] }
+          ]
+        },
+        {
+          "title": "`milestones`",
+          "description": "Propriedade: `items: [{ date?, status?, title, text?, details? }]`. Status usa o mesmo vocabulário dos badges.",
+          "blocks": [
+            { "type": "milestones", "items": [{ "date": "05 jul", "status": "done", "title": "Escopo aprovado", "text": "Critérios de sucesso definidos." }, { "date": "18 jul", "status": "in-progress", "title": "Piloto em produção", "details": { "title": "Piloto", "text": "25% do tráfego." } }, { "date": "01 ago", "status": "not-started", "title": "Disponibilidade geral" }] }
+          ]
+        },
+        {
+          "title": "`roadmap` — padrão e lanes customizadas",
+          "description": "Use `now`, `next`, `later` ou `lanes: [{ label, items }]`. Cada item pode ser string ou `{ title, tag?, details? }`.",
+          "blocks": [
+            { "type": "roadmap", "now": [{ "title": "Busca unificada", "tag": "Core" }], "next": ["Exportação em PDF", "Comentários por bloco"], "later": [{ "title": "Colaboração em tempo real", "tag": "Beta" }] },
+            { "type": "roadmap", "lanes": [{ "label": "Descoberta", "items": ["Entrevistas"] }, { "label": "Construção", "items": ["Protótipo", "API"] }, { "label": "Entrega", "items": ["Piloto"] }] }
+          ]
+        },
+        {
+          "title": "`gantt`",
+          "description": "Propriedades: `tasks: [{ title, start, end, status?, details? }]`, `startLabel` e `endLabel`. Datas podem ser ISO ou números.",
+          "blocks": [
+            { "type": "gantt", "startLabel": "01 jul", "endLabel": "31 ago", "tasks": [{ "title": "Pesquisa", "start": "2026-07-01", "end": "2026-07-12", "status": "done" }, { "title": "Implementação", "start": "2026-07-08", "end": "2026-08-08", "status": "in-progress" }, { "title": "Rollout", "start": "2026-08-05", "end": "2026-08-28", "status": "not-started" }] }
+          ]
+        },
+        {
+          "title": "`countdown` e `date-strip`",
+          "description": "`countdown`: `target`, `label`, `eventLabel`, `pastLabel`. `date-strip`: `items: [{ date, label, active?, details? }]`.",
+          "blocks": [
+            { "type": "countdown", "target": "2027-01-15T12:00:00Z", "label": "até", "eventLabel": "o lançamento global", "pastLabel": "desde o lançamento" },
+            { "type": "date-strip", "items": [{ "date": "10 jul", "label": "Planejamento" }, { "date": "18 jul", "label": "Piloto", "active": true, "details": { "title": "Piloto", "text": "Liberação para 25% da base." } }, { "date": "01 ago", "label": "Rollout" }] }
+          ]
+        },
+        {
+          "title": "`agenda`",
+          "description": "Propriedades: `clickable` e `items: [{ time, title, text?, location?, participants?, active?, details? }]`.",
+          "blocks": [
+            { "type": "agenda", "items": [{ "time": "09:00", "title": "Revisão de métricas", "text": "Validar o fechamento semanal.", "participants": ["Dados", "Produto"], "active": true }, { "time": "11:30", "title": "Planejamento do rollout", "location": "Sala Horizonte" }, { "time": "16:00", "title": "Demo executiva", "details": { "title": "Demo executiva", "text": "Apresentação de 30 minutos." } }] }
+          ]
+        },
+        {
+          "title": "`kanban` — padrão e `compact`",
+          "description": "Propriedades: `variant: \"compact\"`, `clickable` e `columns: [{ title, cards: [{ title, description?, tag?, priority?, assignee?, due?, details? }] }]`.",
+          "blocks": [
+            { "type": "kanban", "columns": [{ "title": "A fazer", "cards": [{ "title": "Instrumentar eventos", "description": "Adicionar eventos ao novo onboarding.", "tag": "Dados", "priority": "high", "assignee": "Lia Melo", "due": "18 jul" }] }, { "title": "Em andamento", "cards": [{ "title": "Revisar dashboard", "tag": "BI", "priority": "medium", "assignee": "Caio Reis" }] }, { "title": "Concluído", "cards": [{ "title": "Definir baseline", "tag": "Pesquisa" }] }] },
+            { "type": "kanban", "variant": "compact", "columns": [{ "title": "Backlog", "cards": [{ "title": "Filtro por região", "priority": "low" }, { "title": "Exportar CSV", "priority": "medium" }] }, { "title": "Pronto", "cards": [{ "title": "Tema escuro", "tag": "UI" }] }] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "06. Calendários",
+      "items": [
+        {
+          "title": "`calendar-month` — `detailed` e `compact`",
+          "description": "Propriedades: `month` (`YYYY-MM`), `variant`, `title`, `today`, `events`, `marks`, `maxPerDay` e `clickable`. Eventos usam `date`, `title`, `time`, `text` e `details`.",
+          "blocks": [
+            { "type": "calendar-month", "month": "2026-07", "variant": "detailed", "today": "2026-07-10", "maxPerDay": 2, "events": [{ "date": "2026-07-10", "time": "09:00", "title": "Revisão semanal", "text": "Fechamento de métricas." }, { "date": "2026-07-10", "time": "14:00", "title": "Demo" }, { "date": "2026-07-18", "title": "Início do piloto", "details": { "title": "Piloto", "text": "25% da base elegível." } }] },
+            { "type": "calendar-month", "month": "2026-08", "variant": "compact", "marks": ["2026-08-04", { "date": "2026-08-12", "label": "Rollout" }, "2026-08-25"] }
+          ]
+        },
+        {
+          "title": "`calendar-week`",
+          "description": "Propriedades: `days: [{ label, active?, items }]` e `clickable`. Itens podem ser strings ou `{ title, time?, text?, details? }`.",
+          "blocks": [
+            { "type": "calendar-week", "days": [{ "label": "Seg 13", "items": [{ "time": "10:00", "title": "Planning", "text": "Prioridades da semana." }] }, { "label": "Ter 14", "items": ["Pesquisa com clientes"] }, { "label": "Qua 15", "active": true, "items": [{ "time": "15:00", "title": "Demo interna" }] }, { "label": "Qui 16", "items": [] }, { "label": "Sex 17", "items": ["Fechamento"] }] }
+          ]
+        },
+        {
+          "title": "`calendar-year` — `dots` e `heatmap`",
+          "description": "Propriedades: `year`, `variant`, `marks`, `values`, `max` e `clickable`. `marks` aceita datas ou `{ date, label }`; `values` mapeia data para intensidade.",
+          "blocks": [
+            { "type": "calendar-year", "year": 2026, "variant": "dots", "marks": [{ "date": "2026-02-14", "label": "Release 2.1" }, "2026-05-08", { "date": "2026-07-10", "label": "Catálogo 3.0" }, "2026-11-21"] },
+            { "type": "calendar-year", "year": 2026, "variant": "heatmap", "max": 10, "values": { "2026-01-05": 2, "2026-01-06": 5, "2026-01-07": 9, "2026-03-14": 7, "2026-07-10": 10, "2026-09-22": 6, "2026-12-03": 8 } }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "07. Métricas e análise",
+      "items": [
+        {
+          "title": "`kpi-grid`, `metric-detail` e `sparkline`",
+          "description": "`kpi-grid`: `columns` e `items: [{ label, value, spark?, trend?, change?, target?, note?, details? }]`. `metric-detail` usa `metric` e força uma coluna.",
+          "columns": 2,
+          "blocks": [
+            { "type": "kpi-grid", "span": "full", "columns": 3, "items": [{ "label": "Receita", "value": "R$ 428 mil", "spark": [310, 328, 345, 371, 399, 428], "trend": "up", "change": "+12%", "target": "R$ 450 mil", "note": "Acumulado no trimestre", "details": { "title": "Receita", "text": "Inclui assinaturas e serviços." } }, { "label": "Churn", "value": "2,8%", "spark": [4.1, 3.8, 3.5, 3.2, 3, 2.8], "trend": "down", "change": "−0,4 p.p." }, { "label": "NPS", "value": "67", "spark": [58, 60, 61, 63, 65, 67], "trend": "up", "change": "+4" }] },
+            { "type": "metric-detail", "metric": { "label": "Payback", "value": "7,2 meses", "target": "< 9 meses", "trend": "down", "change": "−1,1 mês", "note": "Cohort de Q2" } }
+          ]
+        },
+        {
+          "title": "`sparkline` isolado",
+          "description": "Propriedades: `data`, `width` e `height`. Dentro de `kpi-grid`, prefira a propriedade `spark` do próprio KPI.",
+          "blocks": [
+            { "type": "sparkline", "data": [12, 18, 15, 24, 29, 27, 36], "width": 220, "height": 48 }
+          ]
+        },
+        {
+          "title": "`scorecard` e `gauge`",
+          "description": "`scorecard`: `items: [{ health, label, value, note?, details? }]`. `gauge`: `value`, `display`, `label` e `target`.",
+          "blocks": [
+            { "type": "scorecard", "items": [{ "health": "healthy", "label": "Disponibilidade", "value": "99,98%", "note": "Meta 99,9%" }, { "health": "attention", "label": "Latência p95", "value": "420 ms", "note": "Meta < 350 ms" }, { "health": "critical", "label": "Fila de erros", "value": "184", "details": { "title": "Fila de erros", "text": "Concentrada no conector legado." } }] },
+            { "type": "gauge", "value": 72, "display": "72%", "label": "Meta trimestral", "target": "R$ 600 mil" }
+          ]
+        },
+        {
+          "title": "`funnel`",
+          "description": "Propriedade: `steps: [{ label, value, display? }]`. A conversão de cada etapa é calculada em relação à anterior.",
+          "blocks": [
+            { "type": "funnel", "steps": [{ "label": "Visitantes", "value": 12000, "display": "12 mil" }, { "label": "Cadastros", "value": 3600, "display": "3,6 mil" }, { "label": "Ativados", "value": 1920, "display": "1,9 mil" }, { "label": "Pagantes", "value": 720 }] }
+          ]
+        },
+        {
+          "title": "`heatmap` e alias `cohort`",
+          "description": "Propriedades: `columns`, `rows: [{ label, values }]`, `max` e `showValues`. `cohort` usa exatamente a mesma estrutura.",
+          "blocks": [
+            { "type": "heatmap", "columns": ["Seg", "Ter", "Qua", "Qui", "Sex"], "showValues": true, "rows": [{ "label": "Manhã", "values": [42, 38, 45, 40, 35] }, { "label": "Tarde", "values": [55, 60, 58, 62, 48] }, { "label": "Noite", "values": [30, 28, 32, 35, 52] }] },
+            { "type": "cohort", "columns": ["M0", "M1", "M2", "M3", "M4"], "max": 100, "showValues": true, "rows": [{ "label": "Jan", "values": [100, 72, 61, 55, 51] }, { "label": "Fev", "values": [100, 75, 64, 58, 0] }, { "label": "Mar", "values": [100, 70, 60, 0, 0] }] }
+          ]
+        },
+        {
+          "title": "`matrix`",
+          "description": "Propriedades: `xAxis`, `yAxis` e até quatro `quadrants: [{ label, items }]`.",
+          "blocks": [
+            { "type": "matrix", "yAxis": "Impacto", "xAxis": "Esforço", "quadrants": [{ "label": "Alto impacto · baixo esforço", "items": ["Otimizar onboarding", "Cache de consultas"] }, { "label": "Alto impacto · alto esforço", "items": ["Nova arquitetura de eventos"] }, { "label": "Baixo impacto · baixo esforço", "items": ["Ajustes de copy"] }, { "label": "Baixo impacto · alto esforço", "items": ["Tema por equipe"] }] }
+          ]
+        },
+        {
+          "title": "`ranking`",
+          "description": "Propriedade: `items: [{ position?, label, value, trend?, change?, details? }]`.",
+          "blocks": [
+            { "type": "ranking", "items": [{ "position": 1, "label": "Plano Pro", "value": "R$ 182 mil", "trend": "up", "change": "+18%" }, { "label": "Enterprise", "value": "R$ 148 mil", "trend": "up", "change": "+9%" }, { "label": "Starter", "value": "R$ 98 mil", "trend": "flat", "change": "0%" }] }
+          ]
+        },
+        {
+          "title": "`variance` e alias `benchmark`",
+          "description": "Propriedades: `dimension`, `actualLabel`, `expectedLabel`, `deltaLabel` e `rows: [{ label, actual, expected, delta }]`.",
+          "blocks": [
+            { "type": "variance", "dimension": "Canal", "actualLabel": "Realizado", "expectedLabel": "Orçado", "deltaLabel": "Variação", "rows": [{ "label": "Orgânico", "actual": "R$ 184 mil", "expected": "R$ 170 mil", "delta": "+8%" }, { "label": "Pago", "actual": "R$ 126 mil", "expected": "R$ 140 mil", "delta": "-10%" }] },
+            { "type": "benchmark", "dimension": "Métrica", "actualLabel": "Empresa", "expectedLabel": "Mercado", "deltaLabel": "Gap", "rows": [{ "label": "Churn", "actual": "2,8%", "expected": "3,5%", "delta": "+0,7 p.p." }, { "label": "NPS", "actual": "67", "expected": "55", "delta": "+12" }] }
+          ]
+        },
+        {
+          "title": "`breakdown` e `stat-comparison`",
+          "description": "`breakdown`: `total`, `totalDisplay`, `totalLabel`, `items: [{ label, value, display? }]`. `stat-comparison`: `before`, `after` e `note`.",
+          "blocks": [
+            { "type": "breakdown", "total": 428, "totalDisplay": "R$ 428 mil", "totalLabel": "Receita total", "items": [{ "label": "Assinaturas", "value": 286, "display": "R$ 286 mil" }, { "label": "Serviços", "value": 98, "display": "R$ 98 mil" }, { "label": "Parceiros", "value": 44, "display": "R$ 44 mil" }] },
+            { "type": "stat-comparison", "before": { "label": "Antes", "value": "4,1%" }, "after": { "label": "Depois", "value": "6,8%" }, "note": "Conversão após simplificar o formulário." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "08. Resumo executivo, decisões e tarefas",
+      "items": [
+        {
+          "title": "`executive-summary`",
+          "description": "Propriedades: `context`, `findings`, `risks`, `recommendations` como string ou lista; labels podem ser substituídos por `contextLabel`, `findingsLabel`, `risksLabel` e `recommendationsLabel`.",
+          "blocks": [
+            { "type": "executive-summary", "context": "Revisão do desempenho de Q2 após o lançamento do novo onboarding.", "findings": ["Conversão cresceu 2,7 p.p.", "Churn caiu 0,4 p.p."], "risks": ["Amostra de Enterprise ainda pequena"], "recommendations": ["Expandir rollout para 50%", "Manter grupo de controle"] }
+          ]
+        },
+        {
+          "title": "`key-takeaways` e alias `assumptions`",
+          "description": "Ambos usam `items`, aceitando strings ou objetos `{ text }`.",
+          "blocks": [
+            { "type": "key-takeaways", "items": ["O fluxo curto aumenta ativação.", { "text": "O efeito é maior em usuários recorrentes." }, "A qualidade dos leads permaneceu estável."] },
+            { "type": "assumptions", "items": ["Crescimento orgânico de 8% ao mês.", "Churn mantido abaixo de 3%.", "Ticket médio constante no semestre."] }
+          ]
+        },
+        {
+          "title": "`decision`",
+          "description": "Propriedades: `title`, `rationale`, `date`, `owner`, `participants` e `confidence` entre 0–100.",
+          "blocks": [
+            { "type": "decision", "title": "Expandir o onboarding v2 para 50% da base", "rationale": "O piloto superou a meta sem elevar churn ou chamados.", "date": "10 jul 2026", "owner": "Marina Costa", "participants": ["Produto", "Dados", "Suporte"], "confidence": 88 }
+          ]
+        },
+        {
+          "title": "`action-items`, `recommendations`, `blockers` e `risk-register`",
+          "description": "Família `TaskTable`. Todos usam `items` com `title`, `owner`, `due`, `priority`, `status`, `details`; variantes acrescentam `impact` ou `mitigation`.",
+          "blocks": [
+            { "type": "action-items", "items": [{ "title": "Instrumentar eventos faltantes", "owner": "Lia", "due": "18 jul", "priority": "high", "status": "in-progress" }, { "title": "Publicar dashboard", "owner": "Caio", "due": "22 jul", "priority": "medium", "status": "not-started" }] },
+            { "type": "recommendations", "items": [{ "title": "Expandir rollout", "impact": "+1,8 p.p. estimado", "owner": "Marina", "due": "25 jul", "priority": "high", "status": "approved" }] },
+            { "type": "blockers", "items": [{ "title": "Evento de pagamento incompleto", "impact": "Atribuição parcial", "owner": "Backend", "due": "16 jul", "priority": "critical", "status": "blocked" }] },
+            { "type": "risk-register", "items": [{ "title": "Sobrecarga no suporte", "mitigation": "Rollout gradual e FAQ", "owner": "Suporte", "due": "31 jul", "priority": "medium", "status": "in-progress" }] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "09. Comparação e escolha",
+      "items": [
+        {
+          "title": "`comparison-table`",
+          "description": "Propriedades: `options`, `highlightColumn` (índice) e `rows: [{ label, values }]`.",
+          "blocks": [
+            { "type": "comparison-table", "options": ["Construir", "Comprar", "Híbrido"], "highlightColumn": 2, "rows": [{ "label": "Prazo", "values": ["12 semanas", "3 semanas", "6 semanas"] }, { "label": "Controle", "values": ["Alto", "Baixo", "Alto"] }, { "label": "Custo inicial", "values": ["Alto", "Médio", "Médio"] }] }
+          ]
+        },
+        {
+          "title": "`pros-cons` e alias `tradeoffs`",
+          "description": "`pros-cons` aceita `pros`, `cons`, `prosLabel`, `consLabel`. Ambos também aceitam `columns: [{ label, items, tone? }]` para duas ou mais colunas.",
+          "blocks": [
+            { "type": "pros-cons", "pros": ["Entrega rápida", "Menor risco operacional"], "cons": ["Menos flexibilidade", "Custo recorrente"] },
+            { "type": "tradeoffs", "columns": [{ "label": "Velocidade", "tone": "good", "items": ["Piloto em 3 semanas"] }, { "label": "Controle", "tone": "neutral", "items": ["Extensões próprias"] }, { "label": "Custo", "tone": "bad", "items": ["Licença anual"] }] }
+          ]
+        },
+        {
+          "title": "`option-cards` e alias `scenario-comparison`",
+          "description": "Propriedade: `options: [{ title, subtitle?, recommended?, attributes?, note?, details? }]`; `attributes` usa `{ label, value }`.",
+          "blocks": [
+            { "type": "option-cards", "options": [{ "title": "Plano conservador", "subtitle": "25% da base", "attributes": [{ "label": "Risco", "value": "Baixo" }, { "label": "Prazo", "value": "4 semanas" }], "note": "Maior tempo de observação." }, { "title": "Plano equilibrado", "subtitle": "50% da base", "recommended": true, "attributes": [{ "label": "Risco", "value": "Médio" }, { "label": "Prazo", "value": "2 semanas" }], "note": "Melhor relação entre aprendizado e segurança." }] },
+            { "type": "scenario-comparison", "options": [{ "title": "Base", "attributes": [{ "label": "Receita", "value": "R$ 5,2 mi" }] }, { "title": "Otimista", "attributes": [{ "label": "Receita", "value": "R$ 6,1 mi" }] }, { "title": "Pessimista", "attributes": [{ "label": "Receita", "value": "R$ 4,4 mi" }] }] }
+          ]
+        },
+        {
+          "title": "`swot` e `dependencies`",
+          "description": "`swot`: `strengths`, `weaknesses`, `opportunities`, `threats`. `dependencies`: `items: [{ from, on, note? }]`.",
+          "blocks": [
+            { "type": "swot", "strengths": ["Base engajada", "Dados históricos"], "weaknesses": ["Integração legada"], "opportunities": ["Expansão LatAm", "Upsell Pro"], "threats": ["Pressão de preço", "Novo concorrente"] },
+            { "type": "dependencies", "items": [{ "from": "Dashboard executivo", "on": "Nova camada semântica", "note": "Bloqueia publicação" }, { "from": "Rollout do onboarding", "on": "Eventos de analytics", "note": "Necessário para mensuração" }] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "10. Projetos, pessoas e comunicação operacional",
+      "items": [
+        {
+          "title": "`status-summary`, `okr` e `project-health`",
+          "description": "`status-summary`: `progress`, `label`, `blockers`, `next`. `okr`: `objective`, `keyResults`. `project-health`: `dimensions: [{ health, label, note? }]`.",
+          "blocks": [
+            { "type": "status-summary", "progress": 68, "label": "Entrega do projeto", "blockers": ["Contrato do fornecedor pendente"], "next": ["Concluir migração", "Rodar teste de carga"] },
+            { "type": "okr", "objective": "Transformar relatórios em decisões mais rápidas", "keyResults": [{ "title": "Reduzir tempo de preparação para 30 min", "progress": 78 }, { "title": "Atingir 80% de adoção semanal", "progress": 62 }, { "title": "Eliminar planilhas paralelas", "progress": 45 }] },
+            { "type": "project-health", "dimensions": [{ "health": "healthy", "label": "Escopo", "note": "Sem mudanças relevantes." }, { "health": "attention", "label": "Prazo", "note": "Risco de três dias." }, { "health": "healthy", "label": "Orçamento" }, { "health": "critical", "label": "Dependências", "note": "Fornecedor ainda não liberou acesso." }] }
+          ]
+        },
+        {
+          "title": "`release-notes` e alias `changelog`",
+          "description": "Propriedade: `releases: [{ version?, date?, changes }]`. Mudanças podem ser strings ou `{ kind, text }`; kinds: `added`, `fixed`, `changed`, `removed`.",
+          "blocks": [
+            { "type": "release-notes", "releases": [{ "version": "3.0.0", "date": "10 jul 2026", "changes": [{ "kind": "added", "text": "Famílias avançadas" }, { "kind": "changed", "text": "Catálogo reorganizado" }, { "kind": "fixed", "text": "Contraste do heatmap" }] }] },
+            { "type": "changelog", "releases": [{ "date": "02 jul 2026", "changes": ["Novos calendários", { "kind": "removed", "text": "Alias obsoleto de tabela" }] }] }
+          ]
+        },
+        {
+          "title": "`person-card` e alias `team-list`",
+          "description": "Use `person` para um perfil ou `people` para vários. Pessoa: `name`, `role`, `team`, `contact`, `avatar`, `details`.",
+          "blocks": [
+            { "type": "person-card", "person": { "name": "Marina Costa", "role": "Product Lead", "team": "Growth", "contact": "marina@example.com", "details": { "title": "Marina Costa", "text": "Responsável pelo rollout." } } },
+            { "type": "team-list", "people": [{ "name": "Lia Melo", "role": "Data Analyst", "team": "Analytics" }, { "name": "Caio Reis", "role": "Engineer", "team": "Platform" }, { "name": "Joana Lima", "role": "Researcher", "team": "Product" }] }
+          ]
+        },
+        {
+          "title": "`meeting-notes`",
+          "description": "Propriedades: `title`, `date`, `participants`, `agenda`, `decisions` e `next`.",
+          "blocks": [
+            { "type": "meeting-notes", "title": "Revisão do piloto", "date": "10 jul 2026", "participants": ["Produto", "Dados", "Suporte"], "agenda": ["Resultados", "Riscos", "Próxima etapa"], "decisions": ["Expandir para 50%"], "next": ["Atualizar FAQ", "Monitorar chamados por 7 dias"] }
+          ]
+        },
+        {
+          "title": "`incident-summary` e `root-cause`",
+          "description": "`incident-summary`: `severity`, `title`, `date`, `impact`, `duration`, `cause`, `resolution`, `actions`. `root-cause`: `problem`, `whys`, `rootCause`.",
+          "blocks": [
+            { "type": "incident-summary", "severity": "SEV-2", "title": "Atraso no processamento de eventos", "date": "08 jul 2026", "impact": "Dashboards com atraso de 42 minutos", "duration": "1h18", "cause": "Partição saturada", "resolution": "Redistribuição e aumento de capacidade", "actions": ["Alertar por lag", "Revisar particionamento"] },
+            { "type": "root-cause", "problem": "Eventos chegaram atrasados ao warehouse", "whys": ["A fila acumulou mensagens.", "O consumidor processou abaixo da taxa de entrada.", "Uma partição concentrou 68% do volume.", "A chave de partição tinha baixa cardinalidade.", "O desenho original não considerava o novo volume."], "rootCause": "Estratégia de particionamento incompatível com a distribuição atual." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "11. Indicadores de estado",
+      "items": [
+        {
+          "title": "Badges, tendência, saúde, confiança e atualização",
+          "description": "`status-badge`: `status`. `priority-badge`: `priority`. `trend-indicator`: `trend`, `value`. `health-indicator`: `health`, `label`. `confidence`: `level`, `label`. `freshness`: `date`, `label`.",
+          "blocks": [
+            { "type": "status-badge", "status": "in-progress" },
+            { "type": "status-badge", "status": "blocked" },
+            { "type": "priority-badge", "priority": "critical" },
+            { "type": "priority-badge", "priority": "medium" },
+            { "type": "trend-indicator", "trend": "up", "value": "+12%" },
+            { "type": "trend-indicator", "trend": "down", "value": "−0,4 p.p." },
+            { "type": "health-indicator", "health": "healthy", "label": "Operação saudável" },
+            { "type": "health-indicator", "health": "attention", "label": "Requer atenção" },
+            { "type": "confidence", "level": 87, "label": "Confiança alta" },
+            { "type": "freshness", "date": "10 jul 2026, 09:00" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "12. Famílias avançadas e suas variantes",
+      "items": [
+        {
+          "title": "Contrato comum de `AdvancedBlock`",
+          "description": "Todos os tipos avançados aceitam `type`, `title`/`label`, `summary`/`text`/`description`, `status`, `items`/`rows`/`evidence`/`details`, `confidence`, `severity` e `owner`. Entradas aceitam `{ id?, label/name/title, value/text/note/status }`.",
+          "blocks": [
+            { "type": "code", "code": "{\n  \"type\": \"anomaly\",\n  \"title\": \"Conversão fora do padrão\",\n  \"summary\": \"Valor acima do intervalo esperado.\",\n  \"severity\": \"atenção\",\n  \"confidence\": \"92%\",\n  \"items\": [\n    { \"label\": \"Observado\", \"value\": \"8,4%\" },\n    { \"label\": \"Esperado\", \"value\": \"5,1%–6,2%\" }\n  ]\n}" },
+            { "type": "anomaly", "title": "Conversão fora do padrão", "summary": "O resultado ficou acima do intervalo esperado após a campanha.", "severity": "atenção", "confidence": "92%", "owner": "Analytics", "items": [{ "label": "Observado", "value": "8,4%" }, { "label": "Esperado", "value": "5,1%–6,2%" }, { "label": "Desvio", "value": "+2,2 p.p." }] }
+          ]
+        },
+        {
+          "title": "Investigação e análise — variantes",
+          "description": "Tipos para diagnóstico estatístico, relações, causalidade, cenários, distribuições, fluxos e redes.",
+          "blocks": [
+            { "type": "correlation", "title": "Relações entre métricas", "summary": "Engajamento apresenta a relação mais forte com retenção.", "confidence": "Alta", "items": [{ "label": "Uso semanal × retenção", "value": "r = 0,74" }, { "label": "Tickets × churn", "value": "r = 0,41" }] },
+            { "type": "advanced-catalog", "groups": ["Investigação e análise"] }
+          ]
+        },
+        {
+          "title": "Inteligência e explicação — variantes",
+          "description": "Tipos para separar fatos, evidências, hipóteses, interpretações, incertezas e conteúdo gerado por IA.",
+          "blocks": [
+            { "type": "hypothesis", "title": "Hipótese principal", "summary": "A simplificação do segundo passo elevou a ativação.", "status": "Em validação", "confidence": "78%", "items": [{ "label": "Favorável", "value": "+31% no grupo exposto" }, { "label": "Contrária", "value": "Mudança simultânea de campanha" }] },
+            { "type": "advanced-catalog", "groups": ["Inteligência e explicação"] }
+          ]
+        },
+        {
+          "title": "Financeiro — variantes",
+          "description": "DRE, balanço, caixa, orçamento, unit economics, runway, margens, custos, cobranças, assinaturas e índices.",
+          "blocks": [
+            { "type": "income-statement", "title": "DRE resumida", "summary": "Resultado do segundo trimestre.", "status": "Fechado", "items": [{ "label": "Receita líquida", "value": "R$ 1,28 mi" }, { "label": "Margem bruta", "value": "68%" }, { "label": "EBITDA", "value": "R$ 214 mil" }] },
+            { "type": "advanced-catalog", "groups": ["Financeiro"] }
+          ]
+        },
+        {
+          "title": "Produto e tecnologia — variantes",
+          "description": "Status de features e releases, saúde técnica, APIs, bancos, observabilidade, testes, segurança e decisões arquiteturais.",
+          "blocks": [
+            { "type": "service-health", "title": "Saúde da plataforma", "summary": "Serviços críticos dentro do SLO, com atenção para busca.", "status": "Atenção", "owner": "Platform", "items": [{ "label": "API principal", "value": "99,99%" }, { "label": "Busca", "value": "p95 620 ms" }, { "label": "Eventos", "value": "99,95%" }] },
+            { "type": "advanced-catalog", "groups": ["Produto e tecnologia"] }
+          ]
+        },
+        {
+          "title": "Pessoas, comercial e operações — variantes",
+          "description": "Planejamento de equipe, desempenho comercial, jornada do cliente e indicadores operacionais.",
+          "blocks": [
+            { "type": "capacity", "title": "Capacidade das equipes", "summary": "Disponibilidade líquida para o próximo ciclo.", "items": [{ "label": "Produto", "value": "82% alocado" }, { "label": "Engenharia", "value": "94% alocado" }, { "label": "Dados", "value": "76% alocado" }] },
+            { "type": "pipeline-forecast", "title": "Previsão comercial", "summary": "Pipeline ponderado para Q3.", "status": "No plano", "items": [{ "label": "Commit", "value": "R$ 820 mil" }, { "label": "Best case", "value": "R$ 1,12 mi" }] },
+            { "type": "bottleneck", "title": "Gargalo operacional", "summary": "A validação manual concentra 43% do tempo de ciclo.", "severity": "Alta", "owner": "Operações" },
+            { "type": "advanced-catalog", "groups": ["Pessoas e organização", "Comercial e marketing", "Operações"] }
+          ]
+        },
+        {
+          "title": "Risco, pesquisa e geografia — variantes",
+          "description": "Controles e auditoria, método científico, testes estatísticos, datasets e análises territoriais.",
+          "blocks": [
+            { "type": "audit-finding", "title": "Evidência de acesso incompleta", "summary": "Três revisões trimestrais não possuem aceite formal.", "severity": "Média", "status": "Aberto", "owner": "Compliance" },
+            { "type": "experiment-result", "title": "Resultado do experimento", "summary": "A variante B elevou ativação sem impacto em churn.", "confidence": "95%", "items": [{ "label": "Lift", "value": "+11,8%" }, { "label": "p-value", "value": "0,018" }] },
+            { "type": "region-comparison", "title": "Comparação regional", "items": [{ "label": "Sudeste", "value": "R$ 284 mil" }, { "label": "Sul", "value": "R$ 96 mil" }, { "label": "Nordeste", "value": "R$ 74 mil" }] },
+            { "type": "advanced-catalog", "groups": ["Jurídico, risco e conformidade", "Pesquisa e ciência", "Geografia"] }
+          ]
+        },
+        {
+          "title": "Interatividade, colaboração, governança e automação — variantes",
+          "description": "Controles do leitor, revisão coletiva, versionamento, linhagem, sincronização, alertas e integrações.",
+          "blocks": [
+            { "type": "live-indicator", "title": "Dados em tempo real", "summary": "Último evento recebido há 18 segundos.", "status": "Conectado", "owner": "Data Platform" },
+            { "type": "approval-flow", "title": "Aprovação do relatório", "status": "2 de 3 aprovações", "items": [{ "label": "Dados", "value": "Aprovado" }, { "label": "Financeiro", "value": "Aprovado" }, { "label": "Diretoria", "value": "Pendente" }] },
+            { "type": "data-lineage", "title": "Linhagem do indicador", "summary": "Origem e transformações da receita líquida.", "items": [{ "label": "Origem", "value": "billing.transactions" }, { "label": "Modelo", "value": "finance.revenue_daily" }, { "label": "Destino", "value": "KPI Receita" }] },
+            { "type": "workflow-run", "title": "Atualização diária", "status": "Concluída", "items": [{ "label": "Início", "value": "08:00" }, { "label": "Duração", "value": "3m42s" }, { "label": "Registros", "value": "1,8 mi" }] },
+            { "type": "advanced-catalog", "groups": ["Interatividade avançada", "Colaboração", "Governança e versionamento", "Automação"] }
+          ]
+        },
+        {
+          "title": "Conteúdo editorial e relatórios compostos — variantes",
+          "description": "Peças narrativas e modelos de alto nível que combinam os blocos anteriores em formatos recorrentes.",
+          "blocks": [
+            { "type": "abstract", "title": "Resumo técnico", "summary": "Este estudo mede o efeito do novo onboarding sobre ativação e retenção, com grupo de controle e janela de 30 dias.", "owner": "Research" },
+            { "type": "board-report", "title": "Relatório do conselho", "summary": "Visão consolidada de desempenho, riscos, decisões e ações para o trimestre.", "status": "Em revisão", "items": [{ "label": "Receita", "value": "+12%" }, { "label": "Riscos críticos", "value": "1" }, { "label": "Decisões pendentes", "value": "2" }] },
+            { "type": "advanced-catalog", "groups": ["Conteúdo editorial", "Relatórios compostos"] }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "13. Governança final e composição do corpo",
+      "items": [
+        {
+          "title": "`page-break`",
+          "description": "Não possui propriedades. Cria uma quebra explícita na impressão e no PDF; na tela permanece invisível.",
+          "blocks": [
+            { "type": "callout", "kind": "note", "text": "A quebra está inserida imediatamente depois deste aviso." },
+            { "type": "page-break" },
+            { "type": "paragraph", "text": "Este conteúdo começa em uma nova página quando o relatório é impresso." }
+          ]
+        },
+        {
+          "title": "Blocos no corpo e em modais",
+          "description": "Qualquer tipo conhecido pode aparecer diretamente em `body`, recebendo `heading` e `description`, ou dentro de `item.blocks`, `tabs[].blocks` e `details.blocks`.",
+          "blocks": [
+            { "type": "code", "code": "{\n  \"body\": [\n    { \"type\": \"kpi-grid\", \"heading\": \"KPIs\", \"items\": [] },\n    { \"type\": \"section\", \"heading\": \"Detalhes\", \"items\": [] }\n  ]\n}" }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "references",
+      "heading": "Referências — `references`",
+      "description": "Propriedade: `items: [{ title, href?, source?, note? }]`.",
+      "items": [
+        { "title": "Documentação do formato Dia Reports", "href": "https://example.com/dia-reports", "source": "Documentação interna", "note": "estrutura e exemplos" },
+        { "title": "Chart.js", "href": "https://www.chartjs.org/", "source": "Biblioteca de gráficos" },
+        { "title": "Catálogo gerado a partir do código-fonte", "source": "src/components", "note": "tipos e propriedades conferidos no renderizador" }
+      ]
+    },
+    {
+      "type": "related-reports",
+      "heading": "Relatórios relacionados — `related-reports`",
+      "description": "Propriedade: `ids: string[]`. Os IDs são resolvidos pelo registro local de relatórios.",
+      "ids": ["validador-ficha", "monitor-aoc"]
+    }
+  ]
+}

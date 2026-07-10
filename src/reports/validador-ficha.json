@@ -1,0 +1,213 @@
+{
+  "id": "validador-ficha",
+  "title": "Validador de Ficha, Log de Decisões",
+  "from": "Decision Log · #projeto-validador-qrcode",
+  "date": "2026-07-09T19:12:30Z",
+  "settings": { "colorIndex": 5, "fontIndex": 0, "chartStyleIndex": 2 },
+  "headline": ["Validador de Ficha", "Log de Decisões"],
+  "intro": [
+    "**Escopo fechado, uma ponta solta.** As regras de negócio do projeto de validação de ficha foram resolvidas entre 3 e 9 de julho, nas threads com Igor Moura (produto) e Gabriel Pires (app). Este log rastreia cada decisão até quem a tomou e por quê, e isola o único item que ainda trava implementação."
+  ],
+  "metrics": [
+    { "value": "12", "label": "Regras resolvidas", "note": "confirmadas por Igor / Gabriel", "span": 4 },
+    { "value": "1", "label": "Item em aberto", "note": "com dono e input definidos", "span": 4 },
+    { "value": "3", "label": "Endpoints na PDV.Api", "note": "Gerar · Validar · Estornar", "span": 4 }
+  ],
+  "body": [
+    {
+      "type": "section",
+      "heading": "I. Transação e Gestão de Caixa",
+      "items": [
+        {
+          "title": "1. Transação só na venda, nunca na validação",
+          "badge": "Resolvido · Igor",
+          "blocks": [
+            { "type": "paragraph", "text": "**A validação (consumo) não gera transação.** A transação no corporativo nasce apenas na compra da ficha; validar é só controle de entrega/consumo de um item já vendido." },
+            { "type": "bullets", "items": [
+              "Decidido por Igor Moura, em resposta direta à primeira dúvida de Samuel sobre gestão de caixa.",
+              "Rationale: o item já foi vendido antes; a passagem na catraca não é um evento financeiro."
+            ] },
+            {
+              "type": "slack",
+              "name": "Igor Moura",
+              "channel": "#projeto-validador-qrcode",
+              "time": "3 jul",
+              "text": "Gestão de caixa somente da compra da ficha. Validador somente para controle de entrega ou consumo. O item ja foi vendido anteriormente.",
+              "href": "https://festpayworkspace.slack.com/archives/C0BFVBBSCQ0/p1783092560815719"
+            }
+          ]
+        },
+        {
+          "title": "2. Caixa reflete onde a ficha foi vendida",
+          "badge": "Resolvido · Igor",
+          "blocks": [
+            { "type": "paragraph", "text": "**A Gestão de Caixa fica no caixa da venda, não no da validação.** Se a ficha é comprada no caixa 1111 e validada no caixa 2222, o financeiro permanece no 1111." },
+            { "type": "bullets", "items": [
+              "Decorre direto da regra 1: sem transação na validação, não há o que mover de caixa."
+            ] }
+          ]
+        },
+        {
+          "title": "3. Fichas marcadas por IsTicket em TransacaoItem",
+          "badge": "Resolvido · Samuel",
+          "blocks": [
+            { "type": "paragraph", "text": "**Itens de ficha recebem uma nova propriedade `IsTicket` (bit, default false) na tabela `TransacaoItem`**, diferenciando-os dos demais itens da transação. Substitui a abordagem anterior de marcar por `HubId > 10`: a marcação passa a ser explícita e por item. Requer migration adicionando a coluna." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "II. Gestão de Produtos e Geração do QRCode",
+      "items": [
+        {
+          "title": "4. Flag por produto controla a geração",
+          "badge": "Resolvido · Gabriel",
+          "blocks": [
+            { "type": "paragraph", "text": "**A ficha é ligada por uma flag em Gestão de Produtos → Cardápio → ProdutoEvento.** Se \"Esse produto requer validação de QRCode\" for verdadeira, o QRCode sai automaticamente na venda." },
+            { "type": "bullets", "items": [
+              "Gabriel consolidou o entendimento; Samuel confirmou o local exato (ProductEvent) e o texto da flag.",
+              "Implica migration em `ProdutoEvento` com a coluna `RequerValidacaoQrCode` (bit, default false)."
+            ] },
+            {
+              "type": "slack",
+              "name": "Gabriel Pires",
+              "channel": "#projeto-validador-qrcode",
+              "time": "3 jul",
+              "text": "1 - Transação só é gerada no pagamento e não na validação da ficha; 2 - Flag vem do gestão de produto se vai gerar ficha ou não; 3 - Se essa flag for true imprimir qr code.",
+              "href": "https://festpayworkspace.slack.com/archives/C0BFVBBSCQ0/p1783100374426749"
+            }
+          ]
+        },
+        {
+          "title": "5. Um QRCode por produto, não por unidade",
+          "badge": "Resolvido · Samuel",
+          "blocks": [
+            { "type": "paragraph", "text": "**O QRCode é por linha do carrinho.** Comprar 3 unidades do mesmo produto gera 1 QRCode, validável até esgotar a quantidade (3 de uma vez, ou 3 validações de 1)." },
+            { "type": "bullets", "items": [
+              "Vinculado ao registro `WalletTicketItem`; não funciona com o tipo de impressão \"comprovante de venda\".",
+              "Funciona com itens mistos, sobremesa, refrigerante, etc., cada um com seu ponto de validação."
+            ] }
+          ]
+        },
+        {
+          "title": "6. Sem refeição por peso",
+          "badge": "Resolvido · Igor",
+          "blocks": [
+            { "type": "paragraph", "text": "**Ficha não é usada com refeição por peso.** Igor descartou o cenário: exigiria lançar o valor do prato, o que quebra o modelo de item pré-vendido." },
+            {
+              "type": "slack",
+              "name": "Igor Moura",
+              "channel": "#projeto-validador-qrcode",
+              "time": "3 jul",
+              "text": "Nao. Ate pq precisaria lançar o valor do prato.",
+              "href": "https://festpayworkspace.slack.com/archives/C0BFVBBSCQ0/p1783102107871679"
+            }
+          ]
+        },
+        {
+          "title": "7. Fichas e produtos normais na mesma venda",
+          "badge": "Resolvido · Igor",
+          "blocks": [
+            { "type": "paragraph", "text": "**Uma transação de venda pode conter produtos-ficha e produtos normais juntos.** Confirmado por Igor em 9 jul." }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "III. Dispositivos e Fluxo de Validação",
+      "items": [
+        {
+          "title": "8. Catraca libera 1 passagem por validação",
+          "badge": "Resolvido · spec",
+          "blocks": [
+            { "type": "paragraph", "text": "**Cada validação libera uma passagem.** Ficha com N almoços = o mesmo QRCode é validado N vezes (uma por pessoa). Item fora do escopo do totem não libera." },
+            { "type": "bullets", "items": [
+              "Reaproveita a integração local de catraca existente (`http://{ip}:2021/liberar-passagem`).",
+              "Após sucesso, o totem exibe só mensagem de sucesso, sem comprovante."
+            ] }
+          ]
+        },
+        {
+          "title": "9. \"Ficha\" vira forma de pagamento no PDV",
+          "badge": "Resolvido · spec",
+          "blocks": [
+            { "type": "paragraph", "text": "**Ficha passa a ser uma forma de pagamento configurável, igual \"Comanda\".** Habilitável por ponto de venda/evento. Nesta 1ª fase, só o PDV valida; o POS gera mas não valida." }
+          ]
+        },
+        {
+          "title": "10. Ficha não expira (escopo atual)",
+          "badge": "Resolvido · Igor",
+          "blocks": [
+            { "type": "paragraph", "text": "**Sem expiração.** Dúvida de Gabriel; Igor definiu que, no escopo atual, uma ficha comprada pode ser consumida a qualquer momento." },
+            {
+              "type": "slack",
+              "name": "Igor Moura",
+              "channel": "#projeto-validador-qrcode",
+              "time": "6 jul",
+              "text": "No escopo atual não vai expirar.",
+              "href": "https://festpayworkspace.slack.com/archives/C0BFVBBSCQ0/p1783445776953069"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "IV. Estorno",
+      "items": [
+        {
+          "title": "11. Backend garante o cancelamento da ficha",
+          "badge": "Resolvido · Igor",
+          "blocks": [
+            { "type": "paragraph", "text": "**Estorno de venda: permitido, online, via app e Central de Vendas. Estorno de consumo: proibido.** Igor foi enfático: um aviso ao operador \"não adianta nada, o usuário vai dar ok e não vai fazer nada\", então a garantia tem que ser do backend." },
+            { "type": "bullets", "items": [
+              "Quando o estorno chega na fila, o backend verifica se há ficha e se está cancelada; se não, ele mesmo cancela antes de seguir.",
+              "Samuel e Fernando definiram que o `transaction` não faz chamadas a APIs externas, o cancelamento roda por outra fila.",
+              "Divergência Wallet × Corporativo em consumo parcial é tratada manualmente, sem automação."
+            ] },
+            {
+              "type": "slack",
+              "name": "Igor Moura",
+              "channel": "#projeto-validador-qrcode",
+              "time": "9 jul",
+              "text": "Tem que garantir o cancelamento da ficha... no momento que precisa o estorno na fila deveria revisitar e garantir que cancelou. Pq o aviso não adianta nada. O usuario vai dar ok e não vai fazer nada.",
+              "href": "https://festpayworkspace.slack.com/archives/C0BFVBBSCQ0/p1783615896889939"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "section",
+      "heading": "V. Em Aberto e Resolvidos em Paralelo",
+      "items": [
+        {
+          "title": "A. Inativar modelos antigos de QRCode",
+          "badge": "Aberto",
+          "blocks": [
+            { "type": "paragraph", "text": "**Dono: Samuel (extrai dado) → Igor (decide).** Igor propôs manter só os modelos \"agrupado\" e \"individual\" e inativar o \"individual com logo + QR code\" — se nenhum cliente usar." },
+            { "type": "paragraph", "text": "**Input necessário:** Samuel precisa extrair se algum cliente ainda usa o modelo antigo antes de Igor bater o martelo." },
+            {
+              "type": "slack",
+              "name": "Igor Moura",
+              "channel": "#projeto-validador-qrcode",
+              "time": "9 jul",
+              "text": "Se tiver usando somente esses modelos acho que podemos inativar os outros.",
+              "href": "https://festpayworkspace.slack.com/archives/C0BFVBBSCQ0/p1783617453259529"
+            }
+          ]
+        },
+        {
+          "title": "Resolvido em paralelo",
+          "badge": "Nota",
+          "blocks": [
+            { "type": "paragraph", "text": "**Alerta de consumo no cancelamento: definido.** Igor confirmou que o alerta é apenas informativo — serve de confirmação de que o operador realmente deseja seguir com o cancelamento. Não bloqueia a ação." },
+            { "type": "paragraph", "text": "**Local da nova tela/relatório de ficha: definido.** Igor decidiu que é um relatório, \"Rel de Utilização de ficha\", posicionado em Vendas — não um submenu em Gestão como Samuel havia proposto." }
+          ]
+        }
+      ]
+    }
+  ]
+}
