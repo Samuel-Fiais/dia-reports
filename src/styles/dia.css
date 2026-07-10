@@ -3001,6 +3001,10 @@ blockquote.report-blockquote-break footer {
   margin-top: 2rem;
 }
 
+.report:not(.report--full) .report-hero {
+  margin-top: 3rem;
+}
+
 .report-hero-side {
   position: absolute;
   top: 50%;
@@ -3014,13 +3018,13 @@ blockquote.report-blockquote-break footer {
 }
 
 .report-hero-side--left {
-  left: -1.75rem;
+  left: -2.75rem;
   transform: translateY(-50%) rotate(180deg);
   writing-mode: vertical-rl;
 }
 
 .report-hero-side--right {
-  right: -1.75rem;
+  right: -2.75rem;
   transform: translateY(-50%);
   writing-mode: vertical-rl;
 }
