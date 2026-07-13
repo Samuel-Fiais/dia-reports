@@ -1,29 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
+import { Settings } from 'lucide-react'
 import { COLORS, COLORS_DARK, COLOR_NAMES, FONTS, FONT_SCALES } from '../lib/theme.js'
 import { useAppTheme } from '../context/ThemeContext.jsx'
-
-function ThemeToggleButton() {
-  const { appTheme, toggleAppTheme } = useAppTheme()
-  return (
-    <button
-      type="button"
-      className="theme-toggle-btn ready"
-      title={appTheme === 'dark' ? 'Modo claro' : 'Modo escuro'}
-      onClick={toggleAppTheme}
-    >
-      {appTheme === 'dark' ? (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="4" />
-          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-        </svg>
-      ) : (
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-        </svg>
-      )}
-    </button>
-  )
-}
+import { useClickOutside } from '../lib/useClickOutside.js'
+import ThemeToggleButton from './ThemeToggleButton.jsx'
 
 export default function SettingsPanel({ settings, onChange }) {
   const [open, setOpen] = useState(false)
@@ -31,21 +11,7 @@ export default function SettingsPanel({ settings, onChange }) {
   const { appTheme } = useAppTheme()
   const colors = appTheme === 'dark' ? COLORS_DARK : COLORS
 
-  useEffect(() => {
-    if (!open) return
-    const close = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
-    }
-    const closeWithKeyboard = (e) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', close)
-    document.addEventListener('keydown', closeWithKeyboard)
-    return () => {
-      document.removeEventListener('mousedown', close)
-      document.removeEventListener('keydown', closeWithKeyboard)
-    }
-  }, [open])
+  useClickOutside(wrapRef, open, () => setOpen(false))
 
   return (
     <div className="settings-wrap" ref={wrapRef}>
@@ -141,10 +107,7 @@ export default function SettingsPanel({ settings, onChange }) {
           title="Customize"
           onClick={() => setOpen((v) => !v)}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3" />
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-          </svg>
+          <Settings size={16} />
         </button>
       </div>
     </div>

@@ -1,17 +1,70 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import ReportPage from './pages/ReportPage.jsx'
+import Login from './pages/Login.jsx'
+import ReportGroups from './pages/admin/ReportGroups.jsx'
+import Profiles from './pages/admin/Profiles.jsx'
+import Users from './pages/admin/Users.jsx'
+import ReportsAdmin from './pages/admin/ReportsAdmin.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
+import RequireAuth from './components/RequireAuth.jsx'
+import RequirePermission from './components/RequirePermission.jsx'
+import AppMenu from './components/AppMenu.jsx'
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/report/:id" element={<ReportPage />} />
-        </Routes>
-      </BrowserRouter>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <AppMenu />
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+            <Route path="/report/:id" element={<RequireAuth><ReportPage /></RequireAuth>} />
+            <Route
+              path="/admin/report-groups"
+              element={
+                <RequireAuth>
+                  <RequirePermission module="report_groups.manage">
+                    <ReportGroups />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/profiles"
+              element={
+                <RequireAuth>
+                  <RequirePermission module="profiles.manage">
+                    <Profiles />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/users"
+              element={
+                <RequireAuth>
+                  <RequirePermission module="users.manage">
+                    <Users />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/reports"
+              element={
+                <RequireAuth>
+                  <RequirePermission module="reports.manage">
+                    <ReportsAdmin />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
+    </AuthProvider>
   )
 }

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Download, Minus, Plus } from 'lucide-react'
 import { renderInline } from '../../lib/inline.jsx'
 import { useModal } from '../Modal.jsx'
 
@@ -102,7 +103,7 @@ export function Accordion({ block }) {
         <div key={i} className={`accordion-item${open.has(i) ? ' open' : ''}`}>
           <button type="button" className="accordion-head" onClick={() => toggle(i)}>
             <span>{renderInline(item.title ?? item.question)}</span>
-            <span className="accordion-chevron">{open.has(i) ? '−' : '+'}</span>
+            <span className="accordion-chevron">{open.has(i) ? <Minus size={16} /> : <Plus size={16} />}</span>
           </button>
           {open.has(i) && (
             <div className="accordion-body">
@@ -298,7 +299,7 @@ export function Video({ block }) {
 export function FileAttachment({ block }) {
   return (
     <a className="file-attachment" href={block.href} download={block.download ?? true} target="_blank" rel="noopener noreferrer">
-      <span className="file-attachment-icon">⤓</span>
+      <span className="file-attachment-icon"><Download size={18} /></span>
       <span className="file-attachment-info">
         <span className="file-attachment-name">{block.name}</span>
         {(block.size || block.format) && (

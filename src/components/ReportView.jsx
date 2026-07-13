@@ -1,7 +1,7 @@
 import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { renderInline } from '../lib/inline.jsx'
-import { formatReportDate, formatShortDate } from '../lib/theme.js'
+import { formatReportDate, formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
 import { reports } from '../lib/registry.js'
 import { ModalProvider } from './Modal.jsx'
 import { ItemBlock, renderBlocks } from './blocks/index.jsx'
@@ -118,7 +118,7 @@ function BodyBlock({ block, chartStyleIndex, bodyKey, report }) {
                 <span className="related-report-title">
                   {Array.isArray(r.headline) ? r.headline.join(' ') : r.headline ?? r.title}
                 </span>
-                <span className="related-report-date">{formatShortDate(r.date)}</span>
+                <span className="related-report-date">{formatShortDate(r.updatedAt ?? r.date)}</span>
               </Link>
             ))}
           </div>
@@ -144,8 +144,8 @@ function ReportHero({ report }) {
   const headline = Array.isArray(report.headline) ? report.headline : [report.headline]
   return (
     <div className="report-hero">
-      <span className="report-hero-side report-hero-side--left">{cover.sideLeft ?? formatShortDate(report.date)}</span>
-      <span className="report-hero-side report-hero-side--right">{cover.sideRight ?? (report.from ?? '')}</span>
+      <span className="report-hero-side report-hero-side--left">{cover.sideLeft ?? formatShortDate(report.updatedAt ?? report.date)}</span>
+      <span className="report-hero-side report-hero-side--right">{cover.sideRight ?? formatUpdatedAgo(report.updatedAt ?? report.date)}</span>
       <div className="report-hero-frame">
         <img className="report-hero-img" src={cover.src} alt={cover.alt ?? ''} />
         <div className="report-hero-overlay" style={cover.accent ? { '--hero-accent': cover.accent } : undefined}>
@@ -185,7 +185,7 @@ export default function ReportView({ report, settings = {} }) {
             <div className="report-header-left">
               <span className="report-from">{report.title ?? report.from ?? 'Relatório'}</span>
             </div>
-            <span className="report-date">{formatReportDate(report.date)}</span>
+            <span className="report-date">{formatReportDate(report.updatedAt ?? report.date)}</span>
           </header>
 
           {hasCover ? (

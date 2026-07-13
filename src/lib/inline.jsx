@@ -1,6 +1,6 @@
 // Mini-parser de marcação inline usada nos textos do JSON:
-// **negrito**, *itálico*, `código` e [texto](url)
-const TOKEN = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)]+\))/g
+// **negrito**, *itálico*, `código`, ``texto com `backtick` literal`` e [texto](url)
+const TOKEN = /(\*\*[^*]+\*\*|\*[^*]+\*|``(?:[^`]|`(?!`))+``|`[^`]+`|\[[^\]]+\]\([^)]+\))/g
 
 export function renderInline(text) {
   if (text == null) return null
@@ -12,6 +12,14 @@ export function renderInline(text) {
     }
     if (part.startsWith('*') && part.endsWith('*') && part.length > 2) {
       return <em key={i}>{part.slice(1, -1)}</em>
+    }
+    // `` `código` ``: sintaxe padrão de Markdown para código literal contendo backticks
+    if (part.startsWith('``') && part.endsWith('``') && part.length > 4) {
+      let inner = part.slice(2, -2)
+      if (inner.startsWith(' ') && inner.endsWith(' ') && inner.trim() !== '') {
+        inner = inner.slice(1, -1)
+      }
+      return <code key={i}>{inner}</code>
     }
     if (part.startsWith('`') && part.endsWith('`')) {
       return <code key={i}>{part.slice(1, -1)}</code>

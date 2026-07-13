@@ -11,8 +11,11 @@
   "dependencies": {
     "@fontsource/fraunces": "^5.2.9",
     "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
     "@neondatabase/serverless": "^0.9.5",
+    "bcryptjs": "^3.0.3",
     "chart.js": "^4.4.9",
+    "lucide-react": "^1.24.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.30.0"

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Check } from 'lucide-react'
 import { renderInline } from '../lib/inline.jsx'
 
 const storageKey = (blockKey) => `dia-report-todo:${blockKey}`
@@ -36,9 +37,7 @@ export default function TodoBlock({ block, blockKey }) {
           onClick={() => toggle(i)}
         >
           <span className="todo-checkbox">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12" />
-            </svg>
+            <Check strokeWidth={3} />
           </span>
           <span>{renderInline(item.text)}</span>
         </li>

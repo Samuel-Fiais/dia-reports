@@ -1,24 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { ArrowRight, Search, X } from 'lucide-react'
 import { fetchReports } from '../lib/registry.js'
-import { applyTheme, formatReportDate, formatShortDate } from '../lib/theme.js'
-import { useAppTheme } from '../context/ThemeContext.jsx'
+import { formatReportDate, formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
+import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
 
 function countSections(report) {
   if (typeof report.sections_length === 'number') return report.sections_length
   return (report.body ?? []).filter((b) => b.type === 'section').length
 }
 
+function reportTitle(report) {
+  return Array.isArray(report.headline) ? report.headline.join(' ') : report.headline ?? report.title
+}
+
+const SORT_OPTIONS = [
+  { value: 'recent', label: 'Mais recentes' },
+  { value: 'oldest', label: 'Mais antigos' },
+  { value: 'az', label: 'Título (A–Z)' },
+]
+
 export default function Home() {
-  const { appTheme, toggleAppTheme } = useAppTheme()
+  useAppChromeTheme('Relatórios')
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-
-  useEffect(() => {
-    applyTheme({ colorIndex: 0, fontIndex: 0 }, appTheme)
-    document.title = 'Relatórios'
-  }, [appTheme])
+  const [query, setQuery] = useState('')
+  const [category, setCategory] = useState('all')
+  const [sort, setSort] = useState('recent')
 
   useEffect(() => {
     let cancelled = false
@@ -43,28 +52,32 @@ export default function Home() {
     }
   }, [])
 
+  const categories = useMemo(() => {
+    const set = new Set(reports.map((r) => r.from).filter(Boolean))
+    return ['all', ...Array.from(set)]
+  }, [reports])
+
+  const visibleReports = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    let list = reports.filter((report) => {
+      if (category !== 'all' && report.from !== category) return false
+      if (!q) return true
+      const haystack = [reportTitle(report), report.intro?.[0], report.from]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase()
+      return haystack.includes(q)
+    })
+    list = [...list].sort((a, b) => {
+      if (sort === 'az') return reportTitle(a).localeCompare(reportTitle(b), 'pt-BR')
+      const diff = new Date(a.updatedAt ?? a.date) - new Date(b.updatedAt ?? b.date)
+      return sort === 'oldest' ? diff : -diff
+    })
+    return list
+  }, [reports, query, category, sort])
+
   return (
     <div className="report ready">
-      <div className="report-topnav">
-        <button
-          type="button"
-          className="theme-toggle-btn ready"
-          title={appTheme === 'dark' ? 'Modo claro' : 'Modo escuro'}
-          onClick={toggleAppTheme}
-        >
-          {appTheme === 'dark' ? (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-            </svg>
-          ) : (
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-            </svg>
-          )}
-        </button>
-      </div>
-
       <div className="report-wrap">
         <header className="report-header">
           <div className="report-header-left">
@@ -79,13 +92,63 @@ export default function Home() {
           <p>
             <strong>
               {loading
-                ? 'Carregando relatórios.'
-                : `${reports.length} ${reports.length === 1 ? 'relatório disponível' : 'relatórios disponíveis'}.`}
+                ? 'Carregando seus relatórios.'
+                : `${visibleReports.length} de ${reports.length} ${reports.length === 1 ? 'relatório' : 'relatórios'}.`}
             </strong>{' '}
-            Os relatórios agora são carregados pela API em tempo de execução. Clique em um
-            relatório para abri-lo.
+            Tudo em um só lugar, sempre atualizado. Busque por assunto ou filtre por categoria
+            para achar o que precisa rapidinho.
           </p>
         </div>
+
+        {!loading && reports.length > 0 && (
+          <div className="dashboard-controls">
+            <div className="dashboard-search">
+              <Search size={15} aria-hidden="true" />
+              <input
+                type="search"
+                placeholder="Buscar por título ou assunto..."
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                aria-label="Buscar relatórios"
+              />
+              {query && (
+                <button type="button" onClick={() => setQuery('')} aria-label="Limpar busca">
+                  <X size={13} />
+                </button>
+              )}
+            </div>
+
+            {categories.length > 2 && (
+              <div className="dashboard-sort-wrap">
+                <select
+                  className="dashboard-sort"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  aria-label="Filtrar por categoria"
+                >
+                  {categories.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat === 'all' ? 'Todas' : cat}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            <div className="dashboard-sort-wrap">
+              <select
+                className="dashboard-sort"
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                aria-label="Ordenar relatórios"
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
 
         <hr className="report-rule" />
 
@@ -102,18 +165,16 @@ export default function Home() {
               )}
               {!loading && error && (
                 <p className="report-card-empty">
-                  Não foi possível carregar os relatórios agora. Tente novamente em instantes.
+                  Não conseguimos carregar seus relatórios agora. Tente de novo em instantes.
                 </p>
               )}
-              {!loading && !error && reports.map((report) => (
+              {!loading && !error && visibleReports.map((report) => (
                 <Link key={report.id} to={`/report/${report.id}`} className="report-card">
                   <div className="report-card-meta">
-                    <span className="report-card-from">{report.from ?? 'Relatório'}</span>
-                    <span className="report-card-date">{formatShortDate(report.date)}</span>
+                    <span className="report-card-from">{formatUpdatedAgo(report.updatedAt ?? report.date)}</span>
+                    <span className="report-card-date">{formatShortDate(report.updatedAt ?? report.date)}</span>
                   </div>
-                  <h3 className="report-card-title">
-                    {Array.isArray(report.headline) ? report.headline.join(' ') : report.headline ?? report.title}
-                  </h3>
+                  <h3 className="report-card-title">{reportTitle(report)}</h3>
                   {report.intro?.[0] && (
                     <p className="report-card-desc">
                       {String(report.intro[0]).replace(/\*\*|\*|`/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')}
@@ -126,13 +187,20 @@ export default function Home() {
                     {(report.metrics?.length > 0 || report.metrics_length > 0) && (
                       <span className="item-badge">{report.metrics?.length ?? report.metrics_length} métricas</span>
                     )}
-                    <span className="report-card-open">Abrir →</span>
+                    <span className="report-card-open">
+                      Abrir <ArrowRight size={13} aria-hidden="true" />
+                    </span>
                   </div>
                 </Link>
               ))}
+              {!loading && !error && reports.length > 0 && visibleReports.length === 0 && (
+                <p className="report-card-empty">
+                  Nenhum relatório encontrado com esses filtros. Tente outro termo de busca.
+                </p>
+              )}
               {!loading && !error && reports.length === 0 && (
                 <p className="report-card-empty">
-                  Nenhum relatório encontrado na API.
+                  Nenhum relatório disponível ainda.
                 </p>
               )}
             </div>

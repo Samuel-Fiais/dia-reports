@@ -1,21 +1,21 @@
 // Paleta de fundos do seletor "Customize Report" (Dia Browser)
 export const COLORS = [
-  "#faf9f5", // 0 creme (padrão)
-  "#faf6e0", // 1 amarelo
-  "#f9e9ec", // 2 rosa
-  "#eef0f4", // 3 azul-acinzentado
-  "#eaf2e6", // 4 verde
-  "#efeaf6", // 5 lavanda
-  "#faeadd", // 6 pêssego
-  "#ececec", // 7 cinza
-  "#f3f0e8", // 8 pedra quente
-  "#edf4ee", // 9 sálvia clara
-  "#eaf4f3", // 10 água
-  "#eaf1f8", // 11 azul gelo
-  "#f5edf4", // 12 malva
-  "#f6eee8", // 13 argila clara
-  "#f2f0e4", // 14 areia
-  "#edf1f0", // 15 névoa
+  "#f7f5e9", // 0 creme (padrão)
+  "#f5f0d7", // 1 amarelo
+  "#f7dde2", // 2 rosa
+  "#e3e8f1", // 3 azul-acinzentado
+  "#e1f1d9", // 4 verde
+  "#e7dcf5", // 5 lavanda
+  "#f4e3d4", // 6 pêssego
+  "#e5e5e5", // 7 cinza
+  "#f2ebdb", // 8 pedra quente
+  "#e2f1e4", // 9 sálvia clara
+  "#ddf2f0", // 10 água
+  "#ddeaf7", // 11 azul gelo
+  "#f3e1f0", // 12 malva
+  "#f6e6da", // 13 argila clara
+  "#f1eed6", // 14 areia
+  "#e3ecea", // 15 névoa
 ];
 
 // Equivalentes escuros da mesma paleta, usados quando o tema do app é "dark"
@@ -245,4 +245,32 @@ export function formatShortDate(iso) {
     month: "short",
     year: "numeric",
   }).format(date);
+}
+
+const RELATIVE_UNITS = [
+  ["ano", 365 * 24 * 60 * 60],
+  ["mês", 30 * 24 * 60 * 60],
+  ["semana", 7 * 24 * 60 * 60],
+  ["dia", 24 * 60 * 60],
+  ["hora", 60 * 60],
+  ["minuto", 60],
+];
+
+/* "Atualizado há X" — hora exata se for muito recente (<1min), senão a maior unidade que couber. */
+export function formatUpdatedAgo(iso) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  const diffSeconds = Math.max(0, Math.floor((Date.now() - date.getTime()) / 1000));
+
+  if (diffSeconds < 60) return "Atualizado agora mesmo";
+
+  for (const [label, seconds] of RELATIVE_UNITS) {
+    const count = Math.floor(diffSeconds / seconds);
+    if (count >= 1) {
+      const plural = count > 1 ? (label === "mês" ? "meses" : `${label}s`) : label;
+      return `Atualizado há ${count} ${plural}`;
+    }
+  }
+  return "Atualizado agora mesmo";
 }

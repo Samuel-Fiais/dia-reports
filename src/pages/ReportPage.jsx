@@ -1,75 +1,76 @@
-import { useEffect, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
-import { getReport } from '../lib/registry.js'
-import { applyTheme, loadSettings, saveSettings } from '../lib/theme.js'
-import { useAppTheme } from '../context/ThemeContext.jsx'
-import ReportView from '../components/ReportView.jsx'
-import SettingsPanel from '../components/SettingsPanel.jsx'
-import ShareButton from '../components/ShareButton.jsx'
+import { useEffect, useState } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { getReport } from "../lib/registry.js";
+import { applyTheme, loadSettings, saveSettings } from "../lib/theme.js";
+import { useAppTheme } from "../context/ThemeContext.jsx";
+import ReportView from "../components/ReportView.jsx";
+import SettingsPanel from "../components/SettingsPanel.jsx";
+import ShareButton from "../components/ShareButton.jsx";
 
 export default function ReportPage() {
-  const { id } = useParams()
-  const [searchParams] = useSearchParams()
-  const shared = searchParams.get('shared') === '1'
-  const { appTheme } = useAppTheme()
-  const [report, setReport] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const shared = searchParams.get("shared") === "1";
+  const { appTheme } = useAppTheme();
+  const [report, setReport] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const [settings, setSettings] = useState(() => {
     const reportSettings = {
       colorIndex: report?.settings?.colorIndex ?? 0,
       fontIndex: report?.settings?.fontIndex ?? 0,
       chartStyleIndex: report?.settings?.chartStyleIndex ?? 2,
-      widthMode: report?.settings?.widthMode ?? 'standard',
-      fontScale: report?.settings?.fontScale ?? 'default',
-    }
-    return shared ? reportSettings : loadSettings(id, reportSettings)
-  })
+      widthMode: report?.settings?.widthMode ?? "standard",
+      fontScale: report?.settings?.fontScale ?? "default",
+    };
+    return shared ? reportSettings : loadSettings(id, reportSettings);
+  });
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function loadReport() {
       try {
-        setLoading(true)
-        setError(null)
-        const data = await getReport(id)
-        if (cancelled) return
-        setReport(data)
+        setLoading(true);
+        setError(null);
+        const data = await getReport(id);
+        if (cancelled) return;
+        setReport(data);
         setSettings(
           loadSettings(id, {
             colorIndex: data?.settings?.colorIndex ?? 0,
             fontIndex: data?.settings?.fontIndex ?? 0,
             chartStyleIndex: data?.settings?.chartStyleIndex ?? 2,
-            widthMode: data?.settings?.widthMode ?? 'standard',
-            fontScale: data?.settings?.fontScale ?? 'default',
+            widthMode: data?.settings?.widthMode ?? "standard",
+            fontScale: data?.settings?.fontScale ?? "default",
           }),
-        )
+        );
       } catch (err) {
         if (!cancelled) {
-          setReport(null)
-          setError(err)
+          setReport(null);
+          setError(err);
         }
       } finally {
-        if (!cancelled) setLoading(false)
+        if (!cancelled) setLoading(false);
       }
     }
 
-    loadReport()
+    loadReport();
 
     return () => {
-      cancelled = true
-    }
-  }, [id])
+      cancelled = true;
+    };
+  }, [id]);
 
   useEffect(() => {
-    applyTheme(settings, appTheme)
-  }, [settings, appTheme])
+    applyTheme(settings, appTheme);
+  }, [settings, appTheme]);
 
   useEffect(() => {
-    if (report?.title) document.title = report.title
-  }, [report])
+    if (report?.title) document.title = report.title;
+  }, [report]);
 
   if (loading) {
     return (
@@ -86,7 +87,7 @@ export default function ReportPage() {
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (error) {
@@ -101,12 +102,13 @@ export default function ReportPage() {
           <h1 className="report-headline">Não foi possível abrir</h1>
           <div className="report-intro">
             <p>
-              A API não respondeu como esperado. <Link to="/">Voltar ao dashboard</Link>.
+              A API não respondeu como esperado.{" "}
+              <Link to="/">Voltar ao dashboard</Link>.
             </p>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   if (!report) {
@@ -121,24 +123,27 @@ export default function ReportPage() {
           <h1 className="report-headline">404</h1>
           <div className="report-intro">
             <p>
-              Nenhum relatório com o id <code>{id}</code>. <Link to="/">Voltar ao dashboard</Link>.
+              Nenhum relatório com o id <code>{id}</code>.{" "}
+              <Link to="/">Voltar ao dashboard</Link>.
             </p>
           </div>
         </div>
       </div>
-    )
+    );
   }
 
   const handleChange = (next) => {
-    setSettings(next)
-    saveSettings(id, next)
-  }
+    setSettings(next);
+    saveSettings(id, next);
+  };
 
   return (
     <>
       {!shared && (
         <nav className="report-backnav">
-          <Link to="/">← Relatórios</Link>
+          <Link to="/">
+            <ArrowLeft size={12} aria-hidden="true" /> Relatórios
+          </Link>
         </nav>
       )}
       <div className="report-topnav">
@@ -147,5 +152,5 @@ export default function ReportPage() {
       <ReportView report={report} settings={settings} />
       {!shared && <SettingsPanel settings={settings} onChange={handleChange} />}
     </>
-  )
+  );
 }

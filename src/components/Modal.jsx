@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { X } from 'lucide-react'
 import { renderInline } from '../lib/inline.jsx'
 
 const ModalContext = createContext({ openModal: () => {} })
@@ -40,7 +41,7 @@ export function ModalProvider({ renderBlocks, children }) {
         <div className="dia-modal-backdrop" onClick={close}>
           <div className="dia-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="dia-modal-close" onClick={close} aria-label="Fechar">
-              ×
+              <X size={18} />
             </button>
             {modal.eyebrow && <span className="dia-modal-eyebrow">{modal.eyebrow}</span>}
             {modal.title && <h3 className="dia-modal-title">{renderInline(modal.title)}</h3>}

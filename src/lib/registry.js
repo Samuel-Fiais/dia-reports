@@ -16,5 +16,5 @@ export async function getReport(slug) {
   if (res.status === 404) return null
   if (!res.ok) throw new Error('Failed to fetch report')
   const data = await res.json()
-  return data.content ? { ...data.content, id: data.slug } : null
+  return data.content ? { ...data.content, id: data.slug, updatedAt: data.updatedAt } : null
 }

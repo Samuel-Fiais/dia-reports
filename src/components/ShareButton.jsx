@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
+import { ArrowUpRight, Check, Copy, MoreHorizontal, Printer } from 'lucide-react'
+import { useClickOutside } from '../lib/useClickOutside.js'
 
 export default function ShareButton({ reportId }) {
   const [open, setOpen] = useState(false)
@@ -11,21 +13,7 @@ export default function ShareButton({ reportId }) {
     return () => clearTimeout(t)
   }, [copied])
 
-  useEffect(() => {
-    if (!open) return
-    const close = (e) => {
-      if (wrapRef.current && !wrapRef.current.contains(e.target)) setOpen(false)
-    }
-    const closeWithKeyboard = (e) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', close)
-    document.addEventListener('keydown', closeWithKeyboard)
-    return () => {
-      document.removeEventListener('mousedown', close)
-      document.removeEventListener('keydown', closeWithKeyboard)
-    }
-  }, [open])
+  useClickOutside(wrapRef, open, () => setOpen(false))
 
   const link = `${window.location.origin}/report/${reportId}?shared=1`
 
@@ -73,25 +61,27 @@ export default function ShareButton({ reportId }) {
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
       >
-        <svg className="report-share-main-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <circle cx="5" cy="12" r="1.75" />
-          <circle cx="12" cy="12" r="1.75" />
-          <circle cx="19" cy="12" r="1.75" />
-        </svg>
-        {copied ? 'Copiado ✓' : 'Menu'}
+        <MoreHorizontal className="report-share-main-icon" size={16} aria-hidden="true" />
+        {copied ? (
+          <>
+            Copiado <Check size={14} aria-hidden="true" />
+          </>
+        ) : (
+          'Menu'
+        )}
       </button>
       {open && (
         <div className="report-share-menu" role="menu">
           <button type="button" className="report-share-option" role="menuitem" onClick={share}>
-            <span className="report-share-option-icon" aria-hidden="true">↗</span>
+            <span className="report-share-option-icon" aria-hidden="true"><ArrowUpRight size={16} /></span>
             <span><strong>Compartilhar relatório</strong><small>Enviar o link desta página</small></span>
           </button>
           <button type="button" className="report-share-option" role="menuitem" onClick={copy}>
-            <span className="report-share-option-icon" aria-hidden="true">⧉</span>
+            <span className="report-share-option-icon" aria-hidden="true"><Copy size={16} /></span>
             <span><strong>Copiar link</strong><small>Copiar para a área de transferência</small></span>
           </button>
           <button type="button" className="report-share-option" role="menuitem" onClick={print}>
-            <span className="report-share-option-icon" aria-hidden="true">↓</span>
+            <span className="report-share-option-icon" aria-hidden="true"><Printer size={16} /></span>
             <span><strong>Imprimir ou salvar PDF</strong><small>Abrir as opções de impressão</small></span>
           </button>
           <p className="report-share-hint">O link compartilhado abre somente este relatório.</p>

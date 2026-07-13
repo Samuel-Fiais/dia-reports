@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react'
 import { renderInline } from '../../lib/inline.jsx'
 import ChartBlock from '../ChartBlock.jsx'
 import TodoBlock from '../TodoBlock.jsx'
@@ -283,7 +284,7 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
               <span className="stat-comparison-label">{block.before?.label ?? 'Antes'}</span>
               <span className="stat-comparison-value">{block.before?.value}</span>
             </div>
-            <span className="stat-comparison-arrow">→</span>
+            <span className="stat-comparison-arrow"><ArrowRight size={18} /></span>
             <div className="stat-comparison-side stat-comparison-side--after">
               <span className="stat-comparison-label">{block.after?.label ?? 'Depois'}</span>
               <span className="stat-comparison-value">{block.after?.value}</span>
@@ -397,7 +398,7 @@ export function Drilldown({ block }) {
   const { openModal } = useModal()
   return (
     <button type="button" className="drilldown" onClick={() => openModal(block.details)}>
-      {renderInline(block.label ?? 'Ver detalhes')} →
+      {renderInline(block.label ?? 'Ver detalhes')} <ArrowRight size={14} aria-hidden="true" />
     </button>
   )
 }

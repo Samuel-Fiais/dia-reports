@@ -1,3 +1,5 @@
+import { ArrowRight, ArrowUp, ArrowDown } from 'lucide-react'
+
 // Vocabulário compartilhado de estados — usado por status-badge, kanban,
 // action-items, milestones, scorecard, project-health, etc.
 export const STATUS = {
@@ -17,9 +19,9 @@ export const PRIORITY = {
 }
 
 export const TREND = {
-  up: { label: 'Subindo', glyph: '↑' },
-  flat: { label: 'Estável', glyph: '→' },
-  down: { label: 'Caindo', glyph: '↓' },
+  up: { label: 'Subindo', icon: ArrowUp },
+  flat: { label: 'Estável', icon: ArrowRight },
+  down: { label: 'Caindo', icon: ArrowDown },
 }
 
 export const HEALTH = {

@@ -24,9 +24,10 @@ export function PriorityBadge({ priority }) {
 
 export function TrendIndicator({ trend, value }) {
   const info = trendInfo(trend)
+  const Icon = info.icon
   return (
     <span className={`trend-indicator trend-indicator--${trend ?? 'flat'}`}>
-      {info.glyph} {value ?? info.label}
+      <Icon size={14} aria-hidden="true" /> {value ?? info.label}
     </span>
   )
 }
