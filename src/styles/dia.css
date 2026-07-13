@@ -6587,38 +6587,33 @@ blockquote.report-blockquote-break footer {
 
 .dia-modal--report-editor {
   width: min(100%, 1040px);
+  max-height: 94vh;
 }
 
 .report-editor-grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
   gap: 2rem;
-  align-items: start;
+  align-items: stretch;
 }
 
 .report-editor-col {
   display: flex;
   flex-direction: column;
-  gap: 1.1rem;
+  gap: 1rem;
   min-width: 0;
 }
 
-.report-editor-preview {
+.report-editor-col--right {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.75rem 0.9rem;
-  font-family: var(--font-body);
-  color: var(--ink);
-  background: var(--surface);
-  border: 0.5px solid var(--hairline);
-  border-radius: 8px;
+  flex-direction: column;
 }
 
-.report-editor-preview span {
-  font-size: 0.75rem;
-  color: var(--ink-muted);
+.report-editor-col--right .admin-field:first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 /* ── Dropzone de upload ───────────────────────────────────────── */
@@ -6675,6 +6670,8 @@ blockquote.report-blockquote-break footer {
 .json-editor {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 220px;
   border: 0.5px solid var(--hairline);
   border-radius: 8px;
   overflow: hidden;
@@ -6751,15 +6748,17 @@ blockquote.report-blockquote-break footer {
 }
 
 .json-editor-textarea {
+  flex: 1;
   width: 100%;
-  padding: 0.85rem;
-  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.75rem;
-  line-height: 1.55;
+  min-height: 0;
+  padding: 0.75rem;
+  font-family: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.6875rem;
+  line-height: 1.5;
   color: var(--ink);
   background: var(--bg);
   border: 0;
-  resize: vertical;
+  resize: none;
 }
 
 .json-editor-textarea:focus {

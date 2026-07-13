@@ -240,7 +240,7 @@ export default function ReportsAdmin() {
           className="dia-modal--report-editor"
           onClose={() => setModalOpen(false)}
         >
-          <form className="admin-form report-editor-form" onSubmit={handleSubmit}>
+          <form className="admin-form" onSubmit={handleSubmit}>
             <div className="report-editor-grid">
               <div className="report-editor-col report-editor-col--left">
                 <FormField label="Slug (URL do relatório)">
