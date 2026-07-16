@@ -11,7 +11,7 @@ const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const VALID_LAYOUTS = [
   'title', 'bullets', 'content', 'two-columns',
   'section', 'chart', 'image-full',
-  'table', 'quote', 'kpi', 'timeline', 'image-text', 'numbered-list',
+  'table', 'quote', 'kpi', 'timeline', 'image-text', 'numbered-list', 'report-block',
 ]
 
 function validateSlideDeck(content) {

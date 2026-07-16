@@ -11,6 +11,7 @@ import KpiSlide from './layouts/KpiSlide.jsx'
 import TimelineSlide from './layouts/TimelineSlide.jsx'
 import ImageTextSlide from './layouts/ImageTextSlide.jsx'
 import NumberedListSlide from './layouts/NumberedListSlide.jsx'
+import ReportBlockSlide from './layouts/ReportBlockSlide.jsx'
 
 const LAYOUTS = {
   'title': TitleSlide,
@@ -26,6 +27,7 @@ const LAYOUTS = {
   'timeline': TimelineSlide,
   'image-text': ImageTextSlide,
   'numbered-list': NumberedListSlide,
+  'report-block': ReportBlockSlide,
 }
 
 export default function SlideRenderer({ slide, theme, variant = 'viewer', settings }) {
