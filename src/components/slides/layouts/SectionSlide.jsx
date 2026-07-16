@@ -1,13 +1,17 @@
-import { COLORS_DARK } from '../../../lib/theme.js'
+import { COLORS, COLORS_DARK } from '../../../lib/theme.js'
 
-export default function SectionSlide({ content, theme }) {
-  const bg = COLORS_DARK[theme?.colorIndex ?? 0] ?? '#1a1a1a'
+export default function SectionSlide({ content, theme, variant }) {
+  const isDark = variant !== 'detail'
+  const idx = theme?.colorIndex ?? 0
+  const bg = isDark ? (COLORS_DARK[idx] ?? '#1a1a1a') : (COLORS[idx] ?? '#f7f5e9')
+  const textColor = isDark ? '#fff' : 'var(--ink)'
+  const secColor = isDark ? 'rgba(255,255,255,0.8)' : 'var(--ink-secondary)'
 
   return (
     <div className="slide-layout slide-section-layout" style={{ backgroundColor: bg }}>
       <div className="slide-section-content">
-        <h1 className="slide-main-title" style={{ color: '#fff' }}>{content.title}</h1>
-        {content.subtitle && <p className="slide-subtitle" style={{ color: 'rgba(255,255,255,0.8)' }}>{content.subtitle}</p>}
+        <h1 className="slide-main-title" style={{ color: textColor }}>{content.title}</h1>
+        {content.subtitle && <p className="slide-subtitle" style={{ color: secColor }}>{content.subtitle}</p>}
       </div>
     </div>
   )

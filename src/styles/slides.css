@@ -171,7 +171,7 @@ body.slide-viewer-active .app-menu {
   content: "·";
   position: absolute;
   left: 0;
-  color: #888;
+  color: var(--bullet-color, #888);
   font-weight: bold;
 }
 
@@ -665,7 +665,7 @@ body.slide-viewer-active .app-menu {
 }
 
 .slide-detail-btn--present:hover {
-  opacity: 0.85;
+  background: var(--ink-secondary);
 }
 
 .slide-detail-stack {

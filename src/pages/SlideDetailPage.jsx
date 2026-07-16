@@ -186,7 +186,7 @@ export default function SlideDetailPage() {
                       <span className="item-badge">{slide.layout}</span>
                     </div>
                     <div className="slide-detail-card-preview">
-                      <SlideRenderer slide={slide} theme={theme} />
+                      <SlideRenderer slide={slide} theme={theme} variant="detail" />
                     </div>
                   </div>
                 ))}

@@ -3,9 +3,15 @@ import { Chart, registerables } from 'chart.js'
 
 Chart.register(...registerables)
 
-export default function ChartSlide({ content }) {
+export default function ChartSlide({ content, variant }) {
   const canvasRef = useRef(null)
   const chartRef = useRef(null)
+  const isDark = variant !== 'detail'
+  const textColor = isDark ? '#f3f1ea' : '#1a1a1a'
+  const tickColor = isDark ? '#aaa' : '#666'
+  const gridColor = isDark ? 'rgba(243,241,234,0.1)' : 'rgba(0,0,0,0.08)'
+  const borderColor = isDark ? '#f3f1ea' : '#1a1a1a'
+  const bgColor = isDark ? 'rgba(243,241,234,0.15)' : 'rgba(0,0,0,0.08)'
 
   useEffect(() => {
     if (!canvasRef.current || !content.chart) return
@@ -15,8 +21,8 @@ export default function ChartSlide({ content }) {
     const ctx = canvasRef.current.getContext('2d')
     const datasets = (content.chart.datasets ?? []).map((ds, i) => ({
       ...ds,
-      borderColor: i === 0 ? '#f3f1ea' : '#888',
-      backgroundColor: i === 0 ? 'rgba(243,241,234,0.15)' : 'rgba(136,136,136,0.15)',
+      borderColor: i === 0 ? borderColor : '#888',
+      backgroundColor: i === 0 ? bgColor : 'rgba(136,136,136,0.15)',
       fill: ds.fill ?? false,
     }))
 
@@ -26,11 +32,11 @@ export default function ChartSlide({ content }) {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        color: '#f3f1ea',
-        plugins: { legend: { labels: { color: '#f3f1ea' } } },
+        color: textColor,
+        plugins: { legend: { labels: { color: textColor } } },
         scales: {
-          x: { ticks: { color: '#aaa' }, grid: { color: 'rgba(243,241,234,0.1)' } },
-          y: { ticks: { color: '#aaa' }, grid: { color: 'rgba(243,241,234,0.1)' } },
+          x: { ticks: { color: tickColor }, grid: { color: gridColor } },
+          y: { ticks: { color: tickColor }, grid: { color: gridColor } },
         },
       },
     })
@@ -44,11 +50,11 @@ export default function ChartSlide({ content }) {
       if (chartRef.current) chartRef.current.destroy()
       window.removeEventListener('beforeprint', handleBeforePrint)
     }
-  }, [content.chart])
+  }, [content.chart, textColor, tickColor, gridColor, borderColor, bgColor])
 
   return (
     <div className="slide-layout">
-      {content.title && <h2 className="slide-heading">{content.title}</h2>}
+      {content.title && <h2 className="slide-heading" style={{ color: isDark ? '#fff' : 'var(--ink)' }}>{content.title}</h2>}
       <div className="slide-chart-wrap">
         <canvas ref={canvasRef} />
       </div>
