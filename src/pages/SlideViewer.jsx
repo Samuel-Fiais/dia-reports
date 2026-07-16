@@ -1,8 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, X } from 'lucide-react'
+import { ArrowLeft, ArrowRight, Grid3X3, Maximize2, Minimize2, X } from 'lucide-react'
 import { getDeck } from '../lib/slidesClient.js'
 import SlideRenderer from '../components/slides/SlideRenderer.jsx'
+
+function getSlidePreview(slide, index) {
+  const content = slide?.content ?? {}
+  const title = content.title ?? content.subtitle ?? `Slide ${index + 1}`
+  const text = content.text ?? content.items?.[0] ?? content.left?.title ?? content.right?.title ?? ''
+  return { title, text }
+}
 
 export default function SlideViewer() {
   const { id } = useParams()
@@ -11,7 +18,13 @@ export default function SlideViewer() {
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
   const [showNotes, setShowNotes] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [showThumbnails, setShowThumbnails] = useState(true)
+  const [swipeOffset, setSwipeOffset] = useState(0)
   const wrapRef = useRef(null)
+  const thumbnailStripRef = useRef(null)
+  const touchRef = useRef({ active: false, startX: 0, startY: 0, currentX: 0, currentY: 0 })
+  const hasEnteredFullscreenRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -29,6 +42,11 @@ export default function SlideViewer() {
     load()
     return () => { cancelled = true }
   }, [id])
+
+  useEffect(() => {
+    document.body.classList.add('slide-viewer-active')
+    return () => document.body.classList.remove('slide-viewer-active')
+  }, [])
 
   const slides = deck?.content?.slides ?? []
   const theme = deck?.content?.theme ?? {}
@@ -48,6 +66,21 @@ export default function SlideViewer() {
     setCurrentSlide(Math.max(0, Math.min(total - 1, idx)))
   }, [total])
 
+  const requestFullscreen = useCallback(() => {
+    const el = document.documentElement
+    if (!document.fullscreenElement && el.requestFullscreen) {
+      el.requestFullscreen().catch(() => {})
+    }
+  }, [])
+
+  const toggleFullscreen = useCallback(() => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.()
+    } else {
+      requestFullscreen()
+    }
+  }, [requestFullscreen])
+
   useEffect(() => {
     if (deck?.content?.title) {
       document.title = `${deck.content.title} — Apresentação`
@@ -61,6 +94,7 @@ export default function SlideViewer() {
       else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goNext() }
       else if (e.key === 'Escape') navigate('/slides')
       else if (e.key === 'n' || e.key === 'N') setShowNotes((v) => !v)
+      else if (e.key === 'g' || e.key === 'G') setShowThumbnails((v) => !v)
       else if (e.key === 'Home') goTo(0)
       else if (e.key === 'End') goTo(total - 1)
     }
@@ -68,14 +102,77 @@ export default function SlideViewer() {
     return () => window.removeEventListener('keydown', handleKey)
   }, [goPrev, goNext, goTo, navigate, total])
 
+  useEffect(() => {
+    function handleFullscreenChange() {
+      const active = Boolean(document.fullscreenElement)
+      setIsFullscreen(active)
+      if (active) {
+        hasEnteredFullscreenRef.current = true
+      } else if (hasEnteredFullscreenRef.current) {
+        navigate('/slides')
+      }
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    requestFullscreen()
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange)
+      if (document.fullscreenElement) document.exitFullscreen()
+    }
+  }, [navigate, requestFullscreen])
+
+  useEffect(() => {
+    const activeThumb = thumbnailStripRef.current?.querySelector(`[data-slide-thumb="${currentSlide}"]`)
+    activeThumb?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' })
+  }, [currentSlide, showThumbnails])
+
   // Focus trap
   useEffect(() => {
     wrapRef.current?.focus()
   }, [])
 
+  const handleTouchStart = useCallback((e) => {
+    if (e.touches.length !== 1) return
+    const touch = e.touches[0]
+    touchRef.current = {
+      active: true,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      currentX: touch.clientX,
+      currentY: touch.clientY,
+    }
+  }, [])
+
+  const handleTouchMove = useCallback((e) => {
+    if (!touchRef.current.active || e.touches.length !== 1) return
+    const touch = e.touches[0]
+    const dx = touch.clientX - touchRef.current.startX
+    const dy = touch.clientY - touchRef.current.startY
+    touchRef.current.currentX = touch.clientX
+    touchRef.current.currentY = touch.clientY
+
+    if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 8) {
+      e.preventDefault()
+      setSwipeOffset(Math.max(-90, Math.min(90, dx)))
+    }
+  }, [])
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchRef.current.active) return
+    const dx = touchRef.current.currentX - touchRef.current.startX
+    const dy = touchRef.current.currentY - touchRef.current.startY
+    touchRef.current.active = false
+    setSwipeOffset(0)
+
+    if (Math.abs(dx) < 50 || Math.abs(dx) <= Math.abs(dy)) return
+    if (dx < 0) goNext()
+    else goPrev()
+  }, [goNext, goPrev])
+
   if (loading) {
     return (
-      <div className="slide-viewer-overlay">
+      <div className="slide-viewer-shell">
         <div className="slide-loading">Carregando apresentação...</div>
       </div>
     )
@@ -83,7 +180,7 @@ export default function SlideViewer() {
 
   if (!deck || slides.length === 0) {
     return (
-      <div className="slide-viewer-overlay">
+      <div className="slide-viewer-shell">
         <div className="slide-loading">Apresentação não encontrada.</div>
       </div>
     )
@@ -92,9 +189,18 @@ export default function SlideViewer() {
   const currentSlideData = slides[currentSlide]
 
   return (
-    <div className="slide-viewer-overlay" ref={wrapRef} tabIndex={-1}>
-      <div className="slide-viewer">
-        <div className="slide-viewer-inner">
+    <div className="slide-viewer-shell" ref={wrapRef} tabIndex={-1}>
+      <div
+        className="slide-viewer"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+        onTouchCancel={handleTouchEnd}
+      >
+        <div
+          className="slide-viewer-inner"
+          style={{ '--swipe-offset': `${swipeOffset}px` }}
+        >
           {slides.map((slide, i) => (
             <div
               key={i}
@@ -145,15 +251,58 @@ export default function SlideViewer() {
             <span className="slide-counter">
               {currentSlide + 1} / {total}
             </span>
-            <button
-              type="button"
-              className="slide-exit-btn"
-              onClick={() => navigate('/slides')}
-            >
-              <X size={13} style={{ marginRight: 4, verticalAlign: 'middle' }} />
-              Sair
-            </button>
+            <div className="slide-bottom-actions">
+              <button
+                type="button"
+                className="slide-control-btn"
+                onClick={() => setShowThumbnails((v) => !v)}
+                aria-pressed={showThumbnails}
+              >
+                <Grid3X3 size={13} />
+                Miniaturas
+              </button>
+              <button
+                type="button"
+                className="slide-control-btn"
+                onClick={toggleFullscreen}
+                aria-pressed={isFullscreen}
+              >
+                {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+                {isFullscreen ? 'Janela' : 'Tela cheia'}
+              </button>
+              <button
+                type="button"
+                className="slide-exit-btn"
+                onClick={() => navigate('/slides')}
+              >
+                <X size={13} />
+                Sair
+              </button>
+            </div>
           </div>
+
+          {showThumbnails && (
+            <div className="slide-thumbnail-strip" ref={thumbnailStripRef} aria-label="Miniaturas dos slides">
+              {slides.map((slide, i) => {
+                const preview = getSlidePreview(slide, i)
+                return (
+                  <button
+                    key={i}
+                    type="button"
+                    data-slide-thumb={i}
+                    className={`slide-thumbnail${i === currentSlide ? ' slide-thumbnail--active' : ''}`}
+                    onClick={() => goTo(i)}
+                    aria-current={i === currentSlide ? 'true' : undefined}
+                    aria-label={`Ir para slide ${i + 1}`}
+                  >
+                    <span className="slide-thumbnail-number">{i + 1}</span>
+                    <span className="slide-thumbnail-title">{preview.title}</span>
+                    {preview.text && <span className="slide-thumbnail-text">{preview.text}</span>}
+                  </button>
+                )
+              })}
+            </div>
+          )}
         </div>
       </div>
     </div>
