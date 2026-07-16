@@ -35,7 +35,15 @@ export default function ChartSlide({ content }) {
       },
     })
 
-    return () => { if (chartRef.current) chartRef.current.destroy() }
+    function handleBeforePrint() {
+      if (chartRef.current) chartRef.current.resize()
+    }
+    window.addEventListener('beforeprint', handleBeforePrint)
+
+    return () => {
+      if (chartRef.current) chartRef.current.destroy()
+      window.removeEventListener('beforeprint', handleBeforePrint)
+    }
   }, [content.chart])
 
   return (
