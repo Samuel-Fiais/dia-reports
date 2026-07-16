@@ -10,6 +10,7 @@ import FormField from '../../components/admin/FormField.jsx'
 import FormActions from '../../components/admin/FormActions.jsx'
 import ConfirmDialog from '../../components/admin/ConfirmDialog.jsx'
 import Checkbox from '../../components/admin/Checkbox.jsx'
+import SelectControl from '../../components/SelectControl.jsx'
 
 function emptyForm() {
   return { email: '', password: '', profileId: '', active: true }
@@ -186,15 +187,12 @@ export default function Users() {
             </FormField>
 
             <FormField label="Perfil">
-              <select
+              <SelectControl
                 value={form.profileId}
-                onChange={(e) => setForm({ ...form, profileId: e.target.value })}
-              >
-                <option value="">Sem perfil</option>
-                {profiles.map((p) => (
-                  <option key={p.id} value={p.id}>{p.name}</option>
-                ))}
-              </select>
+                onChange={(profileId) => setForm({ ...form, profileId })}
+                ariaLabel="Perfil"
+                options={[{ value: '', label: 'Sem perfil' }, ...profiles.map((profile) => ({ value: profile.id, label: profile.name }))]}
+              />
             </FormField>
 
             <Checkbox checked={form.active} onChange={() => setForm({ ...form, active: !form.active })}>

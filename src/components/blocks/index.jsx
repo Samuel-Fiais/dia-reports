@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { renderInline } from '../../lib/inline.jsx'
 import ChartBlock from '../ChartBlock.jsx'
@@ -10,6 +11,7 @@ import CalendarWeek from '../CalendarWeek.jsx'
 import CalendarYear from '../CalendarYear.jsx'
 import { StatusBadge, PriorityBadge, TrendIndicator, HealthDot, Confidence, Freshness } from '../Badges.jsx'
 import { useModal } from '../Modal.jsx'
+import { normalizeTableBlock } from '../../lib/table.js'
 import {
   Sparkline, KpiGrid, Scorecard, Funnel, Gauge, Heatmap, Matrix, Ranking, Variance, Breakdown,
 } from './analytics.jsx'
@@ -24,7 +26,8 @@ import { ComparisonTable, ProsCons, OptionCards, Swot, Dependencies } from './co
 import {
   Milestones, Roadmap, Gantt, StatusSummary, Okr, ProjectHealth, ReleaseNotes, Countdown, DateStrip,
 } from './plan.jsx'
-import { AdvancedBlock, AdvancedCatalog, ADVANCED_TYPES, advancedType } from './advanced.jsx'
+
+const MermaidBlock = lazy(() => import('../MermaidBlock.jsx'))
 
 function Figure({ block, children }) {
   return (
@@ -43,9 +46,7 @@ function Figure({ block, children }) {
 
 /* Switch central de blocos de conteúdo. Usado dentro de itens, em blocos de
    nível de corpo (via moldura full-width) e dentro de modais de detalhe. */
-export function ItemBlock({ block, chartStyleIndex, blockKey }) {
-  if (ADVANCED_TYPES.has(advancedType(block.type))) return <AdvancedBlock block={block} />
-
+function ItemBlockContent({ block, chartStyleIndex, blockKey }) {
   switch (block.type) {
     /* ── Texto e listas ── */
     case 'paragraph':
@@ -62,27 +63,29 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
       )
     }
 
-    case 'table':
+    case 'table': {
+      const table = normalizeTableBlock(block)
       return (
         <table className="data-table">
           <thead>
             <tr>
-              {block.columns.map((col, i) => (
+              {table.columns.map((col, i) => (
                 <th key={i}>{col}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {block.rows.map((row, i) => (
+            {table.rows.map((row, i) => (
               <tr key={i}>
                 {row.map((cell, j) => (
-                  <td key={j}>{renderInline(cell)}</td>
+                  <td key={j}>{renderInline(String(cell ?? ''))}</td>
                 ))}
               </tr>
             ))}
           </tbody>
         </table>
       )
+    }
 
     case 'code':
       return (
@@ -90,6 +93,9 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
           <code>{block.code}</code>
         </pre>
       )
+
+    case 'mermaid':
+      return <Suspense fallback={<div className="mermaid-loading">Renderizando diagrama…</div>}><MermaidBlock block={block} /></Suspense>
 
     /* ── Mídia ── */
     case 'chart':
@@ -216,18 +222,6 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
     }
 
     case 'timeline':
-      return (
-        <ol className="timeline">
-          {(block.items ?? []).map((item, i) => (
-            <li key={i} className="timeline-item">
-              {item.date && <div className="timeline-date">{item.date}</div>}
-              {item.title && <div className="timeline-title">{renderInline(item.title)}</div>}
-              {item.text && <p className="timeline-text">{renderInline(item.text)}</p>}
-            </li>
-          ))}
-        </ol>
-      )
-
     case 'milestones':
       return <Milestones block={block} />
     case 'roadmap':
@@ -273,8 +267,6 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
       return <Breakdown block={block} />
     case 'sparkline':
       return <Sparkline data={block.data} width={block.width ?? 180} height={block.height ?? 40} />
-    case 'advanced-catalog':
-      return <AdvancedCatalog block={block} />
 
     case 'stat-comparison':
       return (
@@ -384,6 +376,13 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
     default:
       return null
   }
+}
+
+export function ItemBlock({ block, chartStyleIndex, blockKey }) {
+  const { openModal } = useModal()
+  const content = <ItemBlockContent block={block} chartStyleIndex={chartStyleIndex} blockKey={blockKey} />
+  if (!block.details) return content
+  return <div className="block-with-details clickable" role="button" tabIndex={0} onClick={() => openModal(block.details)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openModal(block.details) } }}>{content}</div>
 }
 
 /* Renderiza uma lista de blocos — usado pelo modal de detalhes. */

@@ -16,6 +16,7 @@ export const COLORS = [
   "#f6e6da", // 13 argila clara
   "#f1eed6", // 14 areia
   "#e3ecea", // 15 névoa
+  "#f2f2f2", // 16 preto e branco -> cinza quase branco
 ];
 
 // Equivalentes escuros da mesma paleta, usados quando o tema do app é "dark"
@@ -36,6 +37,7 @@ export const COLORS_DARK = [
   "#211812", // 13 argila -> barro
   "#1e1c12", // 14 areia -> oliva escuro
   "#141b1a", // 15 névoa -> ardósia verde
+  "#151515", // 16 preto e branco -> cinza quase preto
 ];
 
 // Nomes compartilhados pelos pares claro/escuro exibidos no seletor.
@@ -56,6 +58,7 @@ export const COLOR_NAMES = [
   "Argila",
   "Areia",
   "Névoa",
+  "Preto e branco",
 ];
 
 // Fontes do título (headline, section headings, blockquote break).

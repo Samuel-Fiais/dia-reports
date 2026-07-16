@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import Chart from 'chart.js/auto'
 import { useAppTheme } from '../context/ThemeContext.jsx'
+import { buildWaterfallBars } from '../lib/waterfall.js'
 
 const INK = {
   light: {
@@ -67,13 +68,7 @@ function buildConfig(block, chartStyleIndex, ink) {
   if (variant === 'waterfall') {
     // Cascata: barras flutuantes [início, fim] acumulando os deltas de block.items.
     const items = block.items ?? []
-    let running = 0
-    const bars = items.map((item) => {
-      if (item.isTotal) return { range: [0, running], total: true }
-      const start = running
-      running += Number(item.value) || 0
-      return { range: [start, running], total: false }
-    })
+    const bars = buildWaterfallBars(items)
     return {
       type: 'bar',
       data: {
@@ -97,8 +92,9 @@ function buildConfig(block, chartStyleIndex, ink) {
             callbacks: {
               label: (ctx) => {
                 const item = items[ctx.dataIndex]
-                if (item.isTotal) return `Total: ${ctx.raw[1]}`
-                return `${item.value >= 0 ? '+' : ''}${item.value}`
+                const bar = bars[ctx.dataIndex]
+                if (bar.total) return `Total: ${bar.value}`
+                return `${bar.value >= 0 ? '+' : ''}${bar.value}`
               },
             },
           },
@@ -196,7 +192,15 @@ export default function ChartBlock({ block, chartStyleIndex = 2 }) {
   useEffect(() => {
     const ink = INK[appTheme] ?? INK.light
     const chart = new Chart(canvasRef.current, buildConfig(block, chartStyleIndex, ink))
-    return () => chart.destroy()
+    // O layout de impressão muda o tamanho de .chart-wrap depois que o canvas
+    // já foi desenhado na tela — sem forçar um resize aqui, o Chart.js imprime
+    // o bitmap antigo, cortado/comprimido no novo espaço.
+    const handleBeforePrint = () => chart.resize()
+    window.addEventListener('beforeprint', handleBeforePrint)
+    return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint)
+      chart.destroy()
+    }
   }, [block, chartStyleIndex, appTheme])
 
   return (

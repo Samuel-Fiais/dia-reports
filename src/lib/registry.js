@@ -1,3 +1,5 @@
+import { fetchJson, jsonBody } from './api.js'
+
 // Pasta comum de relatórios agora é carregada em tempo de execução pela API.
 const API_BASE = '/api'
 
@@ -17,4 +19,16 @@ export async function getReport(slug) {
   if (!res.ok) throw new Error('Failed to fetch report')
   const data = await res.json()
   return data.content ? { ...data.content, id: data.slug, updatedAt: data.updatedAt } : null
+}
+
+export async function getAdminReport(slug) {
+  return fetchJson(`${API_BASE}/reports/${slug}?admin=1`)
+}
+
+export async function createReport(payload) {
+  return fetchJson(`${API_BASE}/reports`, { method: 'POST', ...jsonBody(payload) })
+}
+
+export async function updateReport(slug, payload) {
+  return fetchJson(`${API_BASE}/reports/${slug}`, { method: 'PUT', ...jsonBody(payload) })
 }

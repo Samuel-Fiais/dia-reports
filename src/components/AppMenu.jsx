@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { FileEdit, FolderKanban, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
@@ -24,6 +24,7 @@ function hasPermission(user, permission) {
 
 export default function AppMenu() {
   const { user, logout } = useAuth()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const [open, setOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
@@ -34,6 +35,7 @@ export default function AppMenu() {
   // Link compartilhado público: sem menu de app, só o conteúdo do relatório.
   if (searchParams.get('shared') === '1') return null
   if (!user) return null
+  if (/^\/admin\/reports\/[^/]+\/edit$/.test(location.pathname)) return null
 
   const visibleItems = MENU_ITEMS.filter((item) => hasPermission(user, item.permission))
 

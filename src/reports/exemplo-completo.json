@@ -378,7 +378,7 @@
           "title": "`roadmap` — padrão e lanes customizadas",
           "description": "Use `now`, `next`, `later` ou `lanes: [{ label, items }]`. Cada item pode ser string ou `{ title, tag?, details? }`.",
           "blocks": [
-            { "type": "roadmap", "now": [{ "title": "Busca unificada", "tag": "Core" }], "next": ["Exportação em PDF", "Comentários por bloco"], "later": [{ "title": "Colaboração em tempo real", "tag": "Beta" }] },
+            { "type": "roadmap", "now": [{ "title": "Busca unificada", "tag": "Core" }], "next": [{ "title": "Exportação em PDF" }, { "title": "Comentários por bloco" }], "later": [{ "title": "Colaboração em tempo real", "tag": "Beta" }] },
             { "type": "roadmap", "lanes": [{ "label": "Descoberta", "items": ["Entrevistas"] }, { "label": "Construção", "items": ["Protótipo", "API"] }, { "label": "Entrega", "items": ["Piloto"] }] }
           ]
         },
@@ -423,7 +423,7 @@
           "description": "Propriedades: `month` (`YYYY-MM`), `variant`, `title`, `today`, `events`, `marks`, `maxPerDay` e `clickable`. Eventos usam `date`, `title`, `time`, `text` e `details`.",
           "blocks": [
             { "type": "calendar-month", "month": "2026-07", "variant": "detailed", "today": "2026-07-10", "maxPerDay": 2, "events": [{ "date": "2026-07-10", "time": "09:00", "title": "Revisão semanal", "text": "Fechamento de métricas." }, { "date": "2026-07-10", "time": "14:00", "title": "Demo" }, { "date": "2026-07-18", "title": "Início do piloto", "details": { "title": "Piloto", "text": "25% da base elegível." } }] },
-            { "type": "calendar-month", "month": "2026-08", "variant": "compact", "marks": ["2026-08-04", { "date": "2026-08-12", "label": "Rollout" }, "2026-08-25"] }
+            { "type": "calendar-month", "month": "2026-08", "variant": "compact", "marks": [{ "date": "2026-08-04" }, { "date": "2026-08-12", "label": "Rollout" }, { "date": "2026-08-25" }] }
           ]
         },
         {
@@ -663,94 +663,15 @@
     },
     {
       "type": "section",
-      "heading": "12. Famílias avançadas e suas variantes",
+      "heading": "12. Governança final e composição do corpo",
       "items": [
         {
-          "title": "Contrato comum de `AdvancedBlock`",
-          "description": "Todos os tipos avançados aceitam `type`, `title`/`label`, `summary`/`text`/`description`, `status`, `items`/`rows`/`evidence`/`details`, `confidence`, `severity` e `owner`. Entradas aceitam `{ id?, label/name/title, value/text/note/status }`.",
+          "title": "`mermaid` — diagramas declarativos",
+          "description": "Propriedades: `code`, `align` e `caption`. A definição Mermaid é renderizada como SVG e atualizada na prévia do editor.",
           "blocks": [
-            { "type": "code", "code": "{\n  \"type\": \"anomaly\",\n  \"title\": \"Conversão fora do padrão\",\n  \"summary\": \"Valor acima do intervalo esperado.\",\n  \"severity\": \"atenção\",\n  \"confidence\": \"92%\",\n  \"items\": [\n    { \"label\": \"Observado\", \"value\": \"8,4%\" },\n    { \"label\": \"Esperado\", \"value\": \"5,1%–6,2%\" }\n  ]\n}" },
-            { "type": "anomaly", "title": "Conversão fora do padrão", "summary": "O resultado ficou acima do intervalo esperado após a campanha.", "severity": "atenção", "confidence": "92%", "owner": "Analytics", "items": [{ "label": "Observado", "value": "8,4%" }, { "label": "Esperado", "value": "5,1%–6,2%" }, { "label": "Desvio", "value": "+2,2 p.p." }] }
+            { "type": "mermaid", "code": "flowchart LR\n  Brief[Brief] --> Editor[Editor visual]\n  Editor --> Preview[Prévia]\n  Preview --> Publish[Publicação]", "align": "center", "caption": "Fluxo de criação de um relatório." }
           ]
         },
-        {
-          "title": "Investigação e análise — variantes",
-          "description": "Tipos para diagnóstico estatístico, relações, causalidade, cenários, distribuições, fluxos e redes.",
-          "blocks": [
-            { "type": "correlation", "title": "Relações entre métricas", "summary": "Engajamento apresenta a relação mais forte com retenção.", "confidence": "Alta", "items": [{ "label": "Uso semanal × retenção", "value": "r = 0,74" }, { "label": "Tickets × churn", "value": "r = 0,41" }] },
-            { "type": "advanced-catalog", "groups": ["Investigação e análise"] }
-          ]
-        },
-        {
-          "title": "Inteligência e explicação — variantes",
-          "description": "Tipos para separar fatos, evidências, hipóteses, interpretações, incertezas e conteúdo gerado por IA.",
-          "blocks": [
-            { "type": "hypothesis", "title": "Hipótese principal", "summary": "A simplificação do segundo passo elevou a ativação.", "status": "Em validação", "confidence": "78%", "items": [{ "label": "Favorável", "value": "+31% no grupo exposto" }, { "label": "Contrária", "value": "Mudança simultânea de campanha" }] },
-            { "type": "advanced-catalog", "groups": ["Inteligência e explicação"] }
-          ]
-        },
-        {
-          "title": "Financeiro — variantes",
-          "description": "DRE, balanço, caixa, orçamento, unit economics, runway, margens, custos, cobranças, assinaturas e índices.",
-          "blocks": [
-            { "type": "income-statement", "title": "DRE resumida", "summary": "Resultado do segundo trimestre.", "status": "Fechado", "items": [{ "label": "Receita líquida", "value": "R$ 1,28 mi" }, { "label": "Margem bruta", "value": "68%" }, { "label": "EBITDA", "value": "R$ 214 mil" }] },
-            { "type": "advanced-catalog", "groups": ["Financeiro"] }
-          ]
-        },
-        {
-          "title": "Produto e tecnologia — variantes",
-          "description": "Status de features e releases, saúde técnica, APIs, bancos, observabilidade, testes, segurança e decisões arquiteturais.",
-          "blocks": [
-            { "type": "service-health", "title": "Saúde da plataforma", "summary": "Serviços críticos dentro do SLO, com atenção para busca.", "status": "Atenção", "owner": "Platform", "items": [{ "label": "API principal", "value": "99,99%" }, { "label": "Busca", "value": "p95 620 ms" }, { "label": "Eventos", "value": "99,95%" }] },
-            { "type": "advanced-catalog", "groups": ["Produto e tecnologia"] }
-          ]
-        },
-        {
-          "title": "Pessoas, comercial e operações — variantes",
-          "description": "Planejamento de equipe, desempenho comercial, jornada do cliente e indicadores operacionais.",
-          "blocks": [
-            { "type": "capacity", "title": "Capacidade das equipes", "summary": "Disponibilidade líquida para o próximo ciclo.", "items": [{ "label": "Produto", "value": "82% alocado" }, { "label": "Engenharia", "value": "94% alocado" }, { "label": "Dados", "value": "76% alocado" }] },
-            { "type": "pipeline-forecast", "title": "Previsão comercial", "summary": "Pipeline ponderado para Q3.", "status": "No plano", "items": [{ "label": "Commit", "value": "R$ 820 mil" }, { "label": "Best case", "value": "R$ 1,12 mi" }] },
-            { "type": "bottleneck", "title": "Gargalo operacional", "summary": "A validação manual concentra 43% do tempo de ciclo.", "severity": "Alta", "owner": "Operações" },
-            { "type": "advanced-catalog", "groups": ["Pessoas e organização", "Comercial e marketing", "Operações"] }
-          ]
-        },
-        {
-          "title": "Risco, pesquisa e geografia — variantes",
-          "description": "Controles e auditoria, método científico, testes estatísticos, datasets e análises territoriais.",
-          "blocks": [
-            { "type": "audit-finding", "title": "Evidência de acesso incompleta", "summary": "Três revisões trimestrais não possuem aceite formal.", "severity": "Média", "status": "Aberto", "owner": "Compliance" },
-            { "type": "experiment-result", "title": "Resultado do experimento", "summary": "A variante B elevou ativação sem impacto em churn.", "confidence": "95%", "items": [{ "label": "Lift", "value": "+11,8%" }, { "label": "p-value", "value": "0,018" }] },
-            { "type": "region-comparison", "title": "Comparação regional", "items": [{ "label": "Sudeste", "value": "R$ 284 mil" }, { "label": "Sul", "value": "R$ 96 mil" }, { "label": "Nordeste", "value": "R$ 74 mil" }] },
-            { "type": "advanced-catalog", "groups": ["Jurídico, risco e conformidade", "Pesquisa e ciência", "Geografia"] }
-          ]
-        },
-        {
-          "title": "Interatividade, colaboração, governança e automação — variantes",
-          "description": "Controles do leitor, revisão coletiva, versionamento, linhagem, sincronização, alertas e integrações.",
-          "blocks": [
-            { "type": "live-indicator", "title": "Dados em tempo real", "summary": "Último evento recebido há 18 segundos.", "status": "Conectado", "owner": "Data Platform" },
-            { "type": "approval-flow", "title": "Aprovação do relatório", "status": "2 de 3 aprovações", "items": [{ "label": "Dados", "value": "Aprovado" }, { "label": "Financeiro", "value": "Aprovado" }, { "label": "Diretoria", "value": "Pendente" }] },
-            { "type": "data-lineage", "title": "Linhagem do indicador", "summary": "Origem e transformações da receita líquida.", "items": [{ "label": "Origem", "value": "billing.transactions" }, { "label": "Modelo", "value": "finance.revenue_daily" }, { "label": "Destino", "value": "KPI Receita" }] },
-            { "type": "workflow-run", "title": "Atualização diária", "status": "Concluída", "items": [{ "label": "Início", "value": "08:00" }, { "label": "Duração", "value": "3m42s" }, { "label": "Registros", "value": "1,8 mi" }] },
-            { "type": "advanced-catalog", "groups": ["Interatividade avançada", "Colaboração", "Governança e versionamento", "Automação"] }
-          ]
-        },
-        {
-          "title": "Conteúdo editorial e relatórios compostos — variantes",
-          "description": "Peças narrativas e modelos de alto nível que combinam os blocos anteriores em formatos recorrentes.",
-          "blocks": [
-            { "type": "abstract", "title": "Resumo técnico", "summary": "Este estudo mede o efeito do novo onboarding sobre ativação e retenção, com grupo de controle e janela de 30 dias.", "owner": "Research" },
-            { "type": "board-report", "title": "Relatório do conselho", "summary": "Visão consolidada de desempenho, riscos, decisões e ações para o trimestre.", "status": "Em revisão", "items": [{ "label": "Receita", "value": "+12%" }, { "label": "Riscos críticos", "value": "1" }, { "label": "Decisões pendentes", "value": "2" }] },
-            { "type": "advanced-catalog", "groups": ["Conteúdo editorial", "Relatórios compostos"] }
-          ]
-        }
-      ]
-    },
-    {
-      "type": "section",
-      "heading": "13. Governança final e composição do corpo",
-      "items": [
         {
           "title": "`page-break`",
           "description": "Não possui propriedades. Cria uma quebra explícita na impressão e no PDF; na tela permanece invisível.",

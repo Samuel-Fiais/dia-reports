@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { COLORS } from '../lib/theme'
 
 const KEY = 'dia-app-theme'
 const COLOR_KEY = 'dia-app-color-index'
@@ -14,7 +15,7 @@ function loadAppTheme() {
 function loadAppColorIndex() {
   try {
     const v = Number(localStorage.getItem(COLOR_KEY))
-    return Number.isInteger(v) && v >= 0 && v <= 15 ? v : 0
+    return Number.isInteger(v) && v >= 0 && v < COLORS.length ? v : 0
   } catch {
     return 0
   }

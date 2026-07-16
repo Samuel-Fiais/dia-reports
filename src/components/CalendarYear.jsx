@@ -8,7 +8,7 @@ import { useModal } from './Modal.jsx'
    marcado abre modal (agregado por mês). */
 export default function CalendarYear({ block }) {
   const { openModal } = useModal()
-  const year = block.year
+  const year = Number(block.year) || new Date().getFullYear()
   const heatmap = block.variant === 'heatmap'
   const values = block.values ?? {}
   const maxValue = block.max ?? Math.max(...Object.values(values).map(Number), 1)

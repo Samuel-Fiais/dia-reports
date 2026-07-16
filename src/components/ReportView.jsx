@@ -1,28 +1,31 @@
-import { Fragment } from 'react'
+import { cloneElement, Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { renderInline } from '../lib/inline.jsx'
 import { formatReportDate, formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
 import { reports } from '../lib/registry.js'
-import { ModalProvider } from './Modal.jsx'
+import { ModalProvider, useModal } from './Modal.jsx'
 import { ItemBlock, renderBlocks } from './blocks/index.jsx'
 import { TableOfContents, sectionSlug } from './blocks/structure.jsx'
 
 /* ── Item (label à esquerda, corpo à direita) ───────────────── */
 
 function ReportItem({ item, chartStyleIndex, itemKey }) {
+  const showLabel = item.showLabel !== false
   const hasChart = (item.blocks ?? []).some((b) => b.type === 'chart')
   const hasImage = (item.blocks ?? []).some((b) => b.type === 'image')
-  const modifier = hasChart ? ' report-item--chart-right' : hasImage ? ' report-item--image-right' : ''
+  const modifier = `${hasChart ? ' report-item--chart-right' : hasImage ? ' report-item--image-right' : ''}${showLabel ? '' : ' report-item--unlabeled'}`
 
   const columns = Math.max(1, Math.min(6, Number(item.columns) || 1))
 
   return (
     <article className={`report-item${modifier}`}>
-      <div className="item-label">
-        <h3 className="item-title">{renderInline(item.title)}</h3>
-        {item.badge && <span className="item-badge">{item.badge}</span>}
-        {item.description && <p>{renderInline(item.description)}</p>}
-      </div>
+      {showLabel && (
+        <div className="item-label">
+          <h3 className="item-title">{renderInline(item.title)}</h3>
+          {item.badge && <span className="item-badge">{item.badge}</span>}
+          {item.description && <p>{renderInline(item.description)}</p>}
+        </div>
+      )}
       <div className="item-body" style={{ '--item-columns': columns }}>
         {(item.blocks ?? []).map((block, i) => {
           const full = block.span === 'full'
@@ -60,7 +63,7 @@ function BodyBlockFrame({ block, children }) {
 
 /* ── Blocos do corpo ────────────────────────────────────────── */
 
-function BodyBlock({ block, chartStyleIndex, bodyKey, report }) {
+function BodyBlockContent({ block, chartStyleIndex, bodyKey, report }) {
   switch (block.type) {
     case 'section':
       return (
@@ -137,18 +140,76 @@ function BodyBlock({ block, chartStyleIndex, bodyKey, report }) {
   }
 }
 
+function BodyBlock(props) {
+  const { block } = props
+  const { openModal } = useModal()
+  const content = <BodyBlockContent {...props} />
+  if (!block.details) return content
+
+  return cloneElement(content, {
+    className: `${content.props.className ?? ''} body-block-with-details clickable`.trim(),
+    role: 'button',
+    tabIndex: 0,
+    onClick: (event) => {
+      content.props.onClick?.(event)
+      if (!event.defaultPrevented) openModal(block.details)
+    },
+    onKeyDown: (event) => {
+      content.props.onKeyDown?.(event)
+      if (!event.defaultPrevented && (event.key === 'Enter' || event.key === ' ')) {
+        event.preventDefault()
+        openModal(block.details)
+      }
+    },
+  })
+}
+
+function MetricCard({ metric, span }) {
+  const { openModal } = useModal()
+  const interactive = Boolean(metric.details)
+  return (
+    <div
+      className={`metric${interactive ? ' clickable' : ''}`}
+      style={{ gridColumn: `span ${span}` }}
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={interactive ? () => openModal(metric.details) : undefined}
+      onKeyDown={interactive ? (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          openModal(metric.details)
+        }
+      } : undefined}
+    >
+      <div className="metric-value">{metric.value}</div>
+      <div className="metric-label">{metric.label}</div>
+      {metric.note && <div className="metric-note">{metric.note}</div>}
+    </div>
+  )
+}
+
 /* ── Capa integrada ao título (hero) ────────────────────────── */
 
 function ReportHero({ report }) {
-  const cover = report.cover
+  const cover = report.cover ?? {}
+  const hasImage = Boolean(cover.src)
   const headline = Array.isArray(report.headline) ? report.headline : [report.headline]
+  const sideLeft = cover.sideLeft ?? formatShortDate(report.updatedAt ?? report.date)
+  const sideRight = cover.sideRight ?? formatUpdatedAgo(report.updatedAt ?? report.date)
   return (
-    <div className="report-hero">
-      <span className="report-hero-side report-hero-side--left">{cover.sideLeft ?? formatShortDate(report.updatedAt ?? report.date)}</span>
-      <span className="report-hero-side report-hero-side--right">{cover.sideRight ?? formatUpdatedAgo(report.updatedAt ?? report.date)}</span>
+    <div className={`report-hero${hasImage ? '' : ' report-hero--plain'}`}>
+      {hasImage ? <>
+        <span className="report-hero-side report-hero-side--left">{sideLeft}</span>
+        <span className="report-hero-side report-hero-side--right">{sideRight}</span>
+      </> : (
+        <div className="report-hero-plain-meta">
+          <span>{sideLeft}</span>
+          <span>{sideRight}</span>
+        </div>
+      )}
       <div className="report-hero-frame">
-        <img className="report-hero-img" src={cover.src} alt={cover.alt ?? ''} />
-        <div className="report-hero-overlay" style={cover.accent ? { '--hero-accent': cover.accent } : undefined}>
+        {hasImage && <img className="report-hero-img" src={cover.src} alt={cover.alt ?? ''} />}
+        <div className="report-hero-overlay" style={{ '--hero-accent': hasImage ? (cover.accent ?? '#fff') : 'var(--ink-secondary)', '--hero-text': hasImage ? (cover.textColor ?? '#fff') : 'var(--ink)' }}>
           {cover.eyebrow && <span className="report-hero-eyebrow">{cover.eyebrow}</span>}
           <h1 className="report-hero-headline">
             {headline.map((line, i, arr) => (
@@ -175,7 +236,6 @@ function ReportHero({ report }) {
 export default function ReportView({ report, settings = {} }) {
   const resolvedChartStyleIndex = settings.chartStyleIndex ?? report.settings?.chartStyleIndex ?? 2
   const widthMode = settings.widthMode ?? report.settings?.widthMode ?? 'standard'
-  const hasCover = Boolean(report.cover?.src)
 
   return (
     <ModalProvider renderBlocks={(blocks) => renderBlocks(blocks, resolvedChartStyleIndex)}>
@@ -183,23 +243,12 @@ export default function ReportView({ report, settings = {} }) {
         <div className="report-wrap">
           <header className="report-header">
             <div className="report-header-left">
-              <span className="report-from">{report.title ?? report.from ?? 'Relatório'}</span>
+              <span className="report-from">{report.from ?? report.title ?? 'Relatório'}</span>
             </div>
             <span className="report-date">{formatReportDate(report.updatedAt ?? report.date)}</span>
           </header>
 
-          {hasCover ? (
-            <ReportHero report={report} />
-          ) : (
-            <h1 className="report-headline">
-              {(Array.isArray(report.headline) ? report.headline : [report.headline]).map((line, i, arr) => (
-                <Fragment key={i}>
-                  {line}
-                  {i < arr.length - 1 && <br />}
-                </Fragment>
-              ))}
-            </h1>
-          )}
+          <ReportHero report={report} />
 
           {report.intro?.length > 0 && (
             <div className="report-intro">
@@ -213,15 +262,11 @@ export default function ReportView({ report, settings = {} }) {
             <div className="metrics-strip">
               <div className="metrics-strip-border" />
               {report.metrics.map((metric, i) => (
-                <div
+                <MetricCard
                   key={i}
-                  className="metric"
-                  style={{ gridColumn: `span ${metric.span ?? Math.floor(12 / report.metrics.length)}` }}
-                >
-                  <div className="metric-value">{metric.value}</div>
-                  <div className="metric-label">{metric.label}</div>
-                  {metric.note && <div className="metric-note">{metric.note}</div>}
-                </div>
+                  metric={metric}
+                  span={metric.span ?? Math.floor(12 / report.metrics.length)}
+                />
               ))}
             </div>
           )}

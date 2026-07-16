@@ -7,7 +7,7 @@ import { useModal } from '../Modal.jsx'
 export function Milestones({ block }) {
   const { openModal } = useModal()
   return (
-    <ol className="timeline milestones">
+    <ol className={`timeline milestones${block.variant === 'compact' ? ' milestones--compact' : ''}`}>
       {(block.items ?? []).map((item, i) => (
         <li
           key={i}
@@ -210,23 +210,31 @@ export function ReleaseNotes({ block }) {
   )
 }
 
-/* countdown: tempo restante até uma data-alvo (atualiza a cada minuto). */
+/* countdown: tempo restante até uma data-alvo, com unidades selecionáveis. */
 export function Countdown({ block }) {
   const target = new Date(block.target).getTime()
   const [now, setNow] = useState(Date.now())
+  const units = block.units?.length ? block.units : ['days', 'hours']
+  const refreshInterval = units.includes('seconds') ? 1_000 : 60_000
   useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 60_000)
+    const id = setInterval(() => setNow(Date.now()), refreshInterval)
     return () => clearInterval(id)
-  }, [])
+  }, [refreshInterval])
   const diff = target - now
   const past = diff < 0
   const abs = Math.abs(diff)
-  const days = Math.floor(abs / 86_400_000)
-  const hours = Math.floor((abs % 86_400_000) / 3_600_000)
-  const parts = [
-    { value: days, label: 'dias' },
-    { value: hours, label: 'horas' },
+  const definitions = [
+    ['years', 'anos', 365 * 86_400_000], ['months', 'meses', 30 * 86_400_000],
+    ['weeks', 'semanas', 7 * 86_400_000], ['days', 'dias', 86_400_000],
+    ['hours', 'horas', 3_600_000], ['minutes', 'minutos', 60_000], ['seconds', 'segundos', 1_000],
   ]
+  let remainder = abs
+  const parts = definitions.flatMap(([key, label, duration]) => {
+    if (!units.includes(key)) return []
+    const value = Math.floor(remainder / duration)
+    remainder %= duration
+    return [{ value, label }]
+  })
   return (
     <div className="countdown">
       <div className="countdown-parts">

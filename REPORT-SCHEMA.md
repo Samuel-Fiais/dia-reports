@@ -33,7 +33,8 @@ O dashboard descobre os arquivos automaticamente — basta salvar e ele aparece 
 
 ### `settings`
 
-- `colorIndex` (0–7): creme, amarelo, rosa, azul-acinzentado, verde, lavanda, pêssego, cinza.
+- `colorIndex` (0–16): creme, amarelo, rosa, azul-acinzentado, verde, lavanda, pêssego, cinza,
+  pedra quente, sálvia, água, azul gelo, malva, argila, areia, névoa, preto e branco.
 - `fontIndex` (0–2): Exposure (serif itálica), Arial, SF Pro.
 - `chartStyleIndex` (0–2): preenchimento dos gráficos — sólido claro, hachurado, pontilhado.
 
@@ -166,20 +167,6 @@ layout com gráfico/imagem à direita e legenda à esquerda.
 O estado marcado/desmarcado é salvo em `localStorage` (por navegador, não é sincronizado
 entre pessoas nem volta para o arquivo `.json`).
 
-### Upload de imagem (anexo feito por quem visualiza)
-```json
-{
-  "type": "image-upload",
-  "label": "Clique para anexar um screenshot",
-  "figure": "Fig. 4",
-  "caption": "Legenda opcional"
-}
-```
-Renderiza uma área de arraste/clique. A imagem enviada é convertida para
-`data:` URL e salva em `localStorage` **apenas no navegador de quem enviou**
-(limite ~1.5MB por imagem) — não é enviada a nenhum servidor nem persistida
-no arquivo `.json`.
-
 ### Callout (aviso/nota)
 ```json
 { "type": "callout", "kind": "note", "label": "Nota", "text": "Texto do aviso." }
@@ -226,6 +213,40 @@ no arquivo `.json`.
 ```json
 { "type": "divider", "label": "Rótulo opcional" }
 ```
+
+### Diagrama Mermaid
+```json
+{
+  "type": "mermaid",
+  "code": "flowchart LR\n  A[Início] --> B[Fim]",
+  "align": "center",
+  "caption": "Legenda opcional"
+}
+```
+`align`: `"left"` | `"center"` | `"right"`. O código é renderizado como SVG.
+
+### Modal universal de detalhes
+
+Qualquer bloco pode receber `details`. O bloco inteiro passa a abrir a modal ao clicar:
+
+```json
+{
+  "type": "paragraph",
+  "text": "Clique para aprofundar.",
+  "details": {
+    "eyebrow": "Detalhes",
+    "title": "Análise completa",
+    "text": "Contexto opcional.",
+    "size": "large",
+    "blocks": [
+      { "type": "chart", "variant": "bar", "labels": [], "datasets": [] },
+      { "type": "paragraph", "text": "Conclusão." }
+    ]
+  }
+}
+```
+
+`size`: `"small"` | `"medium"` | `"large"` | `"full"`. `blocks` aceita qualquer componente documentado, inclusive Mermaid.
 
 ## Recursos do visualizador (não fazem parte do JSON)
 

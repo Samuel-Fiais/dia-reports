@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Download } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Braces, Download } from 'lucide-react'
 import { useAppChromeTheme } from '../../lib/useAppChromeTheme.js'
 import { fetchJson, jsonBody } from '../../lib/api.js'
 import { formatShortDate } from '../../lib/theme.js'
@@ -30,6 +31,7 @@ function downloadJson(filename, data) {
 
 export default function ReportsAdmin() {
   useAppChromeTheme('Relatórios (admin)')
+  const navigate = useNavigate()
 
   const [reports, setReports] = useState([])
   const [groups, setGroups] = useState([])
@@ -102,11 +104,10 @@ export default function ReportsAdmin() {
   }
 
   const openCreate = () => {
-    resetForm()
-    setModalOpen(true)
+    navigate('/admin/reports/new/edit')
   }
 
-  const openEdit = async (report) => {
+  const openJsonEdit = async (report) => {
     resetForm()
     setModalOpen(true)
     setEditingSlug(report.slug)
@@ -185,7 +186,7 @@ export default function ReportsAdmin() {
   return (
     <AdminPage
       title="Relatórios"
-      description="Crie ou edite relatórios enviando o JSON (ver REPORT-SCHEMA.md), e baixe o JSON de qualquer relatório existente para editar fora do app."
+      description="Crie e edite relatórios visualmente por blocos. O JSON completo continua disponível para importação, exportação e ajustes avançados."
       sectionHeading="Todos os relatórios"
       newLabel="Novo relatório"
       onNew={openCreate}
@@ -219,8 +220,11 @@ export default function ReportsAdmin() {
                   <button type="button" onClick={() => handleDownload(report)} aria-label="Baixar JSON" title="Baixar JSON">
                     <Download size={14} />
                   </button>
+                  <button type="button" onClick={() => openJsonEdit(report)} aria-label="Editar JSON" title="Editar JSON">
+                    <Braces size={14} />
+                  </button>
                   <ActionButtons
-                    onEdit={() => openEdit(report)}
+                    onEdit={() => navigate(`/admin/reports/${report.slug}/edit`)}
                     onDelete={() => {
                       setDeleteError(null)
                       setDeleteTarget(report)

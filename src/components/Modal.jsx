@@ -3,6 +3,26 @@ import { X } from 'lucide-react'
 import { renderInline } from '../lib/inline.jsx'
 
 const ModalContext = createContext({ openModal: () => {} })
+let bodyScrollLocks = 0
+
+function lockBodyScroll() {
+  const body = document.body
+  bodyScrollLocks += 1
+  if (bodyScrollLocks === 1) {
+    // Remove bloqueios inline deixados por versões anteriores do modal. A
+    // classe passa a ser a única fonte de verdade e sempre é reversível.
+    if (body.style.overflow === 'hidden') body.style.removeProperty('overflow')
+    body.classList.add('dia-modal-scroll-lock')
+  }
+
+  let released = false
+  return () => {
+    if (released) return
+    released = true
+    bodyScrollLocks = Math.max(0, bodyScrollLocks - 1)
+    if (bodyScrollLocks === 0) body.classList.remove('dia-modal-scroll-lock')
+  }
+}
 
 export function useModal() {
   return useContext(ModalContext)
@@ -22,15 +42,23 @@ export function ModalProvider({ renderBlocks, children }) {
   const close = useCallback(() => setModal(null), [])
 
   useEffect(() => {
-    if (!modal) return
+    if (!modal) {
+      // Também recupera o scroll após HMR/navegação caso uma versão antiga
+      // tenha deixado overflow:hidden diretamente no body.
+      if (bodyScrollLocks === 0) {
+        document.body.classList.remove('dia-modal-scroll-lock')
+        if (document.body.style.overflow === 'hidden') document.body.style.removeProperty('overflow')
+      }
+      return undefined
+    }
     const onKey = (e) => {
       if (e.key === 'Escape') close()
     }
     document.addEventListener('keydown', onKey)
-    document.body.style.overflow = 'hidden'
+    const unlockBodyScroll = lockBodyScroll()
     return () => {
       document.removeEventListener('keydown', onKey)
-      document.body.style.overflow = ''
+      unlockBodyScroll()
     }
   }, [modal, close])
 
@@ -39,7 +67,7 @@ export function ModalProvider({ renderBlocks, children }) {
       {children}
       {modal && (
         <div className="dia-modal-backdrop" onClick={close}>
-          <div className="dia-modal" role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+          <div className={`dia-modal dia-modal--${modal.size ?? 'medium'}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
             <button type="button" className="dia-modal-close" onClick={close} aria-label="Fechar">
               <X size={18} />
             </button>

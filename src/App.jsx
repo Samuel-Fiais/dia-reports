@@ -6,6 +6,7 @@ import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
 import ReportsAdmin from './pages/admin/ReportsAdmin.jsx'
+import ReportEditorPage from './components/editor/ReportEditorPage.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import RequireAuth from './components/RequireAuth.jsx'
@@ -58,6 +59,16 @@ export default function App() {
                 <RequireAuth>
                   <RequirePermission module="reports.manage">
                     <ReportsAdmin />
+                  </RequirePermission>
+                </RequireAuth>
+              }
+            />
+            <Route
+              path="/admin/reports/:slug/edit"
+              element={
+                <RequireAuth>
+                  <RequirePermission module="reports.manage">
+                    <ReportEditorPage />
                   </RequirePermission>
                 </RequireAuth>
               }

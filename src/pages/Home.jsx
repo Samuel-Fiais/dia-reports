@@ -4,6 +4,7 @@ import { ArrowRight, Search, X } from 'lucide-react'
 import { fetchReports } from '../lib/registry.js'
 import { formatReportDate, formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
+import SelectControl from '../components/SelectControl.jsx'
 
 function countSections(report) {
   if (typeof report.sections_length === 'number') return report.sections_length
@@ -120,32 +121,24 @@ export default function Home() {
 
             {categories.length > 2 && (
               <div className="dashboard-sort-wrap">
-                <select
+                <SelectControl
                   className="dashboard-sort"
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  aria-label="Filtrar por categoria"
-                >
-                  {categories.map((cat) => (
-                    <option key={cat} value={cat}>
-                      {cat === 'all' ? 'Todas' : cat}
-                    </option>
-                  ))}
-                </select>
+                  onChange={setCategory}
+                  ariaLabel="Filtrar por categoria"
+                  options={categories.map((cat) => ({ value: cat, label: cat === 'all' ? 'Todas' : cat }))}
+                />
               </div>
             )}
 
             <div className="dashboard-sort-wrap">
-              <select
+              <SelectControl
                 className="dashboard-sort"
                 value={sort}
-                onChange={(e) => setSort(e.target.value)}
-                aria-label="Ordenar relatórios"
-              >
-                {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value}>{opt.label}</option>
-                ))}
-              </select>
+                onChange={setSort}
+                ariaLabel="Ordenar relatórios"
+                options={SORT_OPTIONS}
+              />
             </div>
           </div>
         )}

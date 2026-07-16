@@ -30,9 +30,6 @@ export default function SettingsModal({ onClose }) {
             />
           ))}
         </div>
-        <p className="settings-modal-hint">
-          Vale só para o dashboard e telas do app — cada relatório mantém sua própria cor.
-        </p>
       </div>
     </Dialog>
   )
