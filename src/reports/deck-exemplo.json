@@ -1,0 +1,39 @@
+{
+  "title": "Boas-vindas ao Dia Slides",
+  "theme": { "colorIndex": 0, "fontIndex": 0, "transition": "fade" },
+  "slides": [
+    {
+      "layout": "title",
+      "content": { "title": "Boas-vindas ao Dia Slides", "subtitle": "Modo apresentações do Dia Reports", "date": "Julho de 2026" }
+    },
+    {
+      "layout": "bullets",
+      "content": { "title": "Agenda", "items": ["O que é o Dia Slides?", "Layouts disponíveis", "Como criar um deck", "Navegação e atalhos"] }
+    },
+    {
+      "layout": "content",
+      "content": { "title": "O que é?", "text": "O Dia Slides é um modo de apresentações integrado ao Dia Reports. Mesma arquitetura, mesmos componentes — uma nova forma de apresentar dados e ideias.", "align": "left" }
+    },
+    {
+      "layout": "two-columns",
+      "content": {
+        "title": "Layouts",
+        "left": { "title": "Conteúdo", "items": ["title — slide de título", "bullets — lista de tópicos", "content — texto livre", "two-columns — duas colunas"] },
+        "right": { "title": "Mídia e dados", "items": ["section — divisor de seção", "chart — gráfico Chart.js", "image-full — imagem full-bleed"] },
+        "ratio": "50/50"
+      }
+    },
+    {
+      "layout": "chart",
+      "content": { "title": "Gráficos funcionam direto", "chart": { "variant": "bar", "labels": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"], "datasets": [{ "label": "Vendas", "data": [12, 19, 15, 22, 28, 24] }] } }
+    },
+    {
+      "layout": "bullets",
+      "content": { "title": "Navegação", "items": ["→ ou Espaço: próximo slide", "←: slide anterior", "Esc ou botão Sair: volta pra lista", "N: mostra notas do apresentador", "Home: primeiro slide", "End: último slide"] }
+    },
+    {
+      "layout": "section",
+      "content": { "title": "Vamos começar?", "subtitle": "Crie seu primeiro deck em /admin/slides" }
+    }
+  ]
+}

@@ -8,6 +8,36 @@ export const config = {
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
+const VALID_LAYOUTS = [
+  'title', 'bullets', 'content', 'two-columns',
+  'section', 'chart', 'image-full',
+]
+
+function validateSlideDeck(content) {
+  if (!content || typeof content !== 'object') {
+    return 'Conteúdo (JSON) é obrigatório'
+  }
+  if (!content.slides || !Array.isArray(content.slides)) {
+    return 'content.slides deve ser um array'
+  }
+  if (content.slides.length === 0) {
+    return 'content.slides não pode estar vazio'
+  }
+  for (let i = 0; i < content.slides.length; i++) {
+    const slide = content.slides[i]
+    if (!slide.layout || typeof slide.layout !== 'string') {
+      return `Slide ${i + 1}: layout é obrigatório`
+    }
+    if (!VALID_LAYOUTS.includes(slide.layout)) {
+      return `Slide ${i + 1}: layout "${slide.layout}" inválido. Válidos: ${VALID_LAYOUTS.join(', ')}`
+    }
+    if (!slide.content || typeof slide.content !== 'object') {
+      return `Slide ${i + 1}: content é obrigatório`
+    }
+  }
+  return null
+}
+
 function parseRoute(req) {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`)
   const path = url.pathname.replace(/\/+$/, '')
@@ -99,6 +129,12 @@ export default async function handler(req, res) {
         return
       }
 
+      const validationError = validateSlideDeck(content)
+      if (validationError) {
+        sendJson(res, 400, { error: validationError })
+        return
+      }
+
       try {
         const { rows } = await db.query(
           'INSERT INTO slide_decks (slug, title, content) VALUES ($1, $2, $3::jsonb) RETURNING slug, title',
@@ -127,6 +163,12 @@ export default async function handler(req, res) {
       }
       if (!content || typeof content !== 'object') {
         sendJson(res, 400, { error: 'Conteúdo (JSON) é obrigatório' })
+        return
+      }
+
+      const validationError = validateSlideDeck(content)
+      if (validationError) {
+        sendJson(res, 400, { error: validationError })
         return
       }
 
