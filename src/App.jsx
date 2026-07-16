@@ -11,7 +11,7 @@ import ReportsAdmin from './pages/admin/ReportsAdmin.jsx'
 // import ReportEditorPage from './components/editor/ReportEditorPage.jsx'
 import SlidesHome from './pages/SlidesHome.jsx'
 import SlideViewer from './pages/SlideViewer.jsx'
-import SlidesAdmin from './pages/admin/SlidesAdmin.jsx'
+import SlideDetailPage from './pages/SlideDetailPage.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import RequireAuth from './components/RequireAuth.jsx'
@@ -82,16 +82,7 @@ export default function App() {
             /> */}
             <Route path="/slides" element={<RequireAuth><SlidesHome /></RequireAuth>} />
             <Route path="/slides/:id" element={<RequireAuth><SlideViewer /></RequireAuth>} />
-            <Route
-              path="/admin/slides"
-              element={
-                <RequireAuth>
-                  <RequirePermission module="reports.manage">
-                    <SlidesAdmin />
-                  </RequirePermission>
-                </RequireAuth>
-              }
-            />
+            <Route path="/slides/:id/view" element={<RequireAuth><SlideDetailPage /></RequireAuth>} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>

@@ -22,7 +22,6 @@ const MENU_ITEMS = [
   { type: 'separator' },
   { type: 'label', key: 'slides-label', label: 'Apresentações' },
   { type: 'link', key: 'slides', label: 'Apresentações', icon: Presentation, to: '/slides' },
-  { type: 'link', key: 'slides-admin', label: 'Gerenciar slides', icon: Settings, to: '/admin/slides', permission: 'reports.manage' },
 ]
 
 function hasPermission(user, permission) {

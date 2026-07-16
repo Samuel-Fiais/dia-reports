@@ -635,3 +635,97 @@ body.slide-viewer-active .app-menu {
   color: var(--ink);
   background: var(--surface-hover);
 }
+
+/* ── Slide Detail Page ──────────────────────────── */
+
+.slide-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  border: 1px solid var(--hairline-strong);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 0.85rem;
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: background 0.15s;
+  line-height: 1;
+}
+
+.slide-detail-btn:hover {
+  background: var(--surface-hover);
+}
+
+.slide-detail-btn--present {
+  background: var(--ink);
+  color: var(--bg);
+  border-color: var(--ink);
+}
+
+.slide-detail-btn--present:hover {
+  opacity: 0.85;
+}
+
+.slide-detail-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.slide-detail-card {
+  border: 1px solid var(--hairline);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.slide-detail-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--bg);
+}
+
+.slide-detail-card-num {
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+
+.slide-detail-card-preview {
+  min-height: 200px;
+  position: relative;
+  background: #111;
+}
+
+.slide-detail-card-preview .slide-layout {
+  padding: 2rem 3rem;
+  min-height: 200px;
+}
+
+.slide-detail-card-preview .slide-main-title {
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+}
+
+.slide-detail-card-preview .slide-subtitle {
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+}
+
+.slide-detail-card-preview .slide-heading {
+  font-size: clamp(1rem, 1.8vw, 1.4rem);
+  margin-bottom: 0.75rem;
+}
+
+.slide-detail-card-preview .slide-bullet-item,
+.slide-detail-card-preview .slide-text {
+  font-size: clamp(0.8rem, 1vw, 0.95rem);
+}
+
+.slide-detail-card-preview .slide-chart-wrap {
+  min-height: 150px;
+}
