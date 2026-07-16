@@ -698,34 +698,62 @@ body.slide-viewer-active .app-menu {
 }
 
 .slide-detail-card-preview {
-  min-height: 200px;
   position: relative;
   background: #111;
+  width: 100%;
 }
 
 .slide-detail-card-preview .slide-layout {
-  padding: 2rem 3rem;
-  min-height: 200px;
+  padding: 1rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .slide-detail-card-preview .slide-main-title {
-  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-size: clamp(1rem, 2vw, 1.6rem);
 }
 
 .slide-detail-card-preview .slide-subtitle {
-  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
 }
 
 .slide-detail-card-preview .slide-heading {
-  font-size: clamp(1rem, 1.8vw, 1.4rem);
-  margin-bottom: 0.75rem;
+  font-size: clamp(0.85rem, 1.4vw, 1.1rem);
+  margin-bottom: 0.5rem;
 }
 
 .slide-detail-card-preview .slide-bullet-item,
 .slide-detail-card-preview .slide-text {
-  font-size: clamp(0.8rem, 1vw, 0.95rem);
+  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
 }
 
 .slide-detail-card-preview .slide-chart-wrap {
-  min-height: 150px;
+  min-height: 100px;
+}
+
+.slide-detail-card-preview .slide-two-cols {
+  gap: 1rem;
+}
+
+.slide-detail-card-preview .slide-col-title {
+  font-size: clamp(0.85rem, 1.2vw, 1rem);
+  margin-bottom: 0.5rem;
+}
+
+.slide-detail-card-preview .slide-bullets-grid {
+  gap: 0.3rem 1rem;
+}
+
+.slide-detail-card-preview .slide-title-content {
+  max-width: 100%;
+}
+
+.slide-detail-card-preview .slide-section-content {
+  max-width: 100%;
+}
+
+.slide-detail-card-preview .slide-date {
+  bottom: 0.75rem;
+  right: 1rem;
+  font-size: 0.65rem;
 }

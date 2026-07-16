@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Grid3X3, Maximize2, Minimize2, Printer, X } from 'lucide-react'
 import { getDeck } from '../lib/slidesClient.js'
+import { loadSettings } from '../lib/theme.js'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 import SlideRenderer from '../components/slides/SlideRenderer.jsx'
 
@@ -26,6 +27,13 @@ export default function SlideViewer() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(true)
   const [swipeOffset, setSwipeOffset] = useState(0)
+  const [viewerSettings, setViewerSettings] = useState(() => loadSettings(`slides:${id}`, {
+    colorIndex: 0,
+    fontIndex: 0,
+    chartStyleIndex: 2,
+    widthMode: 'standard',
+    fontScale: 'default',
+  }))
   const wrapRef = useRef(null)
   const thumbnailStripRef = useRef(null)
   const touchRef = useRef({ active: false, startX: 0, startY: 0, currentX: 0, currentY: 0 })
@@ -64,7 +72,7 @@ export default function SlideViewer() {
   }, [])
 
   const slides = deck?.content?.slides ?? []
-  const theme = deck?.content?.theme ?? {}
+  const theme = { ...(deck?.content?.theme ?? {}), ...viewerSettings }
   const total = slides.length
   const hasPrev = currentSlide > 0
   const hasNext = currentSlide < total - 1
@@ -222,7 +230,7 @@ export default function SlideViewer() {
               data-transition={theme.transition ?? 'fade'}
               aria-hidden={i !== currentSlide}
             >
-              <SlideRenderer slide={slide} theme={theme} variant={variant} />
+              <SlideRenderer slide={slide} theme={theme} variant={variant} settings={viewerSettings} />
             </div>
           ))}
 

@@ -16,7 +16,7 @@ const LAYOUTS = {
   'image-full': ImageSlide,
 }
 
-export default function SlideRenderer({ slide, theme, variant = 'viewer' }) {
+export default function SlideRenderer({ slide, theme, variant = 'viewer', settings }) {
   const Component = LAYOUTS[slide.layout]
   if (!Component) {
     return (
@@ -25,5 +25,5 @@ export default function SlideRenderer({ slide, theme, variant = 'viewer' }) {
       </div>
     )
   }
-  return <Component content={slide.content} theme={theme} variant={variant} />
+  return <Component content={slide.content} theme={theme} variant={variant} settings={settings} />
 }
