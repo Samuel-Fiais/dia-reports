@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, ArrowRight, Grid3X3, Maximize2, Minimize2, X } from 'lucide-react'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
+import { ArrowLeft, ArrowRight, Grid3X3, Maximize2, Minimize2, Printer, X } from 'lucide-react'
 import { getDeck } from '../lib/slidesClient.js'
 import SlideRenderer from '../components/slides/SlideRenderer.jsx'
 
@@ -14,6 +14,8 @@ function getSlidePreview(slide, index) {
 export default function SlideViewer() {
   const { id } = useParams()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const isExport = searchParams.get('export') === '1'
   const [deck, setDeck] = useState(null)
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -42,6 +44,16 @@ export default function SlideViewer() {
     load()
     return () => { cancelled = true }
   }, [id])
+
+  // Auto-print quando ?export=1
+  useEffect(() => {
+    if (isExport && !loading && deck && slides.length > 0) {
+      const timer = setTimeout(() => {
+        window.print()
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [isExport, loading, deck])
 
   useEffect(() => {
     document.body.classList.add('slide-viewer-active')
@@ -269,6 +281,15 @@ export default function SlideViewer() {
               >
                 {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
                 {isFullscreen ? 'Janela' : 'Tela cheia'}
+              </button>
+              <button
+                type="button"
+                className="slide-control-btn"
+                onClick={() => window.print()}
+                title="Exportar PDF"
+              >
+                <Printer size={13} />
+                PDF
               </button>
               <button
                 type="button"

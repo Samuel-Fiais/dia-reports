@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { ArrowRight, Plus, Presentation, Search, X } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
+import { ArrowRight, Plus, Presentation, Printer, Search, X } from 'lucide-react'
 import { fetchDecks } from '../lib/slidesClient.js'
 import { formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
 
 export default function SlidesHome() {
   useAppChromeTheme('Apresentações')
+  const navigate = useNavigate()
   const [decks, setDecks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -118,6 +119,19 @@ export default function SlidesHome() {
                     <span className="report-card-open">
                       Apresentar <ArrowRight size={13} aria-hidden="true" />
                     </span>
+                    <button
+                      type="button"
+                      className="report-card-pdf-btn"
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        navigate(`/slides/${deck.id}?export=1`)
+                      }}
+                      title="Exportar PDF"
+                      aria-label="Exportar PDF"
+                    >
+                      <Printer size={13} />
+                    </button>
                   </div>
                 </Link>
               ))}

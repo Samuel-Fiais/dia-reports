@@ -543,3 +543,95 @@ body.slide-viewer-active .app-menu {
     grid-auto-columns: calc((100% - 2rem) / 5);
   }
 }
+
+/* ── Print / PDF export ─────────────────────────── */
+
+@media print {
+  @page {
+    size: landscape;
+    margin: 0;
+  }
+
+  body * {
+    visibility: hidden !important;
+  }
+
+  .slide-viewer-overlay,
+  .slide-viewer-overlay * {
+    visibility: visible !important;
+  }
+
+  .slide-viewer-overlay {
+    position: static !important;
+    background: #111 !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  .slide-viewer {
+    max-width: 100% !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    aspect-ratio: auto !important;
+    overflow: visible !important;
+  }
+
+  .slide-viewer-inner {
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  .slide {
+    position: relative !important;
+    opacity: 1 !important;
+    transform: none !important;
+    page-break-after: always;
+    break-after: page;
+    height: 100vh !important;
+    display: flex !important;
+    pointer-events: auto !important;
+  }
+
+  .slide:last-child {
+    page-break-after: avoid;
+    break-after: avoid;
+  }
+
+  .slide-nav-area,
+  .slide-bottom-bar,
+  .slide-notes-panel,
+  .slide-thumbnail-strip,
+  .slide-viewer-shell {
+    display: none !important;
+  }
+
+  .slide-chart-wrap canvas {
+    max-height: 50vh;
+  }
+
+  .slide-title-layout,
+  .slide-section-layout {
+    background-color: #1a1a1a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+
+/* ── PDF button on cards ────────────────────────── */
+.report-card-pdf-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--ink-muted);
+  padding: 0.25rem 0.4rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  transition: color 0.15s, background 0.15s;
+  line-height: 1;
+}
+
+.report-card-pdf-btn:hover {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
