@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Braces, Download } from 'lucide-react'
 import { useAppChromeTheme } from '../../lib/useAppChromeTheme.js'
 import { fetchJson, jsonBody } from '../../lib/api.js'
+import { fetchDecks, deleteDeck } from '../../lib/slidesClient.js'
 import { formatShortDate } from '../../lib/theme.js'
 import AdminPage from '../../components/admin/AdminPage.jsx'
 import AdminStatus from '../../components/admin/AdminStatus.jsx'
@@ -10,13 +11,8 @@ import Dialog from '../../components/admin/Dialog.jsx'
 import FormField from '../../components/admin/FormField.jsx'
 import FormActions from '../../components/admin/FormActions.jsx'
 import ConfirmDialog from '../../components/admin/ConfirmDialog.jsx'
-import Checkbox from '../../components/admin/Checkbox.jsx'
 import FileDropzone from '../../components/admin/FileDropzone.jsx'
 import JsonEditor from '../../components/admin/JsonEditor.jsx'
-
-function reportTitle(report) {
-  return Array.isArray(report.headline) ? report.headline.join(' ') : report.headline ?? report.title
-}
 
 function downloadJson(filename, data) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
@@ -28,11 +24,10 @@ function downloadJson(filename, data) {
   URL.revokeObjectURL(url)
 }
 
-export default function ReportsAdmin() {
-  useAppChromeTheme('Relatórios (admin)')
+export default function SlidesAdmin() {
+  useAppChromeTheme('Apresentações (admin)')
 
-  const [reports, setReports] = useState([])
-  const [groups, setGroups] = useState([])
+  const [decks, setDecks] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -43,7 +38,6 @@ export default function ReportsAdmin() {
   const [jsonText, setJsonText] = useState('')
   const [parsed, setParsed] = useState(null)
   const [parseError, setParseError] = useState(null)
-  const [groupIds, setGroupIds] = useState([])
   const [formError, setFormError] = useState(null)
   const [saving, setSaving] = useState(false)
 
@@ -55,12 +49,8 @@ export default function ReportsAdmin() {
     try {
       setLoading(true)
       setError(null)
-      const [reportsData, groupsData] = await Promise.all([
-        fetchJson('/api/reports?admin=1'),
-        fetchJson('/api/report-groups'),
-      ])
-      setReports(reportsData)
-      setGroups(groupsData)
+      const data = await fetchDecks()
+      setDecks(data)
     } catch (err) {
       setError(err)
     } finally {
@@ -68,10 +58,9 @@ export default function ReportsAdmin() {
     }
   }
 
-  useEffect(() => {
-    load()
-  }, [])
+  useEffect(() => { load() }, [])
 
+  /* JSON parse */ // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     if (!jsonText.trim()) {
       setParsed(null)
@@ -97,25 +86,18 @@ export default function ReportsAdmin() {
     setJsonText('')
     setParsed(null)
     setParseError(null)
-    setGroupIds([])
     setFormError(null)
   }
 
-  /* Editor visual removido — criar/editar relatórios via JSON direto */
-  // const openCreate = () => {
-  //   navigate('/admin/reports/new/edit')
-  // }
-
-  const openJsonEdit = async (report) => {
+  const openJsonEdit = async (deck) => {
     resetForm()
     setModalOpen(true)
-    setEditingSlug(report.slug)
-    setSlug(report.slug)
-    setFileName(`${report.slug}.json`)
+    setEditingSlug(deck.slug)
+    setSlug(deck.slug)
+    setFileName(`${deck.slug}.json`)
     try {
-      const full = await fetchJson(`/api/reports/${report.slug}?admin=1`)
+      const full = await fetchJson(`/api/slides/${deck.slug}`)
       setJsonText(JSON.stringify(full.content, null, 2))
-      setGroupIds(full.groupIds ?? [])
     } catch (err) {
       setFormError(err.message)
     }
@@ -126,15 +108,10 @@ export default function ReportsAdmin() {
     setJsonText(await file.text())
   }
 
-  const handleDownload = async (report) => {
-    const full = await fetchJson(`/api/reports/${report.slug}?admin=1`)
-    downloadJson(`${report.slug}.json`, full.content)
+  const handleDownload = async (deck) => {
+    const full = await fetchJson(`/api/slides/${deck.slug}`)
+    downloadJson(`${deck.slug}.json`, full.content)
   }
-
-  const allGroupsSelected = groups.length > 0 && groups.every((g) => groupIds.includes(g.id))
-  const toggleAllGroups = () => setGroupIds(allGroupsSelected ? [] : groups.map((g) => g.id))
-  const toggleGroup = (id) =>
-    setGroupIds((ids) => (ids.includes(id) ? ids.filter((g) => g !== id) : [...ids, id]))
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -148,17 +125,17 @@ export default function ReportsAdmin() {
     }
     setSaving(true)
     setFormError(null)
-    const payload = { slug: slug.trim(), title: parsed.title, date: parsed.date, content: parsed }
+    const payload = {
+      slug: slug.trim(),
+      title: parsed.title ?? slug.trim(),
+      content: parsed,
+    }
     try {
       if (editingSlug) {
-        await fetchJson(`/api/reports/${editingSlug}`, { method: 'PUT', ...jsonBody(payload) })
+        await fetchJson(`/api/slides/${editingSlug}`, { method: 'PUT', ...jsonBody(payload) })
       } else {
-        await fetchJson('/api/reports', { method: 'POST', ...jsonBody(payload) })
+        await fetchJson('/api/slides', { method: 'POST', ...jsonBody(payload) })
       }
-      await fetchJson(`/api/report-groups/by-report/${slug.trim()}`, {
-        method: 'PUT',
-        ...jsonBody({ groupIds }),
-      })
       setModalOpen(false)
       await load()
     } catch (err) {
@@ -172,7 +149,7 @@ export default function ReportsAdmin() {
     setDeleting(true)
     setDeleteError(null)
     try {
-      await fetchJson(`/api/reports/${deleteTarget.slug}`, { method: 'DELETE' })
+      await deleteDeck(deleteTarget.slug)
       setDeleteTarget(null)
       await load()
     } catch (err) {
@@ -184,48 +161,46 @@ export default function ReportsAdmin() {
 
   return (
     <AdminPage
-      title="Relatórios"
-      description="Gerencie relatórios via JSON — importação, exportação, grupos e ajustes avançados."
-      sectionHeading="Todos os relatórios"
-      // newLabel="Novo relatório"
-      // onNew={openCreate}
+      title="Apresentações"
+      description="Gerencie decks de slides via JSON — criação, edição, exportação."
+      sectionHeading="Todos os decks"
     >
       <AdminStatus
         loading={loading}
         error={error}
-        empty={!loading && !error && reports.length === 0}
-        loadingText="Carregando relatórios..."
-        errorText="Não foi possível carregar os relatórios agora."
-        emptyText="Nenhum relatório criado ainda."
+        empty={!loading && !error && decks.length === 0}
+        loadingText="Carregando decks..."
+        errorText="Não foi possível carregar os decks agora."
+        emptyText="Nenhum deck criado ainda."
       />
 
-      {!loading && !error && reports.length > 0 && (
+      {!loading && !error && decks.length > 0 && (
         <table className="admin-table">
           <thead>
             <tr>
               <th>Título</th>
+              <th>Slides</th>
               <th>Atualizado</th>
-              <th>Grupos</th>
               <th aria-label="Ações" />
             </tr>
           </thead>
           <tbody>
-            {reports.map((report) => (
-              <tr key={report.slug}>
-                <td>{reportTitle(report)}</td>
-                <td>{formatShortDate(report.updatedAt ?? report.date)}</td>
-                <td>{report.groupIds?.length > 0 ? report.groupIds.length : 'Público'}</td>
+            {decks.map((deck) => (
+              <tr key={deck.slug}>
+                <td>{deck.deckTitle ?? deck.title}</td>
+                <td>{deck.slidesCount}</td>
+                <td>{formatShortDate(deck.updatedAt ?? deck.date)}</td>
                 <td className="admin-table-actions">
-                  <button type="button" onClick={() => handleDownload(report)} aria-label="Baixar JSON" title="Baixar JSON">
+                  <button type="button" onClick={() => handleDownload(deck)} aria-label="Baixar JSON" title="Baixar JSON">
                     <Download size={14} />
                   </button>
-                  <button type="button" onClick={() => openJsonEdit(report)} aria-label="Editar JSON" title="Editar JSON">
+                  <button type="button" onClick={() => openJsonEdit(deck)} aria-label="Editar JSON" title="Editar JSON">
                     <Braces size={14} />
                   </button>
                   <ActionButtons
                     onDelete={() => {
                       setDeleteError(null)
-                      setDeleteTarget(report)
+                      setDeleteTarget(deck)
                     }}
                   />
                 </td>
@@ -237,40 +212,23 @@ export default function ReportsAdmin() {
 
       {modalOpen && (
         <Dialog
-          eyebrow="Relatórios"
-          title={editingSlug ? 'Editar relatório' : 'Novo relatório'}
+          eyebrow="Apresentações"
+          title={editingSlug ? 'Editar deck' : 'Novo deck'}
           className="dia-modal--report-editor"
           onClose={() => setModalOpen(false)}
         >
           <form className="admin-form" onSubmit={handleSubmit}>
             <div className="report-editor-grid">
               <div className="report-editor-col report-editor-col--left">
-                <FormField label="Slug (URL do relatório)">
+                <FormField label="Slug (URL do deck)">
                   <input
                     type="text"
                     required
                     disabled={Boolean(editingSlug)}
-                    placeholder="meu-relatorio"
+                    placeholder="meu-deck"
                     value={slug}
                     onChange={(e) => setSlug(e.target.value)}
                   />
-                </FormField>
-
-                <FormField label="Grupos de relatório">
-                  {groups.length === 0 ? (
-                    <p className="settings-modal-hint">Nenhum grupo criado ainda — relatório fica público para qualquer logado.</p>
-                  ) : (
-                    <div className="admin-field-checkboxes">
-                      <Checkbox emphasis checked={allGroupsSelected} onChange={toggleAllGroups}>
-                        Todos os grupos
-                      </Checkbox>
-                      {groups.map((group) => (
-                        <Checkbox key={group.id} checked={groupIds.includes(group.id)} onChange={() => toggleGroup(group.id)}>
-                          {group.name}
-                        </Checkbox>
-                      ))}
-                    </div>
-                  )}
                 </FormField>
 
                 <FormField label="Arquivo JSON">
@@ -294,8 +252,8 @@ export default function ReportsAdmin() {
 
       {deleteTarget && (
         <ConfirmDialog
-          title="Excluir relatório"
-          message={`Excluir "${reportTitle(deleteTarget)}"? Essa ação não pode ser desfeita.`}
+          title="Excluir deck"
+          message={`Excluir "${deleteTarget.deckTitle ?? deleteTarget.title}"? Essa ação não pode ser desfeita.`}
           confirmLabel="Excluir"
           error={deleteError}
           busy={deleting}

@@ -35,7 +35,7 @@ export default function ReportPage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getReport(id);
+        const data = await getReport(id, shared);
         if (cancelled) return;
         setReport(data);
         setSettings(

@@ -13,8 +13,9 @@ export async function fetchReports() {
   return data
 }
 
-export async function getReport(slug) {
-  const res = await fetch(`${API_BASE}/reports/${slug}`)
+export async function getReport(slug, shared = false) {
+  const url = shared ? `${API_BASE}/reports/${slug}?shared=1` : `${API_BASE}/reports/${slug}`
+  const res = await fetch(url)
   if (res.status === 404) return null
   if (!res.ok) throw new Error('Failed to fetch report')
   const data = await res.json()
