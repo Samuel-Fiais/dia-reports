@@ -5,6 +5,8 @@
     { "source": "/api/report-groups/:path*", "destination": "/api/report-groups" },
     { "source": "/api/profiles/:path*", "destination": "/api/profiles" },
     { "source": "/api/users/:path*", "destination": "/api/users" },
+    { "source": "/api/shared/:path*", "destination": "/api/shared" },
+    { "source": "/api/ai/:path*", "destination": "/api/ai" },
     { "source": "/((?!api/|@)(?!.*\\.[a-zA-Z0-9]+$).*)", "destination": "/index.html" }
   ]
 }
