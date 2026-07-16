@@ -5,6 +5,9 @@ import TwoColumnsSlide from './layouts/TwoColumnsSlide.jsx'
 import SectionSlide from './layouts/SectionSlide.jsx'
 import ChartSlide from './layouts/ChartSlide.jsx'
 import ImageSlide from './layouts/ImageSlide.jsx'
+import TableSlide from './layouts/TableSlide.jsx'
+import QuoteSlide from './layouts/QuoteSlide.jsx'
+import KpiSlide from './layouts/KpiSlide.jsx'
 
 const LAYOUTS = {
   'title': TitleSlide,
@@ -14,6 +17,9 @@ const LAYOUTS = {
   'section': SectionSlide,
   'chart': ChartSlide,
   'image-full': ImageSlide,
+  'table': TableSlide,
+  'quote': QuoteSlide,
+  'kpi': KpiSlide,
 }
 
 export default function SlideRenderer({ slide, theme, variant = 'viewer', settings }) {

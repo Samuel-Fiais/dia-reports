@@ -1,67 +1,327 @@
 {
   "title": "Recursos do Dia Slides",
-  "theme": { "colorIndex": 3, "fontIndex": 0, "transition": "fade" },
+  "theme": {
+    "colorIndex": 3,
+    "fontIndex": 0,
+    "transition": "fade"
+  },
   "slides": [
     {
       "layout": "title",
       "content": {
         "title": "Recursos do Dia Slides",
-        "subtitle": "Guia completo de layouts, gráficos e componentes",
-        "date": "Julho de 2026"
+        "subtitle": "Guia completo",
+        "date": "Julho 2026"
       }
     },
     {
-      "layout": "bullets",
+      "layout": "section",
       "content": {
-        "title": "O que veremos",
-        "items": [
-          "Todos os 7 layouts disponíveis",
-          "Gráficos: barras, linhas, rosca e pizza",
-          "Colunas com proporções variáveis",
-          "Imagens full-bleed",
-          "Slides divisores de seção",
-          "Temas com cores e fontes"
-        ]
+        "title": "Textos",
+        "subtitle": "Paragraph, bullets, blockquote"
       }
     },
     {
       "layout": "content",
       "content": {
-        "title": "Layout de conteúdo",
-        "text": "O layout 'content' é ideal para parágrafos, explicações e textos corridos. Suporta alinhamento à esquerda (padrão), centralizado ou à direita. A formatação inline funciona com **negrito**, *itálico* e `código`.",
+        "title": "Paragraph",
+        "text": "Layout content = bloco paragraph dos relatorios.",
         "align": "left"
       }
     },
     {
       "layout": "content",
       "content": {
-        "title": "Texto centralizado",
-        "text": "Perfeito para citações, destaques ou mensagens importantes que merecem atenção central.",
+        "title": "Centralizado",
+        "text": "Citacoes com alinhamento centralizado.",
         "align": "center"
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "1 coluna",
+        "items": [
+          "Item A",
+          "Item B",
+          "Item C"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "2 colunas",
+        "columns": 2,
+        "items": [
+          "A1",
+          "A2",
+          "A3",
+          "A4",
+          "B1",
+          "B2",
+          "B3",
+          "B4"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "3 colunas",
+        "columns": 3,
+        "items": [
+          "C1",
+          "C2",
+          "C3",
+          "D1",
+          "D2",
+          "D3",
+          "E1",
+          "E2",
+          "E3"
+        ]
+      }
+    },
+    {
+      "layout": "quote",
+      "content": {
+        "text": "Design e como funciona.",
+        "cite": "Steve Jobs",
+        "role": "Apple"
+      }
+    },
+    {
+      "layout": "quote",
+      "content": {
+        "text": "Melhor forma de prever o futuro e cria-lo.",
+        "cite": "Peter Drucker"
       }
     },
     {
       "layout": "section",
       "content": {
-        "title": "Gráficos",
-        "subtitle": "Visualização de dados com Chart.js"
+        "title": "Tabelas",
+        "subtitle": "Table, variance, comparison"
+      }
+    },
+    {
+      "layout": "table",
+      "content": {
+        "title": "Receita trimestral",
+        "columns": [
+          "Produto",
+          "Q1",
+          "Q2",
+          "Q3",
+          "Q4"
+        ],
+        "rows": [
+          [
+            "A",
+            "120",
+            "145",
+            "168",
+            "192"
+          ],
+          [
+            "B",
+            "85",
+            "92",
+            "107",
+            "124"
+          ],
+          [
+            "C",
+            "200",
+            "215",
+            "238",
+            "260"
+          ],
+          [
+            "D",
+            "55",
+            "62",
+            "71",
+            "83"
+          ]
+        ],
+        "caption": "R$ mil"
+      }
+    },
+    {
+      "layout": "table",
+      "content": {
+        "title": "Metricas por equipe",
+        "columns": [
+          "Equipe",
+          "Entregas",
+          "Bugs",
+          "Cobertura"
+        ],
+        "rows": [
+          [
+            "Frontend",
+            "47",
+            "3",
+            "92%"
+          ],
+          [
+            "Backend",
+            "38",
+            "5",
+            "88%"
+          ],
+          [
+            "Dados",
+            "22",
+            "1",
+            "95%"
+          ],
+          [
+            "Mobile",
+            "31",
+            "7",
+            "81%"
+          ]
+        ]
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "KPIs",
+        "subtitle": "KPI grid, gauge, scorecard"
+      }
+    },
+    {
+      "layout": "kpi",
+      "content": {
+        "title": "Trimestre",
+        "columns": 4,
+        "items": [
+          {
+            "value": "R$ 2,4M",
+            "label": "Receita",
+            "note": "+34%"
+          },
+          {
+            "value": "94%",
+            "label": "Retencao",
+            "note": "Meta 90%"
+          },
+          {
+            "value": "78",
+            "label": "NPS",
+            "note": "Excelente"
+          },
+          {
+            "value": "1,2%",
+            "label": "Churn",
+            "note": "-0,3pp"
+          }
+        ]
+      }
+    },
+    {
+      "layout": "kpi",
+      "content": {
+        "title": "Projeto",
+        "columns": 3,
+        "items": [
+          {
+            "value": "87%",
+            "label": "Progresso",
+            "note": "30 dias"
+          },
+          {
+            "value": "12",
+            "label": "Sprints",
+            "note": "3 restantes"
+          },
+          {
+            "value": "98%",
+            "label": "Cobertura",
+            "note": "Testes"
+          }
+        ]
+      }
+    },
+    {
+      "layout": "kpi",
+      "content": {
+        "title": "Destaque",
+        "columns": 1,
+        "items": [
+          {
+            "value": "R$ 12,5M",
+            "label": "Run rate",
+            "note": "Projecao YTD"
+          }
+        ]
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Graficos",
+        "subtitle": "Bar, line, doughnut, pie"
       }
     },
     {
       "layout": "chart",
       "content": {
-        "title": "Vendas por mês (barras)",
+        "title": "Barras 12 meses",
         "chart": {
           "variant": "bar",
-          "labels": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+          "labels": [
+            "Jan",
+            "Fev",
+            "Mar",
+            "Abr",
+            "Mai",
+            "Jun",
+            "Jul",
+            "Ago",
+            "Set",
+            "Out",
+            "Nov",
+            "Dez"
+          ],
           "datasets": [
             {
               "label": "2025",
-              "data": [12, 19, 15, 22, 28, 24, 30, 26, 21, 18, 25, 31]
+              "data": [
+                12,
+                19,
+                15,
+                22,
+                28,
+                24,
+                30,
+                26,
+                21,
+                18,
+                25,
+                31
+              ]
             },
             {
               "label": "2026",
-              "data": [18, 25, 22, 28, 35, 32, 38, 34, 29, 26, 33, 40]
+              "data": [
+                18,
+                25,
+                22,
+                28,
+                35,
+                32,
+                38,
+                34,
+                29,
+                26,
+                33,
+                40
+              ]
             }
           ]
         }
@@ -70,14 +330,32 @@
     {
       "layout": "chart",
       "content": {
-        "title": "Tendência de crescimento (linha)",
+        "title": "Linha tendencia",
         "chart": {
           "variant": "line",
-          "labels": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+          "labels": [
+            "Jan",
+            "Fev",
+            "Mar",
+            "Abr",
+            "Mai",
+            "Jun",
+            "Jul",
+            "Ago"
+          ],
           "datasets": [
             {
-              "label": "Receita (R$ mil)",
-              "data": [45, 52, 58, 63, 71, 78],
+              "label": "Receita",
+              "data": [
+                45,
+                52,
+                58,
+                63,
+                71,
+                78,
+                84,
+                92
+              ],
               "fill": true
             }
           ]
@@ -87,14 +365,24 @@
     {
       "layout": "chart",
       "content": {
-        "title": "Distribuição de mercado (rosca)",
+        "title": "Rosca mercado",
         "chart": {
           "variant": "doughnut",
-          "labels": ["Produto A", "Produto B", "Produto C", "Produto D"],
+          "labels": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
           "datasets": [
             {
-              "label": "Market share",
-              "data": [35, 28, 22, 15]
+              "label": "Share",
+              "data": [
+                35,
+                28,
+                22,
+                15
+              ]
             }
           ]
         }
@@ -103,14 +391,26 @@
     {
       "layout": "chart",
       "content": {
-        "title": "Orçamento por área (pizza)",
+        "title": "Pizza orcamento",
         "chart": {
           "variant": "pie",
-          "labels": ["Engenharia", "Marketing", "Vendas", "Operações", "RH"],
+          "labels": [
+            "Eng",
+            "Mkt",
+            "Vendas",
+            "Ops",
+            "RH"
+          ],
           "datasets": [
             {
-              "label": "Orçamento",
-              "data": [40, 25, 18, 12, 5]
+              "label": "Orcamento",
+              "data": [
+                40,
+                25,
+                18,
+                12,
+                5
+              ]
             }
           ]
         }
@@ -119,30 +419,28 @@
     {
       "layout": "section",
       "content": {
-        "title": "Layouts de colunas",
-        "subtitle": "Two-columns com proporções variáveis"
+        "title": "Colunas",
+        "subtitle": "50/50, 60/40, 40/60"
       }
     },
     {
       "layout": "two-columns",
       "content": {
-        "title": "50/50 — Comparação simétrica",
+        "title": "50/50",
         "left": {
-          "title": "Abordagem atual",
+          "title": "Antes",
           "items": [
-            "Processo manual",
-            "3 dias de análise",
-            "Taxa de erro: 12%",
-            "Custo médio: R$ 4.500"
+            "Manual",
+            "3 dias",
+            "Erro 12%"
           ]
         },
         "right": {
-          "title": "Nova abordagem",
+          "title": "Depois",
           "items": [
-            "Automatizado com IA",
-            "2 horas de análise",
-            "Taxa de erro: 2%",
-            "Custo médio: R$ 800"
+            "IA",
+            "2 horas",
+            "Erro 2%"
           ]
         },
         "ratio": "50/50"
@@ -151,18 +449,17 @@
     {
       "layout": "two-columns",
       "content": {
-        "title": "60/40 — Conteúdo + dados",
+        "title": "60/40",
         "left": {
-          "title": "Resumo executivo",
-          "text": "O projeto superou as metas do trimestre com crescimento de 34% em receita recorrente. A expansão para o mercado LATAM foi o principal motor, representando 58% do novo negócio."
+          "title": "Resumo",
+          "text": "Projeto superou metas."
         },
         "right": {
-          "title": "Métricas-chave",
+          "title": "Metricas",
           "items": [
-            "Ticket médio: R$ 2.450",
-            "NPS: 78",
-            "Churn: 1,2%",
-            "Retenção: 94%"
+            "Ticket 2.450",
+            "NPS 78",
+            "Churn 1,2%"
           ]
         },
         "ratio": "60/40"
@@ -171,18 +468,17 @@
     {
       "layout": "two-columns",
       "content": {
-        "title": "40/60 — Dados + contexto",
+        "title": "40/60",
         "left": {
           "items": [
-            "Q1: R$ 1,2M",
-            "Q2: R$ 1,8M",
-            "Q3: R$ 2,3M",
-            "Q4: R$ 2,9M (projetado)"
+            "Q1: 1,2M",
+            "Q2: 1,8M",
+            "Q3: 2,3M"
           ]
         },
         "right": {
-          "title": "Crescimento anual",
-          "text": "A receita cresceu 140% em relação ao ano anterior, impulsionada pelas novas parcerias com distribuidores na América Latina. A projeção para o próximo ano é de R$ 12M."
+          "title": "Analise",
+          "text": "Crescimento 140% a/a."
         },
         "ratio": "40/60"
       }
@@ -190,32 +486,211 @@
     {
       "layout": "section",
       "content": {
-        "title": "Imagens e mídia",
-        "subtitle": "Full-bleed com legenda opcional"
+        "title": "Componentes",
+        "subtitle": "40+ tipos dos relatorios"
       }
     },
     {
       "layout": "bullets",
       "content": {
-        "title": "Agenda daqui para frente",
+        "title": "Midia e arquivos",
         "columns": 2,
         "items": [
-          "Revisar roadmap Q3",
-          "Definir metas 2027",
-          "Onboarding novo time",
-          "Auditoria de segurança",
-          "Benchmark concorrência",
-          "Workshop de inovação",
-          "Pesquisa satisfação",
-          "Plano de capacitação"
+          "image",
+          "gallery",
+          "before-after",
+          "video",
+          "embed",
+          "file-attachment",
+          "mermaid"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Analise e dados",
+        "columns": 2,
+        "items": [
+          "variance",
+          "breakdown",
+          "waterfall",
+          "funnel",
+          "heatmap",
+          "matrix",
+          "ranking",
+          "sparkline"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Estrutura",
+        "columns": 2,
+        "items": [
+          "executive-summary",
+          "key-takeaways",
+          "decision",
+          "accordion",
+          "tabs",
+          "references",
+          "drilldown"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Planejamento",
+        "columns": 2,
+        "items": [
+          "timeline",
+          "roadmap",
+          "gantt",
+          "okr",
+          "agenda",
+          "kanban",
+          "countdown"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Gestao e risco",
+        "columns": 2,
+        "items": [
+          "action-items",
+          "recommendations",
+          "blockers",
+          "risk-register",
+          "meeting-notes",
+          "incident-summary",
+          "root-cause",
+          "project-health"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Pessoas e badges",
+        "columns": 2,
+        "items": [
+          "team-list",
+          "status-badge",
+          "priority-badge",
+          "trend-indicator",
+          "health-indicator",
+          "confidence",
+          "freshness"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Calendarios",
+        "columns": 2,
+        "items": [
+          "calendar-month",
+          "calendar-week",
+          "calendar-year",
+          "date-strip"
+        ]
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Score e comparacao",
+        "columns": 2,
+        "items": [
+          "scorecard",
+          "option-cards",
+          "comparison-table",
+          "pros-cons",
+          "swot",
+          "stat-comparison",
+          "dependencies"
         ]
       }
     },
     {
       "layout": "section",
       "content": {
-        "title": "Vamos construir algo incrível?",
-        "subtitle": "Crie seu próprio deck com todos esses componentes"
+        "title": "Imagem",
+        "subtitle": "Image-full com legenda"
+      }
+    },
+    {
+      "layout": "content",
+      "content": {
+        "title": "Image-full",
+        "text": "Imagem ocupa slide inteiro sem padding.",
+        "align": "left"
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Temas",
+        "subtitle": "Cores, fontes, graficos, escala"
+      }
+    },
+    {
+      "layout": "content",
+      "content": {
+        "title": "Personalizacao",
+        "text": "17 cores, 8 fontes, 3 estilos de grafico.",
+        "align": "left"
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Atalhos",
+        "columns": 2,
+        "items": [
+          "Direita/Espaco: prox",
+          "Esquerda: ant",
+          "Esc: detalhes",
+          "N: notas",
+          "G: miniaturas",
+          "F: tela cheia"
+        ]
+      }
+    },
+    {
+      "layout": "kpi",
+      "content": {
+        "title": "Resumo",
+        "columns": 3,
+        "items": [
+          {
+            "value": "10",
+            "label": "Layouts",
+            "note": "title a kpi"
+          },
+          {
+            "value": "40+",
+            "label": "Componentes",
+            "note": "catalogados"
+          },
+          {
+            "value": "42",
+            "label": "Slides",
+            "note": "neste exemplo"
+          }
+        ]
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Crie o seu",
+        "subtitle": "JSON + API + tela cheia"
       }
     }
   ]
