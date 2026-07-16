@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home.jsx'
 import ReportPage from './pages/ReportPage.jsx'
+import SharedReport from './pages/SharedReport.jsx'
 import Login from './pages/Login.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
@@ -22,6 +23,7 @@ export default function App() {
           <AppMenu />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/shared/:token" element={<SharedReport />} />
             <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
             <Route path="/report/:id" element={<RequireAuth><ReportPage /></RequireAuth>} />
             <Route

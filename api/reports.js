@@ -11,10 +11,13 @@ const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 function parseRoute(req) {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`)
   const path = url.pathname.replace(/\/+$/, '')
-  const match = path.match(/^\/api\/reports(?:\/([^/]+))?$/)
+  const slugMatch = path.match(/^\/api\/reports(?:\/([^/]+))?$/)
+  const shareMatch = path.match(/^\/api\/reports\/([^/]+)\/share$/)
   return {
-    slug: match?.[1] ? decodeURIComponent(match[1]) : null,
+    slug: slugMatch?.[1] ? decodeURIComponent(slugMatch[1]) : null,
+    share: shareMatch?.[1] ? decodeURIComponent(shareMatch[1]) : null,
     admin: url.searchParams.get('admin') === '1',
+    shared: url.searchParams.get('shared') === '1',
   }
 }
 
@@ -22,15 +25,19 @@ export default async function handler(req, res) {
   if (handleOptions(req, res)) return
 
   try {
+    const db = getPool()
+    const { slug, admin, shared, share } = parseRoute(req)
+
+    // Links compartilhados (?shared=1) no GET individual nao exigem login
+    const isPublicRequest = req.method === 'GET' && slug && shared
+
     const user = await getSessionUser(req)
-    if (!user) {
+    if (!user && !isPublicRequest) {
       sendJson(res, 401, { error: 'Not authenticated' })
       return
     }
 
-    const db = getPool()
-    const { slug, admin } = parseRoute(req)
-    const isAdminRequest = admin && requirePermission(user, 'reports.manage')
+    const isAdminRequest = admin && user && requirePermission(user, 'reports.manage')
 
     if (req.method === 'GET' && !slug) {
       // Lista: modo admin (reports.manage + ?admin=1) devolve tudo, sem filtro de
@@ -100,8 +107,9 @@ export default async function handler(req, res) {
 
       // 404 (não 403) tanto pra relatório inexistente quanto pra sem permissão —
       // não vaza se o relatório existe mas está fora do alcance do usuário. Modo
-      // admin ignora a visibilidade por grupo (precisa poder editar qualquer um).
-      if (!report || (!isAdminRequest && !canViewReport(user, report.group_ids))) {
+      // admin ignora a visibilidade por grupo. Modo shared permite acesso publico
+      // ao relatorio individual (sem groupIds).
+      if (!report || (!isAdminRequest && !shared && !canViewReport(user, report.group_ids))) {
         sendJson(res, 404, { error: 'Report not found' })
         return
       }
@@ -120,6 +128,16 @@ export default async function handler(req, res) {
     // Escrita: sempre exige reports.manage.
     if (!requirePermission(user, 'reports.manage')) {
       sendJson(res, 403, { error: 'Sem permissão' })
+      return
+    }
+
+    // POST /api/reports/:slug/share -> gera token de compartilhamento
+    if (req.method === 'POST' && share) {
+      const { rows } = await db.query(
+        'INSERT INTO share_tokens (report_slug) VALUES ($1) RETURNING token',
+        [share],
+      )
+      sendJson(res, 201, { token: rows[0].token })
       return
     }
 

@@ -5,6 +5,8 @@ import { useClickOutside } from '../lib/useClickOutside.js'
 export default function ShareButton({ reportId }) {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [generating, setGenerating] = useState(false)
+  const [shareUrl, setShareUrl] = useState(null)
   const wrapRef = useRef(null)
 
   useEffect(() => {
@@ -15,36 +17,46 @@ export default function ShareButton({ reportId }) {
 
   useClickOutside(wrapRef, open, () => setOpen(false))
 
-  const link = `${window.location.origin}/report/${reportId}?shared=1`
-
-  const share = async () => {
+  const generateAndCopy = async () => {
+    setGenerating(true)
     try {
-      if (navigator.share) {
-        await navigator.share({ title: document.title, url: link })
-      } else {
-        await navigator.clipboard.writeText(link)
-        setCopied(true)
-      }
-      setOpen(false)
-    } catch (error) {
-      if (error?.name === 'AbortError') return
+      // Gera token de compartilhamento via API
+      const res = await fetch(`/api/reports/${reportId}/share`, { method: 'POST' })
+      if (!res.ok) throw new Error('Falha ao gerar link')
+      const data = await res.json()
+      const url = `${window.location.origin}/shared/${data.token}`
+      setShareUrl(url)
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+    } catch {
+      // Fallback: copia link do proprio relatorio
+      const url = `${window.location.origin}/report/${reportId}`
+      setShareUrl(url)
       try {
-        await navigator.clipboard.writeText(link)
+        await navigator.clipboard.writeText(url)
         setCopied(true)
-      } catch {
-        setOpen(true)
-      }
+      } catch {}
+    } finally {
+      setGenerating(false)
+      setOpen(false)
     }
   }
 
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(link)
-      setCopied(true)
-      setOpen(false)
-    } catch {
-      setOpen(true)
+  const copyLink = async () => {
+    if (!shareUrl) {
+      try {
+        const res = await fetch(`/api/reports/${reportId}/share`, { method: 'POST' })
+        if (!res.ok) throw new Error()
+        const data = await res.json()
+        setShareUrl(`${window.location.origin}/shared/${data.token}`)
+      } catch {}
     }
+    const url = shareUrl || `${window.location.origin}/report/${reportId}`
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+    } catch {}
+    setOpen(false)
   }
 
   const print = () => {
@@ -72,19 +84,19 @@ export default function ShareButton({ reportId }) {
       </button>
       {open && (
         <div className="report-share-menu" role="menu">
-          <button type="button" className="report-share-option" role="menuitem" onClick={share}>
+          <button type="button" className="report-share-option" role="menuitem" onClick={generateAndCopy} disabled={generating}>
             <span className="report-share-option-icon" aria-hidden="true"><ArrowUpRight size={16} /></span>
-            <span><strong>Compartilhar relatório</strong><small>Enviar o link desta página</small></span>
+            <span><strong>Compartilhar relatório</strong><small>{generating ? 'Gerando link...' : 'Criar link seguro e copiar'}</small></span>
           </button>
-          <button type="button" className="report-share-option" role="menuitem" onClick={copy}>
+          <button type="button" className="report-share-option" role="menuitem" onClick={copyLink}>
             <span className="report-share-option-icon" aria-hidden="true"><Copy size={16} /></span>
-            <span><strong>Copiar link</strong><small>Copiar para a área de transferência</small></span>
+            <span><strong>Copiar link</strong><small>Copiar link compartilhável</small></span>
           </button>
           <button type="button" className="report-share-option" role="menuitem" onClick={print}>
             <span className="report-share-option-icon" aria-hidden="true"><Printer size={16} /></span>
             <span><strong>Imprimir ou salvar PDF</strong><small>Abrir as opções de impressão</small></span>
           </button>
-          <p className="report-share-hint">O link compartilhado abre somente este relatório.</p>
+          <p className="report-share-hint">O link compartilhado usa um token unico e seguro.</p>
         </div>
       )}
     </div>
