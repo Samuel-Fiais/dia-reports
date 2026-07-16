@@ -104,7 +104,7 @@ export default function SlideViewer() {
     function handleKey(e) {
       if (e.key === 'ArrowLeft') goPrev()
       else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goNext() }
-      else if (e.key === 'Escape') navigate('/slides')
+      else if (e.key === 'Escape') navigate(`/slides/${id}/view`)
       else if (e.key === 'n' || e.key === 'N') setShowNotes((v) => !v)
       else if (e.key === 'g' || e.key === 'G') setShowThumbnails((v) => !v)
       else if (e.key === 'Home') goTo(0)
@@ -118,21 +118,19 @@ export default function SlideViewer() {
     function handleFullscreenChange() {
       const active = Boolean(document.fullscreenElement)
       setIsFullscreen(active)
-      if (active) {
-        hasEnteredFullscreenRef.current = true
-      } else if (hasEnteredFullscreenRef.current) {
-        navigate('/slides')
+      if (!active && hasEnteredFullscreenRef.current) {
+        // User pressed Esc — go back to viewer page instead of list
+        hasEnteredFullscreenRef.current = false
       }
     }
 
     document.addEventListener('fullscreenchange', handleFullscreenChange)
-    requestFullscreen()
 
     return () => {
       document.removeEventListener('fullscreenchange', handleFullscreenChange)
       if (document.fullscreenElement) document.exitFullscreen()
     }
-  }, [navigate, requestFullscreen])
+  }, [navigate])
 
   useEffect(() => {
     const activeThumb = thumbnailStripRef.current?.querySelector(`[data-slide-thumb="${currentSlide}"]`)
@@ -294,10 +292,10 @@ export default function SlideViewer() {
               <button
                 type="button"
                 className="slide-exit-btn"
-                onClick={() => navigate('/slides')}
+                onClick={() => navigate(`/slides/${id}/view`)}
               >
                 <X size={13} />
-                Sair
+                Voltar
               </button>
             </div>
           </div>

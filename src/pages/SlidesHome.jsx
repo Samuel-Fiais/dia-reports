@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { ArrowRight, Plus, Presentation, Printer, Search, X } from 'lucide-react'
+import { Printer, Search, X } from 'lucide-react'
 import { fetchDecks } from '../lib/slidesClient.js'
 import { formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
@@ -50,10 +50,7 @@ export default function SlidesHome() {
           <span className="report-date">{formatShortDate(new Date().toISOString())}</span>
         </header>
 
-        <h1 className="report-headline">
-          <Presentation size={24} style={{ marginRight: 10, verticalAlign: 'middle', opacity: 0.7 }} />
-          Apresentações
-        </h1>
+        <h1 className="report-headline">Apresentações</h1>
 
         <div className="report-intro">
           <p>
@@ -62,7 +59,7 @@ export default function SlidesHome() {
                 ? 'Carregando seus decks.'
                 : `${visibleDecks.length} ${visibleDecks.length === 1 ? 'deck' : 'decks'} disponíveis.`}
             </strong>{' '}
-            Crie, edite e apresente slides diretamente do Dia.
+            Crie decks via JSON em <code>/admin/slides</code> e apresente direto do navegador.
           </p>
         </div>
 
@@ -83,9 +80,6 @@ export default function SlidesHome() {
                 </button>
               )}
             </div>
-            <Link to="/admin/slides" className="admin-new-btn" style={{ whiteSpace: 'nowrap' }}>
-              <Plus size={14} aria-hidden="true" /> Novo deck
-            </Link>
           </div>
         )}
 
@@ -102,11 +96,11 @@ export default function SlidesHome() {
               )}
               {!loading && error && (
                 <p className="report-card-empty">
-                  Não foi possível carregar os decks agora. Tente de novo em instantes.
+                  Não foi possível carregar os decks agora.
                 </p>
               )}
               {!loading && !error && visibleDecks.map((deck) => (
-                <Link key={deck.id} to={`/slides/${deck.id}`} className="report-card">
+                <Link key={deck.id} to={`/slides/${deck.id}/view`} className="report-card">
                   <div className="report-card-meta">
                     <span className="report-card-from">{formatUpdatedAgo(deck.updatedAt ?? deck.date)}</span>
                     <span className="report-card-date">{formatShortDate(deck.updatedAt ?? deck.date)}</span>
@@ -116,9 +110,7 @@ export default function SlidesHome() {
                     <p className="report-card-desc">{deck.slidesCount} {deck.slidesCount === 1 ? 'slide' : 'slides'}</p>
                   )}
                   <div className="report-card-foot">
-                    <span className="report-card-open">
-                      Apresentar <ArrowRight size={13} aria-hidden="true" />
-                    </span>
+                    <span className="report-card-open">Abrir</span>
                     <button
                       type="button"
                       className="report-card-pdf-btn"
@@ -136,15 +128,10 @@ export default function SlidesHome() {
                 </Link>
               ))}
               {!loading && !error && decks.length > 0 && visibleDecks.length === 0 && (
-                <p className="report-card-empty">
-                  Nenhum deck encontrado com esse termo.
-                </p>
+                <p className="report-card-empty">Nenhum deck encontrado com esse termo.</p>
               )}
               {!loading && !error && decks.length === 0 && (
-                <p className="report-card-empty">
-                  Nenhum deck ainda.{' '}
-                  <Link to="/admin/slides">Crie o primeiro.</Link>
-                </p>
+                <p className="report-card-empty">Nenhum deck ainda.</p>
               )}
             </div>
           </section>
