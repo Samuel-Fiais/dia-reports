@@ -1,0 +1,222 @@
+{
+  "title": "Recursos do Dia Slides",
+  "theme": { "colorIndex": 3, "fontIndex": 0, "transition": "fade" },
+  "slides": [
+    {
+      "layout": "title",
+      "content": {
+        "title": "Recursos do Dia Slides",
+        "subtitle": "Guia completo de layouts, gráficos e componentes",
+        "date": "Julho de 2026"
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "O que veremos",
+        "items": [
+          "Todos os 7 layouts disponíveis",
+          "Gráficos: barras, linhas, rosca e pizza",
+          "Colunas com proporções variáveis",
+          "Imagens full-bleed",
+          "Slides divisores de seção",
+          "Temas com cores e fontes"
+        ]
+      }
+    },
+    {
+      "layout": "content",
+      "content": {
+        "title": "Layout de conteúdo",
+        "text": "O layout 'content' é ideal para parágrafos, explicações e textos corridos. Suporta alinhamento à esquerda (padrão), centralizado ou à direita. A formatação inline funciona com **negrito**, *itálico* e `código`.",
+        "align": "left"
+      }
+    },
+    {
+      "layout": "content",
+      "content": {
+        "title": "Texto centralizado",
+        "text": "Perfeito para citações, destaques ou mensagens importantes que merecem atenção central.",
+        "align": "center"
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Gráficos",
+        "subtitle": "Visualização de dados com Chart.js"
+      }
+    },
+    {
+      "layout": "chart",
+      "content": {
+        "title": "Vendas por mês (barras)",
+        "chart": {
+          "variant": "bar",
+          "labels": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"],
+          "datasets": [
+            {
+              "label": "2025",
+              "data": [12, 19, 15, 22, 28, 24, 30, 26, 21, 18, 25, 31]
+            },
+            {
+              "label": "2026",
+              "data": [18, 25, 22, 28, 35, 32, 38, 34, 29, 26, 33, 40]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "layout": "chart",
+      "content": {
+        "title": "Tendência de crescimento (linha)",
+        "chart": {
+          "variant": "line",
+          "labels": ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun"],
+          "datasets": [
+            {
+              "label": "Receita (R$ mil)",
+              "data": [45, 52, 58, 63, 71, 78],
+              "fill": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "layout": "chart",
+      "content": {
+        "title": "Distribuição de mercado (rosca)",
+        "chart": {
+          "variant": "doughnut",
+          "labels": ["Produto A", "Produto B", "Produto C", "Produto D"],
+          "datasets": [
+            {
+              "label": "Market share",
+              "data": [35, 28, 22, 15]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "layout": "chart",
+      "content": {
+        "title": "Orçamento por área (pizza)",
+        "chart": {
+          "variant": "pie",
+          "labels": ["Engenharia", "Marketing", "Vendas", "Operações", "RH"],
+          "datasets": [
+            {
+              "label": "Orçamento",
+              "data": [40, 25, 18, 12, 5]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Layouts de colunas",
+        "subtitle": "Two-columns com proporções variáveis"
+      }
+    },
+    {
+      "layout": "two-columns",
+      "content": {
+        "title": "50/50 — Comparação simétrica",
+        "left": {
+          "title": "Abordagem atual",
+          "items": [
+            "Processo manual",
+            "3 dias de análise",
+            "Taxa de erro: 12%",
+            "Custo médio: R$ 4.500"
+          ]
+        },
+        "right": {
+          "title": "Nova abordagem",
+          "items": [
+            "Automatizado com IA",
+            "2 horas de análise",
+            "Taxa de erro: 2%",
+            "Custo médio: R$ 800"
+          ]
+        },
+        "ratio": "50/50"
+      }
+    },
+    {
+      "layout": "two-columns",
+      "content": {
+        "title": "60/40 — Conteúdo + dados",
+        "left": {
+          "title": "Resumo executivo",
+          "text": "O projeto superou as metas do trimestre com crescimento de 34% em receita recorrente. A expansão para o mercado LATAM foi o principal motor, representando 58% do novo negócio."
+        },
+        "right": {
+          "title": "Métricas-chave",
+          "items": [
+            "Ticket médio: R$ 2.450",
+            "NPS: 78",
+            "Churn: 1,2%",
+            "Retenção: 94%"
+          ]
+        },
+        "ratio": "60/40"
+      }
+    },
+    {
+      "layout": "two-columns",
+      "content": {
+        "title": "40/60 — Dados + contexto",
+        "left": {
+          "items": [
+            "Q1: R$ 1,2M",
+            "Q2: R$ 1,8M",
+            "Q3: R$ 2,3M",
+            "Q4: R$ 2,9M (projetado)"
+          ]
+        },
+        "right": {
+          "title": "Crescimento anual",
+          "text": "A receita cresceu 140% em relação ao ano anterior, impulsionada pelas novas parcerias com distribuidores na América Latina. A projeção para o próximo ano é de R$ 12M."
+        },
+        "ratio": "40/60"
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Imagens e mídia",
+        "subtitle": "Full-bleed com legenda opcional"
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Agenda daqui para frente",
+        "columns": 2,
+        "items": [
+          "Revisar roadmap Q3",
+          "Definir metas 2027",
+          "Onboarding novo time",
+          "Auditoria de segurança",
+          "Benchmark concorrência",
+          "Workshop de inovação",
+          "Pesquisa satisfação",
+          "Plano de capacitação"
+        ]
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Vamos construir algo incrível?",
+        "subtitle": "Crie seu próprio deck com todos esses componentes"
+      }
+    }
+  ]
+}
