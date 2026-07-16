@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { FolderKanban, Home, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
+import { FolderKanban, Home, LogOut, Menu, Presentation, Settings, ShieldCheck, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import SettingsModal from './SettingsModal.jsx'
@@ -18,7 +18,11 @@ const MENU_ITEMS = [
   { type: 'link', key: 'users', label: 'Usuários', icon: User, to: '/admin/users', permission: 'users.manage' },
   // Editor visual removido — relatórios são gerenciados via JSON direto no ReportsAdmin
   // { key: 'reports-admin', label: 'Editor de relatórios', icon: FileEdit, to: '/admin/reports', permission: 'reports.manage' },
+  { type: 'link', key: 'reports-admin', label: 'Gerenciar relatórios', icon: Settings, to: '/admin/reports', permission: 'reports.manage' },
   { type: 'separator' },
+  { type: 'label', key: 'slides-label', label: 'Apresentações' },
+  { type: 'link', key: 'slides', label: 'Apresentações', icon: Presentation, to: '/slides' },
+  { type: 'link', key: 'slides-admin', label: 'Gerenciar slides', icon: Settings, to: '/admin/slides', permission: 'reports.manage' },
 ]
 
 function hasPermission(user, permission) {

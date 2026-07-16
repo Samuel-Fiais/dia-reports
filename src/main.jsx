@@ -12,6 +12,7 @@ import '@fontsource/inter/800.css'
 import '@fontsource/jetbrains-mono/400.css'
 
 import './styles/dia.css'
+import './styles/slides.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

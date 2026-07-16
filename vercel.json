@@ -7,6 +7,7 @@
     { "source": "/api/users/:path*", "destination": "/api/users" },
     { "source": "/api/shared/:path*", "destination": "/api/shared" },
     { "source": "/api/ai/:path*", "destination": "/api/ai" },
+    { "source": "/api/slides/:path*", "destination": "/api/slides" },
     { "source": "/((?!api/|@)(?!.*\\.[a-zA-Z0-9]+$).*)", "destination": "/index.html" }
   ]
 }
