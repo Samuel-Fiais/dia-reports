@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { Braces, Download } from 'lucide-react'
 import { useAppChromeTheme } from '../../lib/useAppChromeTheme.js'
 import { fetchJson, jsonBody } from '../../lib/api.js'
@@ -31,7 +30,6 @@ function downloadJson(filename, data) {
 
 export default function ReportsAdmin() {
   useAppChromeTheme('Relatórios (admin)')
-  const navigate = useNavigate()
 
   const [reports, setReports] = useState([])
   const [groups, setGroups] = useState([])
@@ -103,9 +101,10 @@ export default function ReportsAdmin() {
     setFormError(null)
   }
 
-  const openCreate = () => {
-    navigate('/admin/reports/new/edit')
-  }
+  /* Editor visual removido — criar/editar relatórios via JSON direto */
+  // const openCreate = () => {
+  //   navigate('/admin/reports/new/edit')
+  // }
 
   const openJsonEdit = async (report) => {
     resetForm()
@@ -186,10 +185,10 @@ export default function ReportsAdmin() {
   return (
     <AdminPage
       title="Relatórios"
-      description="Crie e edite relatórios visualmente por blocos. O JSON completo continua disponível para importação, exportação e ajustes avançados."
+      description="Gerencie relatórios via JSON — importação, exportação, grupos e ajustes avançados."
       sectionHeading="Todos os relatórios"
-      newLabel="Novo relatório"
-      onNew={openCreate}
+      // newLabel="Novo relatório"
+      // onNew={openCreate}
     >
       <AdminStatus
         loading={loading}
@@ -224,7 +223,6 @@ export default function ReportsAdmin() {
                     <Braces size={14} />
                   </button>
                   <ActionButtons
-                    onEdit={() => navigate(`/admin/reports/${report.slug}/edit`)}
                     onDelete={() => {
                       setDeleteError(null)
                       setDeleteTarget(report)

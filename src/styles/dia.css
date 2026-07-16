@@ -2733,6 +2733,21 @@ blockquote.report-blockquote-break footer {
   color: var(--ink-muted);
 }
 
+.app-menu-separator {
+  height: 1px;
+  margin: 0.3rem 0.5rem;
+  background: var(--hairline);
+}
+
+.app-menu-label {
+  padding: 0.5rem 0.7rem 0.2rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-muted);
+}
+
 /* ── Novos componentes ────────────────────────────────────────── */
 
 /* To-do */

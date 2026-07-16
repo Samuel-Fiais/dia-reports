@@ -1,19 +1,24 @@
 import { useRef, useState } from 'react'
 import { Link, useLocation, useSearchParams } from 'react-router-dom'
-import { FileEdit, FolderKanban, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
+import { FolderKanban, Home, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import SettingsModal from './SettingsModal.jsx'
 
-// Itens declarativos: cada plano (grupos, perfis, usuários, editor de relatórios)
-// acrescenta uma entrada aqui em vez de mexer na lógica do menu. `permission`
-// ausente = sempre visível pra qualquer logado; presente = só aparece se
-// user.permissions['*'] ou user.permissions[permission] for true.
+// Cada entrada pode ter `type`:
+//   'link' (padrão) — item clicável com ícone + label + to
+//   'separator' — linha divisória (ignora label, icon, to, permission)
+//   'label' — texto de seção não clicável (ignora icon, to, permission)
 const MENU_ITEMS = [
-  { key: 'report-groups', label: 'Grupos de relatórios', icon: FolderKanban, to: '/admin/report-groups', permission: 'report_groups.manage' },
-  { key: 'profiles', label: 'Perfis', icon: ShieldCheck, to: '/admin/profiles', permission: 'profiles.manage' },
-  { key: 'users', label: 'Usuários', icon: User, to: '/admin/users', permission: 'users.manage' },
-  { key: 'reports-admin', label: 'Editor de relatórios', icon: FileEdit, to: '/admin/reports', permission: 'reports.manage' },
+  { type: 'link', key: 'home', label: 'Início', icon: Home, to: '/' },
+  { type: 'separator' },
+  { type: 'label', key: 'admin-label', label: 'Administração' },
+  { type: 'link', key: 'report-groups', label: 'Grupos de relatórios', icon: FolderKanban, to: '/admin/report-groups', permission: 'report_groups.manage' },
+  { type: 'link', key: 'profiles', label: 'Perfis', icon: ShieldCheck, to: '/admin/profiles', permission: 'profiles.manage' },
+  { type: 'link', key: 'users', label: 'Usuários', icon: User, to: '/admin/users', permission: 'users.manage' },
+  // Editor visual removido — relatórios são gerenciados via JSON direto no ReportsAdmin
+  // { key: 'reports-admin', label: 'Editor de relatórios', icon: FileEdit, to: '/admin/reports', permission: 'reports.manage' },
+  { type: 'separator' },
 ]
 
 function hasPermission(user, permission) {
@@ -35,9 +40,29 @@ export default function AppMenu() {
   // Link compartilhado público: sem menu de app, só o conteúdo do relatório.
   if (searchParams.get('shared') === '1') return null
   if (!user) return null
-  if (/^\/admin\/reports\/[^/]+\/edit$/.test(location.pathname)) return null
 
   const visibleItems = MENU_ITEMS.filter((item) => hasPermission(user, item.permission))
+
+  function renderItem(item, idx) {
+    if (item.type === 'separator') {
+      return <div key={`sep-${idx}`} className="app-menu-separator" role="separator" />
+    }
+    if (item.type === 'label') {
+      return <div key={item.key} className="app-menu-label">{item.label}</div>
+    }
+    return (
+      <Link
+        key={item.key}
+        to={item.to}
+        className="app-menu-item"
+        role="menuitem"
+        onClick={() => setOpen(false)}
+      >
+        <item.icon size={16} aria-hidden="true" />
+        {item.label}
+      </Link>
+    )
+  }
 
   return (
     <>
@@ -56,18 +81,7 @@ export default function AppMenu() {
               <Settings size={16} aria-hidden="true" />
               Configurações
             </button>
-            {visibleItems.map((item) => (
-              <Link
-                key={item.key}
-                to={item.to}
-                className="app-menu-item"
-                role="menuitem"
-                onClick={() => setOpen(false)}
-              >
-                <item.icon size={16} aria-hidden="true" />
-                {item.label}
-              </Link>
-            ))}
+            {visibleItems.map((item, idx) => renderItem(item, idx))}
             <button
               type="button"
               className="app-menu-item"
