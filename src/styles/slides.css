@@ -672,6 +672,7 @@ body.slide-viewer-active .app-menu {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  width: 100%;
 }
 
 .slide-detail-card {
@@ -679,6 +680,7 @@ body.slide-viewer-active .app-menu {
   border-radius: 8px;
   overflow: hidden;
   background: var(--surface);
+  width: 100%;
 }
 
 .slide-detail-card-header {
