@@ -8,6 +8,9 @@ import ImageSlide from './layouts/ImageSlide.jsx'
 import TableSlide from './layouts/TableSlide.jsx'
 import QuoteSlide from './layouts/QuoteSlide.jsx'
 import KpiSlide from './layouts/KpiSlide.jsx'
+import TimelineSlide from './layouts/TimelineSlide.jsx'
+import ImageTextSlide from './layouts/ImageTextSlide.jsx'
+import NumberedListSlide from './layouts/NumberedListSlide.jsx'
 
 const LAYOUTS = {
   'title': TitleSlide,
@@ -20,6 +23,9 @@ const LAYOUTS = {
   'table': TableSlide,
   'quote': QuoteSlide,
   'kpi': KpiSlide,
+  'timeline': TimelineSlide,
+  'image-text': ImageTextSlide,
+  'numbered-list': NumberedListSlide,
 }
 
 export default function SlideRenderer({ slide, theme, variant = 'viewer', settings }) {

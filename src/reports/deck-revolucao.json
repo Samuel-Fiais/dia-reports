@@ -10,118 +10,124 @@
       "layout": "title",
       "content": {
         "title": "Revolução Francesa",
-        "subtitle": "1789-1799: A queda do Antigo Regime e a ascensão da República",
-        "date": "Material didático - Julho 2026"
+        "subtitle": "1789-1799: a queda do Antigo Regime e a ascensão da República",
+        "date": "Material didático — Julho de 2026"
       }
     },
     {
       "layout": "section",
       "content": {
         "title": "Contexto histórico",
-        "subtitle": "Franca antes de 1789"
+        "subtitle": "A França antes de 1789"
       }
     },
     {
       "layout": "content",
       "content": {
         "title": "O Antigo Regime",
-        "text": "A Franca do seculo 18 era uma monarquia absolutista governada pelo rei Luís XVI. A sociedade estava dividida em tres estados: o clero (Primeiro Estado), a nobreza (Segundo Estado) e o povo (Terceiro Estado). Os dois primeiros estados gozavam de privilégios enquanto o terceiro arcava com todos os impostos.",
+        "text": "A França do século 18 era uma monarquia absolutista governada pelo rei Luís XVI. A sociedade estava dividida em três estados: o clero (Primeiro Estado), a nobreza (Segundo Estado) e o povo (Terceiro Estado). Os dois primeiros estados gozavam de privilégios enquanto o terceiro arcava com todos os impostos.",
         "align": "left"
       }
     },
     {
-      "layout": "content",
+      "layout": "numbered-list",
       "content": {
-        "title": "Crise econômica e social",
-        "text": "A Franca enfrentava uma grave crise financeira devido aos gastos com guerras (incluindo o apoio a independência dos EUA), masas colheitas ruins geraram fome e o preco do pao disparou. O povo passava fome enquanto a nobreza vivia na opulência de Versalhes.",
-        "align": "left"
+        "title": "Causas da Revolução",
+        "columns": 1,
+        "items": [
+          {
+            "text": "Crise financeira: gastos com guerras (incluindo apoio à independência dos EUA) e má administração real",
+            "note": "Dívida equivalente a 4 anos de receita do Estado"
+          },
+          {
+            "text": "Crise agrícola: colheitas ruins em 1788-89 elevaram o preço do pão a níveis recordes",
+            "note": "Preço do pão = 80% da renda de um trabalhador"
+          },
+          {
+            "text": "Desigualdade social: Terceiro Estado (98% da população) pagava todos os impostos, clero e nobreza eram isentos",
+            "note": "Terceiro Estado = 25 milhões de pessoas"
+          },
+          {
+            "text": "Ideias iluministas: filósofos como Rousseau, Voltaire e Montesquieu questionavam o absolutismo",
+            "note": "Liberdade, igualdade e soberania popular"
+          }
+        ]
       }
     },
     {
       "layout": "section",
       "content": {
         "title": "O estopim",
-        "subtitle": "Dos Estados Gerais a Queda da Bastilha"
+        "subtitle": "Dos Estados Gerais à Queda da Bastilha"
       }
     },
     {
-      "layout": "content",
+      "layout": "image-text",
       "content": {
-        "title": "Convocacao dos Estados Gerais",
-        "text": "Em maio de 1789, Luís XIV convocou os Estados Gerais (assembleia dos tres estados) para tentar resolver a crise financeira. O Terceiro Estado exigiu votação por cabeca (cada deputado um voto) em vez de por estado. Negado, eles se retiraram e fundaram a Assembleia Nacional.",
-        "align": "left"
-      }
-    },
-    {
-      "layout": "content",
-      "content": {
-        "title": "Juramento da Sala do Jogo da Pela",
-        "text": "Em 20 de junho de 1789, os deputados do Terceiro Estado se reuniram em uma sala de jogo de pele (tenis) e juraram nao se separar ate que a Franca tivesse uma Constituicao. Foi o primeiro ato revolucionário explícito.",
-        "align": "left"
-      }
-    },
-    {
-      "layout": "image-full",
-      "content": {
+        "title": "A convocação dos Estados Gerais",
         "src": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Jacques_Louis_David_-_Le_serment_du_Jeu_de_Paume_-_Google_Art_Project.jpg",
-        "alt": "Juramento da Sala do Jogo da Pela por Jacques-Louis David",
-        "caption": "O Juramento da Sala do Jogo da Pela (esboço de Jacques-Louis David, 1791)"
+        "alt": "Juramento da Sala do Jogo da Pela",
+        "caption": "Esboço de Jacques-Louis David, 1791",
+        "text": "Em maio de 1789, Luís XVI convocou os Estados Gerais para resolver a crise. O Terceiro Estado exigiu voto por cabeça (cada deputado um voto) em vez de por estado. Negado, eles se retiraram e fundaram a Assembleia Nacional. Em 20 de junho, no Juramento da Sala do Jogo da Pela, juraram não se separar até que a França tivesse uma Constituição.",
+        "side": "left",
+        "ratio": "45/55"
       }
     },
     {
-      "layout": "content",
+      "layout": "image-text",
       "content": {
-        "title": "Queda da Bastilha - 14 de julho de 1789",
-        "text": "O povo de Paris, temendo que o rei dispersasse a Assembleia Nacional, invadiu a Bastilha em busca de armas e pólvora. A prisao-fortaleza, símbolo do absolutismo real, caiu apos horas de combate. Este evento e celebrado ate hoje como o Dia da Franca.",
-        "align": "left"
-      }
-    },
-    {
-      "layout": "image-full",
-      "content": {
+        "title": "14 de julho de 1789 — Queda da Bastilha",
         "src": "https://upload.wikimedia.org/wikipedia/commons/5/57/Anonymous_-_Prise_de_la_Bastille.jpg",
         "alt": "Tomada da Bastilha",
-        "caption": "A Tomada da Bastilha em 14 de julho de 1789"
+        "caption": "Pintura anônima da época",
+        "text": "O povo de Paris, temendo que o rei dispersasse a Assembleia, invadiu a Bastilha em busca de armas e munição. A prisão-fortaleza, símbolo do absolutismo, caiu após horas de combate. Este evento é celebrado até hoje como o Dia da França (14 juillet).",
+        "side": "right",
+        "ratio": "45/55"
       }
     },
     {
       "layout": "section",
       "content": {
-        "title": "A Revolução se radicaliza",
-        "subtitle": "1792-1794"
+        "title": "Linha do tempo",
+        "subtitle": "Os eventos-chave da Revolução"
       }
     },
     {
-      "layout": "bullets",
+      "layout": "timeline",
       "content": {
-        "title": "Acontecimentos-chave (1789-1792)",
-        "columns": 2,
+        "title": "1789-1792: da monarquia à República",
         "items": [
-          "Ago/1789: abolição dos privilégios feudais",
-          "Ago/1789: Declaracao dos Direitos do Homem",
-          "Out/1789: Marcha das mulheres a Versalhes",
-          "Jul/1790: Constituicao Civil do Clero",
-          "Jun/1791: Fuga do rei para Varennes",
-          "Abr/1792: Franca declara guerra a Áustria",
-          "Ago/1792: Queda da monarquia",
-          "Set/1792: Proclamacao da República"
+          {
+            "date": "4 ago 1789",
+            "title": "Noite do 4 de Agosto",
+            "text": "Abolição dos privilégios feudais pela Assembleia Nacional"
+          },
+          {
+            "date": "26 ago 1789",
+            "title": "Declaração dos Direitos",
+            "text": "Declaração dos Direitos do Homem e do Cidadão — marco dos direitos humanos universais"
+          },
+          {
+            "date": "5-6 out 1789",
+            "title": "Marcha das mulheres",
+            "text": "Milhares de mulheres marcham a Versalhes e forçam a família real a voltar a Paris"
+          },
+          {
+            "date": "20 jun 1791",
+            "title": "Fuga para Varennes",
+            "text": "Luís XVI tenta fugir da França mas é reconhecido e capturado"
+          },
+          {
+            "date": "10 ago 1792",
+            "title": "Queda da monarquia",
+            "text": "A insurreição parisiense invade o palácio das Tulherias e suspende o rei"
+          },
+          {
+            "date": "21 set 1792",
+            "title": "Proclamação da República",
+            "text": "A Convenção Nacional abole a monarquia e proclama a República Francesa"
+          }
         ]
-      }
-    },
-    {
-      "layout": "quote",
-      "content": {
-        "text": "Os homens nascem e permanecem livres e iguais em direitos.",
-        "cite": "Declaracao dos Direitos do Homem e do Cidadao",
-        "role": "Artigo 1, 1789"
-      }
-    },
-    {
-      "layout": "image-full",
-      "content": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/La_Libert%C3%A9_guidant_le_peuple_-_Eug%C3%A8ne_Delacroix_-_Mus%C3%A9e_du_Louvre_Peintures_RF_129_-_apr%C3%A8s_restauration_2024.jpg",
-        "alt": "A Liberdade guiando o povo",
-        "caption": "A Liberdade guiando o povo (Eugene Delacroix, 1830) - símbolo da revolucao"
       }
     },
     {
@@ -132,67 +138,49 @@
       }
     },
     {
-      "layout": "content",
+      "layout": "numbered-list",
       "content": {
-        "title": "O Comite de Salvacao Publica",
-        "text": "Sob a lideranca de Maximilien de Robespierre, o Comite de Salvacao Publica governou a Franca com punho de ferro. O Tribunal Revolucionario julgou e executou milhares de suspeitos de traicao na guilhotina, incluindo o rei Luís XVI e a rainha Maria Antonieta.",
-        "align": "left"
-      }
-    },
-    {
-      "layout": "image-full",
-      "content": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Death_of_Marat_by_David.jpg",
-        "alt": "A Morte de Marat",
-        "caption": "A Morte de Marat (Jacques-Louis David, 1793)"
-      }
-    },
-    {
-      "layout": "kpi",
-      "content": {
-        "title": "O Terror em numeros",
-        "columns": 4,
+        "title": "O Comitê de Salvação Pública",
+        "columns": 2,
         "items": [
           {
-            "value": "~17.000",
-            "label": "Executados",
-            "note": "oficialmente"
+            "text": "Criado em abril de 1793 para defender a Revolução"
           },
           {
-            "value": "~40.000",
-            "label": "Vitimas",
-            "note": "incluindo semsumario"
+            "text": "Liderado por Robespierre a partir de julho de 1793"
           },
           {
-            "value": "85%",
-            "label": "Eram",
-            "note": "do Terceiro Estado"
+            "text": "Poderes ditatoriais: controle do exército, tribunais e polícia"
           },
           {
-            "value": "16 meses",
-            "label": "Duracao",
-            "note": "set/1793 a jul/1794"
+            "text": "Lei dos Suspeitos: qualquer opositor podia ser preso e julgado"
+          },
+          {
+            "text": "Guilhotina como instrumento oficial de execução"
+          },
+          {
+            "text": "~17 mil execuções oficiais em 16 meses"
           }
         ]
       }
     },
     {
-      "layout": "bullets",
+      "layout": "image-text",
       "content": {
-        "title": "Principais executados",
-        "items": [
-          "Luís XVI - janeiro de 1793",
-          "Maria Antonieta - outubro de 1793",
-          "Georges Danton - abril de 1794 (revolucionário devorado pela revolucao)",
-          "Maximilien de Robespierre - julho de 1794 (executado no golpe do 9 Termidor)"
-        ]
+        "title": "A Morte de Marat",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Death_of_Marat_by_David.jpg",
+        "alt": "A Morte de Marat",
+        "caption": "Jacques-Louis David, 1793",
+        "text": "Jean-Paul Marat, jornalista e líder jacobino, foi assassinado em seu banho por Charlotte Corday, uma simpatizante girondina. Sua morte radicalizou ainda mais o Terror. A pintura de David se tornou um dos ícones da Revolução.",
+        "side": "left",
+        "ratio": "40/60"
       }
     },
     {
       "layout": "section",
       "content": {
         "title": "Personagens",
-        "subtitle": "Figuras centrais da Revolução"
+        "subtitle": "Figuras centrais"
       }
     },
     {
@@ -202,39 +190,18 @@
         "left": {
           "title": "Jacobinos",
           "items": [
-            "Maximilien Robespierre",
-            "Georges Danton",
-            "Jean-Paul Marat",
-            "Louis Antoine Saint-Just"
+            "Maximilien de Robespierre — líder do Terror",
+            "Georges Danton — fundador do Comitê",
+            "Jean-Paul Marat — jornalista radical",
+            "Louis Antoine Saint-Just — braço direito"
           ]
         },
         "right": {
           "title": "Girondinos",
           "items": [
-            "Jacques Pierre Brissot",
-            "Madame Roland",
-            "Marquis de Condorcet"
-          ]
-        },
-        "ratio": "50/50"
-      }
-    },
-    {
-      "layout": "two-columns",
-      "content": {
-        "title": "Monarquia e contra-revolucao",
-        "left": {
-          "title": "Monarquia",
-          "items": [
-            "Rei Luís XVI",
-            "Rainha Maria Antonieta"
-          ]
-        },
-        "right": {
-          "title": "Oposição",
-          "items": [
-            "Edmund Burke (critico ingles)",
-            "Josefina de Beauharnais (futura imperatriz)"
+            "Jacques Pierre Brissot — líder girondino",
+            "Madame Roland — influente salonnière",
+            "Marquis de Condorcet — filósofo"
           ]
         },
         "ratio": "50/50"
@@ -243,150 +210,30 @@
     {
       "layout": "section",
       "content": {
-        "title": "O Golpe do 9 Termidor",
-        "subtitle": "Fim do Terror e início do Diretório"
+        "title": "O 9 Termidor e o fim do Terror",
+        "subtitle": "27 de julho de 1794"
       }
     },
     {
-      "layout": "content",
+      "layout": "numbered-list",
       "content": {
-        "title": "27 de julho de 1794",
-        "text": "Robespierre foi preso e executado no dia seguinte, encerrando o periodo mais sangrento da Revolução. A Convencao Nacional aprovou uma nova Constituicao mais moderada e estabeleceu o Diretório, um governo de cinco membros.",
-        "align": "left"
-      }
-    },
-    {
-      "layout": "section",
-      "content": {
-        "title": "O Diretório e a ascensão de Napoleão",
-        "subtitle": "1795-1799"
-      }
-    },
-    {
-      "layout": "content",
-      "content": {
-        "title": "Do Diretório ao Consulado",
-        "text": "O Diretório (1795-1799) foi marcado por corrupção e instabilidade. O general Napoleon Bonaparte, apos campanhas vitoriosas na Itália e no Egito, deu um golpe de estado em 9 de novembro de 1799 (18 Brumário), estabelecendo o Consulado e encerrando a Revolução Francesa.",
-        "align": "left"
-      }
-    },
-    {
-      "layout": "section",
-      "content": {
-        "title": "Legado",
-        "subtitle": "O que a Revolução Francesa nos deixou"
-      }
-    },
-    {
-      "layout": "bullets",
-      "content": {
-        "title": "Contribuicoes duradouras",
-        "columns": 2,
-        "items": [
-          "Fim do absolutismo na Franca",
-          "Declaracao Universal dos Direitos Humanos",
-          "Soberania popular e repúblicanismo",
-          "Separacao entre Igreja e Estado",
-          "Sistema metrico decimal",
-          "Bandeira tricolor francesa",
-          "Lema: Liberdade, Igualdade, Fraternidade",
-          "Inspiracao para revolucoes no mundo todo"
-        ]
-      }
-    },
-    {
-      "layout": "quote",
-      "content": {
-        "text": "A Revolução Francesa e o ponto de partida da modernidade politica. Ela inventou a politica como a conhecemos: direita e esquerda, República, cidadania e direitos universais.",
-        "cite": "Eric Hobsbawm",
-        "role": "Historiador"
-      }
-    },
-    {
-      "layout": "section",
-      "content": {
-        "title": "Linha do tempo",
-        "subtitle": "1789-1799"
-      }
-    },
-    {
-      "layout": "table",
-      "content": {
-        "title": "Cronologia resumida",
-        "columns": [
-          "Data",
-          "Evento",
-          "Significado"
-        ],
-        "rows": [
-          [
-            "5 mai 1789",
-            "Estados Gerais",
-            "Inicio da crise politica"
-          ],
-          [
-            "17 jun 1789",
-            "Assembleia Nacional",
-            "Terceiro Estado toma o poder"
-          ],
-          [
-            "14 jul 1789",
-            "Queda da Bastilha",
-            "Revolução popular comeca"
-          ],
-          [
-            "4 ago 1789",
-            "Noite do 4 de Agosto",
-            "Fim dos privilégios feudais"
-          ],
-          [
-            "26 ago 1789",
-            "Declaracao dos Direitos",
-            "Março dos direitos humanos"
-          ],
-          [
-            "21 jan 1793",
-            "Execucao de Luís XVI",
-            "Fim da monarquia"
-          ],
-          [
-            "5 set 1793",
-            "Inicio do Terror",
-            "Radicalizacao revolucionaria"
-          ],
-          [
-            "27 jul 1794",
-            "9 Termidor",
-            "Queda de Robespierre"
-          ],
-          [
-            "9 nov 1799",
-            "18 Brumário",
-            "Golpe de Napoleão, fim da Revolução"
-          ]
-        ]
-      }
-    },
-    {
-      "layout": "kpi",
-      "content": {
-        "title": "A Revolução em numeros",
-        "columns": 3,
+        "title": "Cronologia do golpe",
         "items": [
           {
-            "value": "10 anos",
-            "label": "Duracao",
-            "note": "1789-1799"
+            "text": "Robespierre ameaça novos expurgos dentro da própria Convenção",
+            "note": ""
           },
           {
-            "value": "3",
-            "label": "Constituicoes",
-            "note": "1791, 1793, 1795"
+            "text": "Deputados temendo serem os próximos se unem contra ele"
           },
           {
-            "value": "1 milhao",
-            "label": "Mortos",
-            "note": "guerras revolucionarias incluidas"
+            "text": "Robespierre é preso na Prefeitura de Paris"
+          },
+          {
+            "text": "Executado na guilhotina em 28 de julho sem julgamento"
+          },
+          {
+            "text": "Fim do Terror: 90 execuções por semana caem para 3"
           }
         ]
       }
@@ -394,29 +241,85 @@
     {
       "layout": "section",
       "content": {
-        "title": "Para saber mais",
-        "subtitle": "Leituras complementares"
-      }
-    },
-    {
-      "layout": "bullets",
-      "content": {
-        "title": "Livros e filmes",
-        "items": [
-          "Livro: 'A Revolução Francesa' - Eric Hobsbawm",
-          "Livro: 'Cidadaos' - Simon Schama",
-          "Filme: 'Danton' (1983) - Andrej Wajda",
-          "Filme: 'A Revolução Francesa' (1989) - Robert Enrico",
-          "Documentario: 'A Revolução Francesa em 10 episódios' - BBC"
-        ]
+        "title": "O Diretório e Napoleão",
+        "subtitle": "1795-1799"
       }
     },
     {
       "layout": "content",
       "content": {
-        "title": "Conclusao",
-        "text": "A Revolução Francesa foi um dos eventos mais transformativeis da historia mundial. Em apenas uma decada, derrubou uma monarquia milenar, reinventou a sociedade e plantou as sementes da democracia moderna. Seu lema - Liberdade, Igualdade, Fraternidade - continua sendo um ideal perseguido ate hoje.",
+        "title": "O golpe do 18 Brumário",
+        "text": "O Diretório (1795-1799) foi marcado por corrupção e instabilidade. O general Napoleão Bonaparte, após campanhas vitoriosas na Itália e no Egito, deu um golpe de Estado em 9 de novembro de 1799 (18 Brumário), estabelecendo o Consulado. A Revolução Francesa chegava ao fim.",
         "align": "left"
+      }
+    },
+    {
+      "layout": "section",
+      "content": {
+        "title": "Legado",
+        "subtitle": "Contribuições duradouras"
+      }
+    },
+    {
+      "layout": "bullets",
+      "content": {
+        "title": "Herança da Revolução",
+        "columns": 2,
+        "items": [
+          "Fim do absolutismo na França",
+          "Declaração Universal dos Direitos Humanos",
+          "Soberania popular e republicanismo",
+          "Separação entre Igreja e Estado",
+          "Sistema métrico decimal",
+          "Bandeira tricolor francesa",
+          "Lema: Liberdade, Igualdade, Fraternidade",
+          "Inspiração para revoluções no mundo todo"
+        ]
+      }
+    },
+    {
+      "layout": "image-text",
+      "content": {
+        "title": "A Liberdade guiando o povo",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/La_Libert%C3%A9_guidant_le_peuple_-_Eug%C3%A8ne_Delacroix_-_Mus%C3%A9e_du_Louvre_Peintures_RF_129_-_apr%C3%A8s_restauration_2024.jpg",
+        "alt": "A Liberdade guiando o povo",
+        "caption": "Eugène Delacroix, 1830 — símbolo da Revolução Francesa",
+        "text": "A pintura de Delacroix, embora retrate a Revolução de 1830, tornou-se o símbolo universal do ideal revolucionário francês. A figura central — a Liberdade — empunha a bandeira tricolor e conduz o povo sobre as barricadas. Marianne, a personificação da República, representa os valores que a Revolução de 1789 inaugurou.",
+        "side": "right",
+        "ratio": "50/50"
+      }
+    },
+    {
+      "layout": "timeline",
+      "content": {
+        "title": "O legado no tempo",
+        "items": [
+          {
+            "date": "1789",
+            "title": "Declaração dos Direitos",
+            "text": "Inspirou a Declaração Universal da ONU (1948)"
+          },
+          {
+            "date": "1791",
+            "title": "Primeira Constituição",
+            "text": "Estabeleceu a separação dos poderes"
+          },
+          {
+            "date": "1793",
+            "title": "Abolição da escravatura",
+            "text": "Primeira abolição colonial (revogada em 1802)"
+          },
+          {
+            "date": "1795",
+            "title": "Sistema métrico",
+            "text": "Adotado por quase todos os países do mundo"
+          },
+          {
+            "date": "1804",
+            "title": "Código Napoleônico",
+            "text": "Base dos sistemas legais de dezenas de países"
+          }
+        ]
       }
     },
     {
