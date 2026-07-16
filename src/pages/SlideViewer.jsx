@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Grid3X3, Maximize2, Minimize2, Printer, X } from 'lucide-react'
 import { getDeck } from '../lib/slidesClient.js'
+import { useAppTheme } from '../context/ThemeContext.jsx'
 import SlideRenderer from '../components/slides/SlideRenderer.jsx'
 
 function getSlidePreview(slide, index) {
@@ -16,6 +17,8 @@ export default function SlideViewer() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const isExport = searchParams.get('export') === '1'
+  const { appTheme } = useAppTheme()
+  const variant = appTheme === 'dark' ? 'viewer' : 'detail'
   const [deck, setDeck] = useState(null)
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -199,9 +202,10 @@ export default function SlideViewer() {
   const currentSlideData = slides[currentSlide]
 
   return (
-    <div className="slide-viewer-shell" ref={wrapRef} tabIndex={-1}>
+    <div className="slide-viewer-shell" ref={wrapRef} tabIndex={-1} style={{ background: variant === 'detail' ? '#faf9f5' : '#111' }}>
       <div
         className="slide-viewer"
+        style={{ background: variant === 'detail' ? '#fff' : '#1a1a1a' }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -218,7 +222,7 @@ export default function SlideViewer() {
               data-transition={theme.transition ?? 'fade'}
               aria-hidden={i !== currentSlide}
             >
-              <SlideRenderer slide={slide} theme={theme} />
+              <SlideRenderer slide={slide} theme={theme} variant={variant} />
             </div>
           ))}
 
