@@ -102,7 +102,7 @@
       "layout": "section",
       "content": {
         "title": "Tabelas",
-        "subtitle": "Table, variance, comparison"
+        "subtitle": "Table, variance, comParison"
       }
     },
     {
@@ -152,7 +152,7 @@
     {
       "layout": "table",
       "content": {
-        "title": "Metricas por equipe",
+        "title": "Métricas por equipe",
         "columns": [
           "Equipe",
           "Entregas",
@@ -207,7 +207,7 @@
           },
           {
             "value": "94%",
-            "label": "Retencao",
+            "label": "Retenção",
             "note": "Meta 90%"
           },
           {
@@ -256,7 +256,7 @@
           {
             "value": "R$ 12,5M",
             "label": "Run rate",
-            "note": "Projecao YTD"
+            "note": "Projeção YTD"
           }
         ]
       }
@@ -264,7 +264,7 @@
     {
       "layout": "section",
       "content": {
-        "title": "Graficos",
+        "title": "Gráficos",
         "subtitle": "Bar, line, doughnut, pie"
       }
     },
@@ -455,7 +455,7 @@
           "text": "Projeto superou metas."
         },
         "right": {
-          "title": "Metricas",
+          "title": "Métricas",
           "items": [
             "Ticket 2.450",
             "NPS 78",
@@ -477,7 +477,7 @@
           ]
         },
         "right": {
-          "title": "Analise",
+          "title": "Análise",
           "text": "Crescimento 140% a/a."
         },
         "ratio": "40/60"
@@ -493,7 +493,7 @@
     {
       "layout": "bullets",
       "content": {
-        "title": "Midia e arquivos",
+        "title": "Mídia e arquivos",
         "columns": 2,
         "items": [
           "image",
@@ -509,7 +509,7 @@
     {
       "layout": "bullets",
       "content": {
-        "title": "Analise e dados",
+        "title": "Análise e dados",
         "columns": 2,
         "items": [
           "variance",
@@ -558,7 +558,7 @@
     {
       "layout": "bullets",
       "content": {
-        "title": "Gestao e risco",
+        "title": "Gestão e risco",
         "columns": 2,
         "items": [
           "action-items",
@@ -591,7 +591,7 @@
     {
       "layout": "bullets",
       "content": {
-        "title": "Calendarios",
+        "title": "Calendários",
         "columns": 2,
         "items": [
           "calendar-month",
@@ -609,10 +609,10 @@
         "items": [
           "scorecard",
           "option-cards",
-          "comparison-table",
+          "comParison-table",
           "pros-cons",
           "swot",
-          "stat-comparison",
+          "stat-comParison",
           "dependencies"
         ]
       }
@@ -642,7 +642,7 @@
     {
       "layout": "content",
       "content": {
-        "title": "Personalizacao",
+        "title": "Personalização",
         "text": "17 cores, 8 fontes, 3 estilos de grafico.",
         "align": "left"
       }
