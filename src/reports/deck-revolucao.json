@@ -349,6 +349,7 @@
         "blocks": [
           {
             "type": "decision",
+            "stamp": "Golpe",
             "title": "Queda de Robespierre",
             "rationale": "Robespierre apresentou à Convenção uma lista de novos inimigos sem nomeá-los. Os deputados, temendo ser os próximos, uniram-se para prendê-lo.",
             "date": "27-28 de julho de 1794",
@@ -358,7 +359,7 @@
               "Barras",
               "Tallien"
             ],
-            "confidence": "high"
+            "confidence": 85
           },
           {
             "type": "callout",

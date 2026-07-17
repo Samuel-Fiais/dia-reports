@@ -54,7 +54,7 @@ export function Decision({ block }) {
   return (
     <div className="decision">
       <div className="decision-head">
-        <span className="decision-stamp">Decisão</span>
+        <span className="decision-stamp">{block.stamp ?? 'Decisão'}</span>
         {block.date && <span className="decision-date">{block.date}</span>}
       </div>
       <p className="decision-title">{renderInline(block.title)}</p>

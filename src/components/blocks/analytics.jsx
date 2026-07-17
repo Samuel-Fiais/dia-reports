@@ -56,7 +56,7 @@ export function Scorecard({ block }) {
           className={`scorecard-row${item.details ? ' clickable' : ''}`}
           onClick={item.details ? () => openModal(item.details) : undefined}
         >
-          <HealthDot health={item.health} />
+          <HealthDot health={item.health} label={item.healthLabel} />
           <span className="scorecard-label">{renderInline(item.label)}</span>
           <span className="scorecard-value">{item.value}</span>
           {item.note && <span className="scorecard-note">{renderInline(item.note)}</span>}
