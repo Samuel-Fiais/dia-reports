@@ -12,7 +12,7 @@ export function ComparisonTable({ block }) {
           {(block.options ?? []).map((opt, i) => (
             <th key={i} className={i === highlight ? 'highlight' : undefined}>
               {opt}
-              {i === highlight && <span className="comparison-reco">Recomendado</span>}
+              {i === highlight && <span className="comparison-reco">{block.highlightLabel ?? 'Recomendado'}</span>}
             </th>
           ))}
         </tr>

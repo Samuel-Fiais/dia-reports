@@ -34,6 +34,7 @@
               "Terceiro Estado"
             ],
             "highlightColumn": 2,
+            "highlightLabel": "Arrocava com tudo",
             "rows": [
               {
                 "label": "Quem era",
@@ -62,8 +63,8 @@
               {
                 "label": "Tinha privilégios?",
                 "values": [
-                  "Sim — isenção total, dízimo",
-                  "Sim — cargos, terras, forca",
+                  "Sim — isenção total",
+                  "Sim — cargos e terras",
                   "Nenhum"
                 ]
               }
@@ -131,7 +132,7 @@
         "src": "https://upload.wikimedia.org/wikipedia/commons/5/57/Anonymous_-_Prise_de_la_Bastille.jpg",
         "alt": "Bastilha",
         "caption": "Pintura anônima da época",
-        "text": "O povo de Paris invadiu a Bastilha em busca de armas e pólvora. A prisão-fortaleza, símbolo do absolutismo, caiu após horas de combate. Apenas 7 prisioneiros foram libertados, mas o impacto simbólico foi imenso.",
+        "text": "O povo de Paris invadiu a Bastilha em busca de armas e pólvora. A prisão-fortaleza, símbolo do absolutismo, caiu após horas de combate. Apenas 7 prisioneiros libertados, mas o impacto simbólico foi imenso.",
         "side": "right",
         "ratio": "45/55"
       }
@@ -147,7 +148,7 @@
               {
                 "date": "5 mai 1789",
                 "status": "done",
-                "title": "Abertura dos Estados Gerais",
+                "title": "Estados Gerais",
                 "text": "Luís XVI convoca os três estados"
               },
               {
@@ -223,20 +224,20 @@
     {
       "layout": "two-columns",
       "content": {
-        "title": "Principais lideranças",
+        "title": "Líderes",
         "left": {
-          "title": "Jacobinos — radicais",
+          "title": "Jacobinos (radicais)",
           "items": [
             "Robespierre — líder do Comitê de Salvação Pública",
             "Danton — orador e fundador do Comitê",
             "Marat — jornalista radical",
-            "Saint-Just — teórico e braço direito"
+            "Saint-Just — teórico"
           ]
         },
         "right": {
           "title": "Monarquia e girondinos",
           "items": [
-            "Luís XVI — rei absolutista, executado em 1793",
+            "Luís XVI — rei, executado em 1793",
             "Maria Antonieta — rainha, executada em 1793",
             "Brissot — líder girondino",
             "Madame Roland — salonnière influente"
@@ -249,7 +250,7 @@
       "layout": "section",
       "content": {
         "title": "O Reinado do Terror",
-        "subtitle": "1793-1794 — o ano que mudou a Revolução"
+        "subtitle": "1793-1794"
       }
     },
     {
@@ -259,7 +260,7 @@
         "src": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Death_of_Marat_by_David.jpg",
         "alt": "Morte de Marat",
         "caption": "Jacques-Louis David, 1793",
-        "text": "Jean-Paul Marat foi assassinado a facadas em seu banho por Charlotte Corday, 24 anos. A pintura de David imortalizou o momento e se tornou símbolo do martírio revolucionário.",
+        "text": "Jean-Paul Marat foi assassinado a facadas em seu banho por Charlotte Corday, 24 anos. A pintura de David tornou-se símbolo do martírio revolucionário.",
         "side": "left",
         "ratio": "35/65"
       }
@@ -300,7 +301,7 @@
     {
       "layout": "report-block",
       "content": {
-        "title": "Os executados pela Revolução",
+        "title": "Executados pela Revolução",
         "blocks": [
           {
             "type": "table",
@@ -319,12 +320,12 @@
               ],
               [
                 "Maria Antonieta",
-                "Rainha consorte",
+                "Rainha",
                 "16 out 1793",
-                "Acusações infundadas, processo de 3 dias"
+                "Acusações infundadas"
               ],
               [
-                "Georges Danton",
+                "Danton",
                 "Fundador do Comitê",
                 "5 abr 1794",
                 "Executado pelos colegas que indicou"
@@ -348,7 +349,7 @@
           {
             "type": "decision",
             "title": "Queda de Robespierre",
-            "rationale": "Robespierre apresentou à Convenção uma lista de novos inimigos da Revolução sem nomeá-los. Os deputados, temendo ser os próximos, uniram-se para prendê-lo.",
+            "rationale": "Robespierre apresentou à Convenção uma lista de novos inimigos sem nomeá-los. Os deputados, temendo ser os próximos, uniram-se para prendê-lo.",
             "date": "27-28 de julho de 1794",
             "owner": "Convenção Nacional",
             "participants": [
@@ -362,7 +363,7 @@
             "type": "callout",
             "kind": "warning",
             "label": "Ironia histórica",
-            "text": "Robespierre, que enviou milhares à guilhotina, foi executado por ela sem julgamento — o Terror que ele criou o consumiu."
+            "text": "Robespierre, que enviou milhares à guilhotina, foi executado por ela sem julgamento."
           }
         ]
       }
@@ -371,13 +372,13 @@
       "layout": "section",
       "content": {
         "title": "O Diretório e Napoleão",
-        "subtitle": "1795-1799 — o fim da Revolução"
+        "subtitle": "1795-1799"
       }
     },
     {
       "layout": "report-block",
       "content": {
-        "title": "Do Diretório ao Consulado",
+        "title": "Até o Império",
         "blocks": [
           {
             "type": "timeline",
@@ -385,14 +386,8 @@
               {
                 "date": "1795",
                 "status": "done",
-                "title": "Diretório assume",
-                "text": "Governo de 5 diretores — corrupção e instabilidade"
-              },
-              {
-                "date": "1796-97",
-                "status": "done",
-                "title": "Campanha da Itália",
-                "text": "Napoleão vence os austríacos e vira herói nacional"
+                "title": "Diretório",
+                "text": "Governo de 5 diretores"
               },
               {
                 "date": "1798",
@@ -403,8 +398,8 @@
               {
                 "date": "9 nov 1799",
                 "status": "done",
-                "title": "Golpe do 18 Brumário",
-                "text": "Napoleão dissolve o Diretório e estabelece o Consulado"
+                "title": "18 Brumário",
+                "text": "Golpe de Napoleão, fim da Revolução"
               },
               {
                 "date": "1804",
@@ -420,14 +415,14 @@
     {
       "layout": "section",
       "content": {
-        "title": "O legado da Revolução",
-        "subtitle": "O que 1789 deixou para o mundo"
+        "title": "O legado",
+        "subtitle": "Contribuições duradouras"
       }
     },
     {
       "layout": "report-block",
       "content": {
-        "title": "Contribuições que mudaram o mundo",
+        "title": "Impacto global",
         "blocks": [
           {
             "type": "kpi-grid",
@@ -464,8 +459,8 @@
         "title": "A Liberdade guiando o povo",
         "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/La_Libert%C3%A9_guidant_le_peuple_-_Eug%C3%A8ne_Delacroix_-_Mus%C3%A9e_du_Louvre_Peintures_RF_129_-_apr%C3%A8s_restauration_2024.jpg",
         "alt": "Liberdade",
-        "caption": "Eugène Delacroix, 1830 — Marianne, a personificação da República",
-        "text": "A pintura mais famosa da história francesa mostra a Liberdade empunhando a bandeira tricolor. Tornou-se o símbolo universal do ideal revolucionário.",
+        "caption": "Eugène Delacroix, 1830",
+        "text": "A Liberdade empunhando a bandeira tricolor — símbolo do ideal revolucionário.",
         "side": "right",
         "ratio": "50/50"
       }
@@ -473,14 +468,14 @@
     {
       "layout": "report-block",
       "content": {
-        "title": "Análise do impacto histórico",
+        "title": "Análise histórica",
         "blocks": [
           {
             "type": "executive-summary",
-            "context": "A Revolução Francesa (1789-1799) foi o evento fundador da política moderna. Em dez anos, derrubou uma monarquia de mil anos e reinventou a sociedade.",
-            "findings": "O legado revolucionário moldou instituições que consideramos básicas: a república, os direitos humanos, o sistema métrico, a separação Igreja-Estado.",
-            "risks": "O Terror de 1793-94 mostra como ideais elevados podem degenerar em autoritarismo quando combinados com medo e poder sem freios.",
-            "recommendations": "Liberdade e igualdade não são dadas — são conquistadas e defendidas por instituições sólidas e cidadania ativa."
+            "context": "A Revolução Francesa (1789-1799) foi o evento fundador da política moderna. Em dez anos, derrubou uma monarquia de mil anos.",
+            "findings": "O legado moldou a república, os direitos humanos, o sistema métrico e a separação Igreja-Estado.",
+            "risks": "O Terror mostra como ideais elevados podem degenerar em autoritarismo.",
+            "recommendations": "Liberdade e igualdade são conquistadas e defendidas por instituições sólidas."
           }
         ]
       }
@@ -496,17 +491,12 @@
               {
                 "title": "Cidadãos: Uma Crônica da Revolução Francesa",
                 "source": "Simon Schama",
-                "note": "Abordagem narrativa"
+                "note": "Narrativa"
               },
               {
                 "title": "A Era das Revoluções",
                 "source": "Eric Hobsbawm",
                 "note": "Análise estrutural"
-              },
-              {
-                "title": "Danton (1983)",
-                "source": "Andrzej Wajda",
-                "note": "Filme sobre o conflito Danton x Robespierre"
               },
               {
                 "title": "Reflexões sobre a Revolução na França",
@@ -522,7 +512,7 @@
       "layout": "section",
       "content": {
         "title": "Fim",
-        "subtitle": "Material didático produzido com Dia Slides"
+        "subtitle": "Material didático com Dia Slides"
       }
     }
   ]
