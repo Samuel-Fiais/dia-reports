@@ -385,7 +385,8 @@ export function ItemBlock({ block, chartStyleIndex, blockKey }) {
   return <div className="block-with-details clickable" role="button" tabIndex={0} onClick={() => openModal(block.details)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openModal(block.details) } }}>{content}</div>
 }
 
-/* Renderiza uma lista de blocos — usado pelo modal de detalhes. */
+/* Renderiza uma lista de blocos — usado pelo modal de detalhes e pelo layout
+   "blocks" das apresentações. */
 export function renderBlocks(blocks, chartStyleIndex = 2, keyPrefix = 'modal') {
   return (blocks ?? []).map((block, i) => (
     <ItemBlock key={i} block={block} chartStyleIndex={chartStyleIndex} blockKey={`${keyPrefix}:${i}`} />

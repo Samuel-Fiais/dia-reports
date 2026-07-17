@@ -1,6 +1,6 @@
-export default function ImageSlide({ content }) {
+export default function ImageSlide({ content, themeStyle }) {
   return (
-    <div className="slide-layout slide-image-layout">
+    <div className="slide-layout slide-image-layout" style={themeStyle}>
       <img
         className="slide-full-image"
         src={content.src}

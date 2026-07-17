@@ -5,7 +5,7 @@ import { useAppTheme } from '../context/ThemeContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import ThemeToggleButton from './ThemeToggleButton.jsx'
 
-export default function SettingsPanel({ settings, onChange }) {
+export default function SettingsPanel({ settings, onChange, title = 'Personalizar relatório' }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const { appTheme } = useAppTheme()
@@ -16,7 +16,7 @@ export default function SettingsPanel({ settings, onChange }) {
   return (
     <div className="settings-wrap" ref={wrapRef}>
       <div className={`settings-panel${open ? ' open' : ''}`}>
-        <div className="settings-header">Personalizar relatório</div>
+        <div className="settings-header">{title}</div>
         <div className="settings-section-label">Fundo</div>
         <div className="settings-swatches">
           {colors.map((color, i) => (

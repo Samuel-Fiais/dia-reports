@@ -16,7 +16,7 @@ export const COLORS = [
   "#f6e6da", // 13 argila clara
   "#f1eed6", // 14 areia
   "#e3ecea", // 15 névoa
-  "#f2f2f2", // 16 preto e branco -> cinza quase branco
+  "#ffffff", // 16 preto e branco -> cinza quase branco
 ];
 
 // Equivalentes escuros da mesma paleta, usados quando o tema do app é "dark"
@@ -37,7 +37,7 @@ export const COLORS_DARK = [
   "#211812", // 13 argila -> barro
   "#1e1c12", // 14 areia -> oliva escuro
   "#141b1a", // 15 névoa -> ardósia verde
-  "#151515", // 16 preto e branco -> cinza quase preto
+  "#050505", // 16 preto e branco -> cinza quase preto
 ];
 
 // Nomes compartilhados pelos pares claro/escuro exibidos no seletor.
@@ -207,6 +207,29 @@ export function saveSettings(id, settings) {
   }
 }
 
+// Override de cor por slide dentro de uma apresentação (índice -> colorIndex),
+// separado dos ajustes gerais do deck para sobreviver independente de onde o
+// leitor está (tela de detalhe ou apresentação em tela cheia).
+const slideColorOverridesKey = (id) => `dia-slide-colors:${id}`;
+
+export function loadSlideColorOverrides(id) {
+  try {
+    const raw = localStorage.getItem(slideColorOverridesKey(id));
+    if (raw) return JSON.parse(raw);
+  } catch {
+    /* ignore */
+  }
+  return {};
+}
+
+export function saveSlideColorOverrides(id, overrides) {
+  try {
+    localStorage.setItem(slideColorOverridesKey(id), JSON.stringify(overrides));
+  } catch {
+    /* ignore */
+  }
+}
+
 export function applyTheme(
   { colorIndex = 0, fontIndex = 0, fontScale = "default" },
   appTheme = "light",
@@ -224,6 +247,28 @@ export function applyTheme(
   root.style.setProperty("--title-style", font.style);
   root.style.setProperty("--title-weight", String(font.weight));
   root.style.setProperty("--title-weight-sub", String(font.weightSub ?? font.weight));
+}
+
+// Override local de cor/fonte para um slide específico dentro de uma
+// apresentação: retorna apenas as CSS custom properties que o slide precisa
+// sobrescrever (herdando o resto — tema claro/escuro, demais fontes, etc. —
+// do :root, exatamente como um relatório). Usado quando o slide tem um
+// `theme.colorIndex`/`theme.fontIndex` próprio, diferente do padrão do deck.
+export function slideThemeOverride({ colorIndex, fontIndex } = {}, appTheme = 'light') {
+  const style = {}
+  if (colorIndex != null) {
+    const palette = appTheme === 'dark' ? COLORS_DARK : COLORS
+    style['--bg'] = palette[colorIndex] ?? palette[0]
+  }
+  if (fontIndex != null) {
+    const font = FONTS[fontIndex] ?? FONTS[0]
+    style['--font-title'] = font.stack
+    style['--font-body'] = font.bodyStack
+    style['--title-style'] = font.style
+    style['--title-weight'] = String(font.weight)
+    style['--title-weight-sub'] = String(font.weightSub ?? font.weight)
+  }
+  return style
 }
 
 export function formatReportDate(iso) {

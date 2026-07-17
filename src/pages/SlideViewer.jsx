@@ -2,15 +2,23 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { ArrowLeft, ArrowRight, Grid3X3, Maximize2, Minimize2, Printer, X } from 'lucide-react'
 import { getDeck } from '../lib/slidesClient.js'
-import { loadSettings } from '../lib/theme.js'
+import { applyTheme, loadSettings, loadSlideColorOverrides } from '../lib/theme.js'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 import SlideRenderer from '../components/slides/SlideRenderer.jsx'
+import { toSlideText } from '../lib/slideText.js'
 
 function getSlidePreview(slide, index) {
   const content = slide?.content ?? {}
+  const firstTextBlock = content.blocks?.find((b) => b.text || b.items?.length)
   const title = content.title ?? content.subtitle ?? `Slide ${index + 1}`
-  const text = content.text ?? content.items?.[0] ?? content.left?.title ?? content.right?.title ?? ''
-  return { title, text }
+  const text = content.text
+    ?? content.items?.[0]
+    ?? content.left?.title
+    ?? content.right?.title
+    ?? firstTextBlock?.text
+    ?? firstTextBlock?.items?.[0]
+    ?? ''
+  return { title: toSlideText(title), text: toSlideText(text) }
 }
 
 export default function SlideViewer() {
@@ -19,7 +27,7 @@ export default function SlideViewer() {
   const [searchParams] = useSearchParams()
   const isExport = searchParams.get('export') === '1'
   const { appTheme } = useAppTheme()
-  const variant = appTheme === 'dark' ? 'viewer' : 'detail'
+  const variant = 'viewer'
   const [deck, setDeck] = useState(null)
   const [loading, setLoading] = useState(true)
   const [currentSlide, setCurrentSlide] = useState(0)
@@ -27,6 +35,7 @@ export default function SlideViewer() {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [showThumbnails, setShowThumbnails] = useState(true)
   const [swipeOffset, setSwipeOffset] = useState(0)
+  const [colorOverrides, setColorOverrides] = useState(() => loadSlideColorOverrides(id))
   const [viewerSettings, setViewerSettings] = useState(() => loadSettings(`slides:${id}`, {
     colorIndex: 0,
     fontIndex: 0,
@@ -45,7 +54,10 @@ export default function SlideViewer() {
       try {
         setLoading(true)
         const data = await getDeck(id)
-        if (!cancelled) setDeck(data)
+        if (!cancelled) {
+          setDeck(data)
+          setColorOverrides(loadSlideColorOverrides(id))
+        }
       } catch {
         if (!cancelled) setDeck(null)
       } finally {
@@ -70,6 +82,31 @@ export default function SlideViewer() {
     document.body.classList.add('slide-viewer-active')
     return () => document.body.classList.remove('slide-viewer-active')
   }, [])
+
+  // Um `@page { size: landscape }` declarado direto no CSS vale pra qualquer
+  // impressão do app enquanto o arquivo estiver carregado — inclusive
+  // relatórios, que precisam continuar em retrato. Por isso a orientação
+  // paisagem só existe como uma tag <style> presa ao ciclo de vida do próprio
+  // SlideViewer (montada/desmontada com o componente), não ao evento de
+  // impressão: presa a `beforeprint`, ela entrava na página DEPOIS que o
+  // ChartBlock (efeito de um componente filho, que monta antes do pai) já
+  // tinha lido o tamanho do container e chamado `chart.resize()` — o gráfico
+  // era redimensionado ainda em retrato, antes da orientação virar paisagem,
+  // e saía esticado/cortado na impressão.
+  useEffect(() => {
+    const styleEl = document.createElement('style')
+    styleEl.textContent = '@page { size: landscape; margin: 0; }'
+    document.head.appendChild(styleEl)
+    return () => {
+      styleEl.remove()
+    }
+  }, [])
+
+  // Mesmo mecanismo de um relatório/da tela de detalhe: aplica o tema
+  // escolhido (claro/escuro, cor, fonte) no documento inteiro.
+  useEffect(() => {
+    applyTheme(viewerSettings, appTheme)
+  }, [viewerSettings, appTheme])
 
   const slides = deck?.content?.slides ?? []
   const theme = { ...(deck?.content?.theme ?? {}), ...viewerSettings }
@@ -210,10 +247,9 @@ export default function SlideViewer() {
   const currentSlideData = slides[currentSlide]
 
   return (
-    <div className="slide-viewer-shell" ref={wrapRef} tabIndex={-1} style={{ background: variant === 'detail' ? '#faf9f5' : '#111' }}>
+    <div className="slide-viewer-shell" ref={wrapRef} tabIndex={-1}>
       <div
         className="slide-viewer"
-        style={{ background: variant === 'detail' ? '#fff' : '#1a1a1a' }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -223,16 +259,22 @@ export default function SlideViewer() {
           className="slide-viewer-inner"
           style={{ '--swipe-offset': `${swipeOffset}px` }}
         >
-          {slides.map((slide, i) => (
-            <div
-              key={i}
-              className={`slide${i === currentSlide ? ' slide--active' : ''}`}
-              data-transition={theme.transition ?? 'fade'}
-              aria-hidden={i !== currentSlide}
-            >
-              <SlideRenderer slide={slide} theme={theme} variant={variant} settings={viewerSettings} />
-            </div>
-          ))}
+          {slides.map((slide, i) => {
+            const colorOverride = colorOverrides[i]
+            const effectiveSlide = colorOverride == null
+              ? slide
+              : { ...slide, theme: { ...slide.theme, colorIndex: colorOverride } }
+            return (
+              <div
+                key={i}
+                className={`slide${i === currentSlide ? ' slide--active' : ''}`}
+                data-transition={theme.transition ?? 'fade'}
+                aria-hidden={i !== currentSlide}
+              >
+                <SlideRenderer slide={effectiveSlide} theme={theme} variant={variant} />
+              </div>
+            )
+          })}
 
           {/* Speaker notes */}
           {showNotes && currentSlideData?.notes && (
