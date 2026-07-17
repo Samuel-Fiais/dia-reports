@@ -179,10 +179,10 @@ export function TeamList({ block }) {
 /* meeting-notes: participantes, pauta, decisões e próximos passos. */
 export function MeetingNotes({ block }) {
   const groups = [
-    ['Participantes', block.participants],
-    ['Pauta', block.agenda],
-    ['Decisões', block.decisions],
-    ['Próximos passos', block.next],
+    [block.participantsLabel ?? 'Participantes', block.participants],
+    [block.agendaLabel ?? 'Pauta', block.agenda],
+    [block.decisionsLabel ?? 'Decisões', block.decisions],
+    [block.nextLabel ?? 'Próximos passos', block.next],
   ]
   return (
     <div className="meeting-notes">
@@ -211,10 +211,10 @@ export function MeetingNotes({ block }) {
 /* incident-summary: incidente com impacto, causa e ações. */
 export function IncidentSummary({ block }) {
   const rows = [
-    ['Impacto', block.impact],
-    ['Duração', block.duration],
-    ['Causa raiz', block.cause],
-    ['Resolução', block.resolution],
+    [block.impactLabel ?? 'Impacto', block.impact],
+    [block.durationLabel ?? 'Duração', block.duration],
+    [block.causeLabel ?? 'Causa raiz', block.cause],
+    [block.resolutionLabel ?? 'Resolução', block.resolution],
   ].filter(([, v]) => v)
   return (
     <div className="incident">
@@ -251,21 +251,21 @@ export function RootCause({ block }) {
     <div className="root-cause">
       {block.problem && (
         <p className="root-cause-problem">
-          <strong>Problema: </strong>
+          <strong>{block.problemLabel ?? 'Problema'}: </strong>
           {renderInline(block.problem)}
         </p>
       )}
       <ol className="root-cause-whys">
         {(block.whys ?? []).map((why, i) => (
           <li key={i}>
-            <span className="root-cause-num">Por quê {i + 1}</span>
+            <span className="root-cause-num">{block.whyLabel ?? 'Por quê'} {i + 1}</span>
             <p>{renderInline(why)}</p>
           </li>
         ))}
       </ol>
       {block.rootCause && (
         <p className="root-cause-conclusion">
-          <strong>Causa raiz: </strong>
+          <strong>{block.rootCauseLabel ?? 'Causa raiz'}: </strong>
           {renderInline(block.rootCause)}
         </p>
       )}

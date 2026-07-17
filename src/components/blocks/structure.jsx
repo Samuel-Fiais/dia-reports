@@ -60,13 +60,13 @@ export function Decision({ block }) {
       <p className="decision-title">{renderInline(block.title)}</p>
       {block.rationale && (
         <p className="decision-rationale">
-          <strong>Por quê: </strong>
+          <strong>{block.rationaleLabel ?? 'Por quê'}: </strong>
           {renderInline(block.rationale)}
         </p>
       )}
       <div className="decision-meta">
-        {block.owner && <span>Decidido por {block.owner}</span>}
-        {block.participants?.length > 0 && <span>Com {block.participants.join(', ')}</span>}
+        {block.owner && <span>{block.decidedByLabel ?? 'Decidido por'} {block.owner}</span>}
+        {block.participants?.length > 0 && <span>{block.withLabel ?? 'Com'} {block.participants.join(', ')}</span>}
         {block.confidence != null && <Confidence level={block.confidence} />}
       </div>
     </div>
@@ -88,11 +88,11 @@ export function TaskTable({ block, kind = 'action-items' }) {
       <thead>
         <tr>
           <th>{cols.title}</th>
-          {cols.extra && <th>{cols.extra}</th>}
-          <th>Responsável</th>
-          <th>Prazo</th>
-          <th>Prioridade</th>
-          <th>Status</th>
+          {cols.extra && <th>{block.extraLabel ?? cols.extra}</th>}
+          <th>{block.ownerLabel ?? 'Responsável'}</th>
+          <th>{block.dueLabel ?? 'Prazo'}</th>
+          <th>{block.priorityLabel ?? 'Prioridade'}</th>
+          <th>{block.statusLabel ?? 'Status'}</th>
         </tr>
       </thead>
       <tbody>
