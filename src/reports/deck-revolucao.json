@@ -25,6 +25,7 @@
       "layout": "report-block",
       "content": {
         "title": "A sociedade do Antigo Regime",
+        "compact": true,
         "blocks": [
           {
             "type": "comparison-table",
@@ -141,6 +142,7 @@
       "layout": "report-block",
       "content": {
         "title": "Cronologia dos primeiros meses",
+        "compact": true,
         "blocks": [
           {
             "type": "timeline",
@@ -190,6 +192,7 @@
       "layout": "report-block",
       "content": {
         "title": "Declaração dos Direitos do Homem e do Cidadão",
+        "compact": true,
         "blocks": [
           {
             "type": "quote",
@@ -269,6 +272,7 @@
       "layout": "report-block",
       "content": {
         "title": "O Terror em dados",
+        "compact": true,
         "blocks": [
           {
             "type": "kpi-grid",
@@ -303,6 +307,7 @@
       "layout": "report-block",
       "content": {
         "title": "Executados pela Revolução",
+        "compact": true,
         "blocks": [
           {
             "type": "table",
@@ -346,6 +351,7 @@
       "layout": "report-block",
       "content": {
         "title": "O golpe do 9 Termidor",
+        "compact": true,
         "blocks": [
           {
             "type": "decision",
@@ -381,6 +387,7 @@
       "layout": "report-block",
       "content": {
         "title": "Até o Império",
+        "compact": true,
         "blocks": [
           {
             "type": "timeline",
@@ -425,6 +432,7 @@
       "layout": "report-block",
       "content": {
         "title": "Impacto global",
+        "compact": true,
         "blocks": [
           {
             "type": "kpi-grid",
@@ -471,6 +479,7 @@
       "layout": "report-block",
       "content": {
         "title": "Análise histórica",
+        "compact": true,
         "blocks": [
           {
             "type": "executive-summary",
@@ -486,6 +495,7 @@
       "layout": "report-block",
       "content": {
         "title": "Para saber mais",
+        "compact": true,
         "blocks": [
           {
             "type": "references",

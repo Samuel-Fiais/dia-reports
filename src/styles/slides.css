@@ -93,7 +93,7 @@ body.slide-viewer-active .app-menu {
 .slide-layout {
   width: 100%;
   height: 100%;
-  padding: 4rem 5rem;
+  padding: 3rem 3rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
