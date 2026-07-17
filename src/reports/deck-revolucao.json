@@ -271,7 +271,8 @@
         "title": "O Terror em dados",
         "blocks": [
           {
-            "type": "scorecard",
+            "type": "kpi-grid",
+            "columns": 4,
             "items": [
               {
                 "health": "critical",
