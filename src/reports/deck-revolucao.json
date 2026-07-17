@@ -29,36 +29,45 @@
           {
             "type": "comparison-table",
             "options": [
-              "Estado",
-              "Composição",
-              "População",
-              "Impostos",
-              "Privilégios"
+              "Primeiro Estado",
+              "Segundo Estado",
+              "Terceiro Estado"
             ],
+            "highlightColumn": 2,
             "rows": [
-              [
-                "Primeiro Estado",
-                "Clero (igreja)",
-                "130 mil",
-                "NÃO pagava",
-                "SIM — isenção total, dízimo"
-              ],
-              [
-                "Segundo Estado",
-                "Nobreza",
-                "350 mil",
-                "NÃO pagava",
-                "SIM — cargos, terras, forca"
-              ],
-              [
-                "Terceiro Estado",
-                "Povo (camponeses, burgueses, trabalhadores)",
-                "25 milhões",
-                "PAGAVA TUDO",
-                "NENHUM"
-              ]
-            ],
-            "highlightColumn": 4
+              {
+                "label": "Quem era",
+                "values": [
+                  "Clero (Igreja)",
+                  "Nobreza",
+                  "Povo (camponeses, burgueses)"
+                ]
+              },
+              {
+                "label": "População",
+                "values": [
+                  "~130 mil",
+                  "~350 mil",
+                  "~25 milhões"
+                ]
+              },
+              {
+                "label": "Pagava impostos?",
+                "values": [
+                  "Não",
+                  "Não",
+                  "Sim — todos os impostos"
+                ]
+              },
+              {
+                "label": "Tinha privilégios?",
+                "values": [
+                  "Sim — isenção total, dízimo",
+                  "Sim — cargos, terras, forca",
+                  "Nenhum"
+                ]
+              }
+            ]
           }
         ]
       }
@@ -73,25 +82,25 @@
             "type": "callout",
             "kind": "danger",
             "label": "Crise financeira",
-            "text": "A França gastou 1,3 bilhão de libras apoiando a independência dos EUA. A dívida equivalia a 4 anos de receita do Estado. Os gastos da corte em Versalhes consumiam 6% do orçamento."
+            "text": "A França gastou 1,3 bilhão de libras apoiando a independência dos EUA. A dívida equivalia a 4 anos de receita do Estado."
           },
           {
             "type": "callout",
             "kind": "warning",
             "label": "Crise agrícola",
-            "text": "Colheitas ruins em 1788-1789 elevaram o preço do pão em 88%. Um trabalhador gastava 80% de sua renda apenas para comprar pão. Fome generalizada."
+            "text": "Colheitas ruins em 1788-89 elevaram o preço do pão em 88%. Um trabalhador gastava 80% da renda só com pão."
           },
           {
             "type": "callout",
             "kind": "info",
             "label": "Ideias iluministas",
-            "text": "Rousseau (Contrato Social), Montesquieu (separação dos poderes) e Voltaire (liberdade de expressão) pregavam que o poder emana do povo, não do rei."
+            "text": "Rousseau, Montesquieu e Voltaire pregavam que o poder emana do povo, não do rei."
           },
           {
             "type": "callout",
             "kind": "note",
             "label": "Desigualdade extrema",
-            "text": "O Terceiro Estado representava 98% da população mas tinha 0% do poder político. Cada estado tinha um voto nos Estados Gerais — 1 contra 2 sempre."
+            "text": "Terceiro Estado = 98% da população, 0% do poder político."
           }
         ]
       }
@@ -108,9 +117,9 @@
       "content": {
         "title": "O Juramento da Sala do Jogo da Pela",
         "src": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Jacques_Louis_David_-_Le_serment_du_Jeu_de_Paume_-_Google_Art_Project.jpg",
-        "alt": "Juramento da Sala do Jogo da Pela",
-        "caption": "Obra de Jacques-Louis David (esboço, 1791)",
-        "text": "Em 20 de junho de 1789, os deputados do Terceiro Estado, trancados para fora da sala habitual, reuniram-se numa quadra de jogo da pela (tênis) e juraram solenemente não se separar até que a França tivesse uma Constituição. Foi o primeiro ato de desobediência civil da Revolução.",
+        "alt": "Juramento",
+        "caption": "Jacques-Louis David (esboço, 1791)",
+        "text": "Em 20 de junho de 1789, os deputados do Terceiro Estado reuniram-se numa quadra de jogo da pela e juraram não se separar até que a França tivesse uma Constituição. Foi o primeiro ato de desobediência civil da Revolução.",
         "side": "left",
         "ratio": "45/55"
       }
@@ -118,11 +127,11 @@
     {
       "layout": "image-text",
       "content": {
-        "title": "A Queda da Bastilha — 14 de julho de 1789",
+        "title": "14 de julho de 1789 — Queda da Bastilha",
         "src": "https://upload.wikimedia.org/wikipedia/commons/5/57/Anonymous_-_Prise_de_la_Bastille.jpg",
-        "alt": "Tomada da Bastilha",
+        "alt": "Bastilha",
         "caption": "Pintura anônima da época",
-        "text": "O povo de Paris, temendo que o rei dispersasse a Assembleia Nacional, invadiu a Bastilha em busca de armas e pólvora. A prisão-fortaleza, símbolo máximo do absolutismo, caiu após horas de combate. Foram libertados apenas 7 prisioneiros, mas o impacto simbólico foi imenso: o povo mostrou que podia enfrentar o poder real.",
+        "text": "O povo de Paris invadiu a Bastilha em busca de armas e pólvora. A prisão-fortaleza, símbolo do absolutismo, caiu após horas de combate. Apenas 7 prisioneiros foram libertados, mas o impacto simbólico foi imenso.",
         "side": "right",
         "ratio": "45/55"
       }
@@ -139,19 +148,19 @@
                 "date": "5 mai 1789",
                 "status": "done",
                 "title": "Abertura dos Estados Gerais",
-                "text": "Luís XVI convoca os três estados para resolver a crise fiscal"
+                "text": "Luís XVI convoca os três estados"
               },
               {
                 "date": "17 jun 1789",
                 "status": "done",
                 "title": "Assembleia Nacional",
-                "text": "Terceiro Estado se autoproclama representante legítimo da nação"
+                "text": "Terceiro Estado se proclama representante da nação"
               },
               {
                 "date": "20 jun 1789",
                 "status": "done",
                 "title": "Juramento da Sala do Jogo da Pela",
-                "text": "Prometem não parar até redigir uma Constituição"
+                "text": "Prometem não parar até ter uma Constituição"
               },
               {
                 "date": "14 jul 1789",
@@ -163,13 +172,13 @@
                 "date": "4 ago 1789",
                 "status": "done",
                 "title": "Noite do 4 de Agosto",
-                "text": "Abolição dos privilégios feudais — fim do Antigo Regime"
+                "text": "Abolição dos privilégios feudais"
               },
               {
                 "date": "26 ago 1789",
                 "status": "done",
                 "title": "Declaração dos Direitos",
-                "text": "Marco dos direitos humanos: liberdade, igualdade, propriedade"
+                "text": "Marco dos direitos humanos universais"
               }
             ]
           }
@@ -193,7 +202,6 @@
               "Liberdade de expressão e pensamento",
               "Igualdade perante a lei",
               "Soberania popular",
-              "Direito à propriedade",
               "Devido processo legal"
             ],
             "cons": [
@@ -219,10 +227,10 @@
         "left": {
           "title": "Jacobinos — radicais",
           "items": [
-            "Maximilien Robespierre — líder do Comitê de Salvação Pública",
-            "Georges Danton — orador e fundador do Comitê",
-            "Jean-Paul Marat — jornalista do L'Ami du Peuple",
-            "Louis Saint-Just — teórico, braço direito de Robespierre"
+            "Robespierre — líder do Comitê de Salvação Pública",
+            "Danton — orador e fundador do Comitê",
+            "Marat — jornalista radical",
+            "Saint-Just — teórico e braço direito"
           ]
         },
         "right": {
@@ -230,7 +238,7 @@
           "items": [
             "Luís XVI — rei absolutista, executado em 1793",
             "Maria Antonieta — rainha, executada em 1793",
-            "Jacques Brissot — líder girondino",
+            "Brissot — líder girondino",
             "Madame Roland — salonnière influente"
           ]
         },
@@ -249,9 +257,9 @@
       "content": {
         "title": "A Morte de Marat",
         "src": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Death_of_Marat_by_David.jpg",
-        "alt": "A Morte de Marat",
-        "caption": "Jacques-Louis David, 1793 — uma das pinturas mais famosas da Revolução",
-        "text": "Jean-Paul Marat, jornalista radical e líder jacobino, foi assassinado a facadas em seu banho por Charlotte Corday, uma simpatizante girondina de 24 anos. O pintor Jacques-Louis David, amigo de Marat, imortalizou o momento em uma obra que se tornou símbolo do martírio revolucionário — e justificativa para intensificar o Terror.",
+        "alt": "Morte de Marat",
+        "caption": "Jacques-Louis David, 1793",
+        "text": "Jean-Paul Marat foi assassinado a facadas em seu banho por Charlotte Corday, 24 anos. A pintura de David imortalizou o momento e se tornou símbolo do martírio revolucionário.",
         "side": "left",
         "ratio": "35/65"
       }
@@ -285,10 +293,6 @@
                 "value": "16 meses"
               }
             ]
-          },
-          {
-            "type": "paragraph",
-            "text": "O Tribunal Revolucionário julgava e condenava em média 60 pessoas por dia no auge do Terror. A guilhotina na Praça da Revolução (atual Praça da Concórdia) executava em fila. Entre os mortos: operários, camponeses, nobres, padres e até revolucionários que haviam perdido o favor de Robespierre."
           }
         ]
       }
@@ -296,7 +300,7 @@
     {
       "layout": "report-block",
       "content": {
-        "title": "Os executados pela própria Revolução",
+        "title": "Os executados pela Revolução",
         "blocks": [
           {
             "type": "table",
@@ -310,26 +314,26 @@
               [
                 "Luís XVI",
                 "Rei da França",
-                "21 jan 1793 — guilhotina",
+                "21 jan 1793",
                 "Julgado pela Convenção que ele mesmo convocou"
               ],
               [
                 "Maria Antonieta",
                 "Rainha consorte",
-                "16 out 1793 — guilhotina",
-                "Processo de 3 dias, acusações infundadas"
+                "16 out 1793",
+                "Acusações infundadas, processo de 3 dias"
               ],
               [
                 "Georges Danton",
                 "Fundador do Comitê",
-                "5 abr 1794 — guilhotina",
+                "5 abr 1794",
                 "Executado pelos colegas que indicou"
               ],
               [
                 "Robespierre",
                 "Líder do Terror",
-                "28 jul 1794 — guilhotina",
-                "Sem julgamento, no dia seguinte à sua prisão"
+                "28 jul 1794",
+                "Sem julgamento, guilhotinado no dia seguinte"
               ]
             ]
           }
@@ -344,17 +348,21 @@
           {
             "type": "decision",
             "title": "Queda de Robespierre",
-            "rationale": "Robespierre apresentou à Convenção uma lista de novos 'inimigos da Revolução' sem nomeá-los. Os deputados, temendo ser os próximos, uniram-se para prendê-lo.",
+            "rationale": "Robespierre apresentou à Convenção uma lista de novos inimigos da Revolução sem nomeá-los. Os deputados, temendo ser os próximos, uniram-se para prendê-lo.",
             "date": "27-28 de julho de 1794",
             "owner": "Convenção Nacional",
-            "participants": "Deputados termidorianos (Fouché, Barras, Tallien)",
+            "participants": [
+              "Fouché",
+              "Barras",
+              "Tallien"
+            ],
             "confidence": "high"
           },
           {
             "type": "callout",
             "kind": "warning",
             "label": "Ironia histórica",
-            "text": "Maximilien Robespierre, que enviou milhares à guilhotina como 'inimigos do povo', foi executado na mesma guilhotina 24 horas depois de sua prisão, sem qualquer julgamento. A 'virtude' que ele tanto pregava não o salvou do Terror que ele próprio criou."
+            "text": "Robespierre, que enviou milhares à guilhotina, foi executado por ela sem julgamento — o Terror que ele criou o consumiu."
           }
         ]
       }
@@ -378,19 +386,19 @@
                 "date": "1795",
                 "status": "done",
                 "title": "Diretório assume",
-                "text": "Governo moderado de 5 diretores — corrupção e instabilidade"
+                "text": "Governo de 5 diretores — corrupção e instabilidade"
               },
               {
-                "date": "1796-1797",
+                "date": "1796-97",
                 "status": "done",
                 "title": "Campanha da Itália",
-                "text": "Napoleão Bonaparte vence os austríacos e se torna herói nacional"
+                "text": "Napoleão vence os austríacos e vira herói nacional"
               },
               {
                 "date": "1798",
                 "status": "done",
                 "title": "Campanha do Egito",
-                "text": "Napoleão invade o Egito — vitória militar, fracasso estratégico"
+                "text": "Napoleão invade o Egito"
               },
               {
                 "date": "9 nov 1799",
@@ -402,7 +410,7 @@
                 "date": "1804",
                 "status": "done",
                 "title": "Império",
-                "text": "Napoleão se coroa Imperador — a Revolução chega ao fim definitivo"
+                "text": "Napoleão se coroa Imperador"
               }
             ]
           }
@@ -426,14 +434,14 @@
             "columns": 4,
             "items": [
               {
-                "label": "Países que adotaram",
+                "label": "Países signatários",
                 "value": "192",
-                "note": "a Declaração Universal"
+                "note": "Declaração Universal"
               },
               {
-                "label": "Sistema métrico",
+                "label": "Usam sistema métrico",
                 "value": "95%",
-                "note": "do mundo usa"
+                "note": "do mundo"
               },
               {
                 "label": "Repúblicas no mundo",
@@ -441,7 +449,7 @@
                 "note": "em 194 países"
               },
               {
-                "label": "Inspirou revoluções",
+                "label": "Revoluções inspiradas",
                 "value": "50+",
                 "note": "em todos os continentes"
               }
@@ -455,9 +463,9 @@
       "content": {
         "title": "A Liberdade guiando o povo",
         "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/La_Libert%C3%A9_guidant_le_peuple_-_Eug%C3%A8ne_Delacroix_-_Mus%C3%A9e_du_Louvre_Peintures_RF_129_-_apr%C3%A8s_restauration_2024.jpg",
-        "alt": "A Liberdade guiando o povo",
+        "alt": "Liberdade",
         "caption": "Eugène Delacroix, 1830 — Marianne, a personificação da República",
-        "text": "A pintura mais famosa da história francesa mostra a Liberdade (Marianne) empunhando a bandeira tricolor e conduzindo o povo sobre as barricadas. Embora retrate a Revolução de 1830, tornou-se o símbolo universal do ideal revolucionário: Liberdade, Igualdade, Fraternidade.",
+        "text": "A pintura mais famosa da história francesa mostra a Liberdade empunhando a bandeira tricolor. Tornou-se o símbolo universal do ideal revolucionário.",
         "side": "right",
         "ratio": "50/50"
       }
@@ -469,10 +477,10 @@
         "blocks": [
           {
             "type": "executive-summary",
-            "context": "A Revolução Francesa (1789-1799) foi o evento fundador da política moderna. Em dez anos, derrubou uma monarquia de mil anos, reinventou a sociedade e plantou as sementes da democracia.",
-            "findings": "O legado revolucionário moldou instituições que consideramos básicas hoje: a república, os direitos humanos, o sistema métrico, a separação Igreja-Estado e o próprio conceito de cidadania universal.",
-            "risks": "O Terror de 1793-94 mostra como ideais elevados podem degenerar em autoritarismo quando combinados com medo, polarização e poder sem freios.",
-            "recommendations": "A Revolução Francesa nos ensina que liberdade e igualdade não são dadas — são conquistadas e precisam ser constantemente defendidas por instituições sólidas e uma cidadania ativa."
+            "context": "A Revolução Francesa (1789-1799) foi o evento fundador da política moderna. Em dez anos, derrubou uma monarquia de mil anos e reinventou a sociedade.",
+            "findings": "O legado revolucionário moldou instituições que consideramos básicas: a república, os direitos humanos, o sistema métrico, a separação Igreja-Estado.",
+            "risks": "O Terror de 1793-94 mostra como ideais elevados podem degenerar em autoritarismo quando combinados com medo e poder sem freios.",
+            "recommendations": "Liberdade e igualdade não são dadas — são conquistadas e defendidas por instituições sólidas e cidadania ativa."
           }
         ]
       }
@@ -487,27 +495,23 @@
             "items": [
               {
                 "title": "Cidadãos: Uma Crônica da Revolução Francesa",
-                "href": "https://pt.wikipedia.org/wiki/Cidad%C3%A3os",
                 "source": "Simon Schama",
-                "note": "Livro — abordagem narrativa e detalhada"
+                "note": "Abordagem narrativa"
               },
               {
-                "title": "A Revolução Francesa",
-                "href": "#",
+                "title": "A Era das Revoluções",
                 "source": "Eric Hobsbawm",
-                "note": "Capítulo da obra 'A Era das Revoluções'"
+                "note": "Análise estrutural"
               },
               {
-                "title": "Danton — O Filme",
-                "href": "#",
-                "source": "Andrzej Wajda, 1983",
+                "title": "Danton (1983)",
+                "source": "Andrzej Wajda",
                 "note": "Filme sobre o conflito Danton x Robespierre"
               },
               {
-                "title": "Refletindo sobre a Revolução na França",
-                "href": "#",
+                "title": "Reflexões sobre a Revolução na França",
                 "source": "Edmund Burke",
-                "note": "Crítica conservadora clássica à Revolução"
+                "note": "Crítica conservadora"
               }
             ]
           }
