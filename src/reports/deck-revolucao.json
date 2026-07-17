@@ -18,21 +18,21 @@
       "layout": "section",
       "content": {
         "title": "A França antes da Revolução",
-        "subtitle": "Contexto histórico e causas"
+        "subtitle": "Contexto e causas"
       }
     },
     {
       "layout": "report-block",
       "content": {
-        "title": "A sociedade do Antigo Regime",
+        "title": "A sociedade e as causas",
         "compact": true,
         "blocks": [
           {
             "type": "comparison-table",
             "options": [
-              "Primeiro Estado",
-              "Segundo Estado",
-              "Terceiro Estado"
+              "1º Estado",
+              "2º Estado",
+              "3º Estado"
             ],
             "highlightColumn": 2,
             "highlightLabel": "Arrocava com tudo",
@@ -40,69 +40,60 @@
               {
                 "label": "Quem era",
                 "values": [
-                  "Clero (Igreja)",
+                  "Clero",
                   "Nobreza",
-                  "Povo (camponeses, burgueses)"
+                  "Povo"
                 ]
               },
               {
                 "label": "População",
                 "values": [
-                  "~130 mil",
-                  "~350 mil",
-                  "~25 milhões"
+                  "130 mil",
+                  "350 mil",
+                  "25 milhões"
                 ]
               },
               {
-                "label": "Pagava impostos?",
+                "label": "Impostos?",
                 "values": [
                   "Não",
                   "Não",
-                  "Sim — todos os impostos"
+                  "Sim — todos"
                 ]
               },
               {
-                "label": "Tinha privilégios?",
+                "label": "Privilégios?",
                 "values": [
-                  "Sim — isenção total",
-                  "Sim — cargos e terras",
+                  "Sim",
+                  "Sim",
                   "Nenhum"
                 ]
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "layout": "report-block",
-      "content": {
-        "title": "Causas profundas",
-        "compact": true,
-        "blocks": [
+          },
           {
             "type": "callout",
             "kind": "danger",
-            "label": "Crise financeira",
-            "text": "A França gastou 1,3 bilhão de libras apoiando a independência dos EUA. A dívida equivalia a 4 anos de receita do Estado."
+            "label": "Dívida",
+            "text": "1,3 bilhão de libras gastos com guerras — 4 anos de receita do Estado."
           },
           {
             "type": "callout",
             "kind": "warning",
-            "label": "Crise agrícola",
-            "text": "Colheitas ruins em 1788-89 elevaram o preço do pão em 88%. Um trabalhador gastava 80% da renda só com pão."
+            "label": "Fome",
+            "text": "Preço do pão subiu 88% em 1788-89. Um trabalhador gastava 80% da renda só com pão."
           },
           {
             "type": "callout",
             "kind": "info",
-            "label": "Ideias iluministas",
-            "text": "Rousseau, Montesquieu e Voltaire pregavam que o poder emana do povo, não do rei."
+            "label": "Ideias",
+            "text": "Rousseau, Montesquieu e Voltaire pregavam que o poder emana do povo."
           },
           {
             "type": "callout",
             "kind": "note",
-            "label": "Desigualdade extrema",
-            "text": "Terceiro Estado = 98% da população, 0% do poder político."
+            "label": "Desigualdade",
+            "text": "98% da população com 0% do poder político."
           }
         ]
       }
@@ -110,7 +101,7 @@
     {
       "layout": "section",
       "content": {
-        "title": "O estopim da Revolução",
+        "title": "O estopim",
         "subtitle": "Maio a julho de 1789"
       }
     },
@@ -121,7 +112,7 @@
         "src": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Jacques_Louis_David_-_Le_serment_du_Jeu_de_Paume_-_Google_Art_Project.jpg",
         "alt": "Juramento",
         "caption": "Jacques-Louis David (esboço, 1791)",
-        "text": "Em 20 de junho de 1789, os deputados do Terceiro Estado reuniram-se numa quadra de jogo da pela e juraram não se separar até que a França tivesse uma Constituição. Foi o primeiro ato de desobediência civil da Revolução.",
+        "text": "20 de junho de 1789. Os deputados do Terceiro Estado juraram não se separar até que a França tivesse uma Constituição. Foi o primeiro ato de desobediência civil da Revolução.",
         "side": "left",
         "ratio": "45/55"
       }
@@ -133,7 +124,7 @@
         "src": "https://upload.wikimedia.org/wikipedia/commons/5/57/Anonymous_-_Prise_de_la_Bastille.jpg",
         "alt": "Bastilha",
         "caption": "Pintura anônima da época",
-        "text": "O povo de Paris invadiu a Bastilha em busca de armas e pólvora. A prisão-fortaleza, símbolo do absolutismo, caiu após horas de combate. Apenas 7 prisioneiros libertados, mas o impacto simbólico foi imenso.",
+        "text": "O povo de Paris invadiu a Bastilha em busca de armas. A prisão-fortaleza, símbolo do absolutismo, caiu após horas de combate. Impacto simbólico imenso: o povo mostrou que podia enfrentar o poder real.",
         "side": "right",
         "ratio": "45/55"
       }
@@ -141,7 +132,7 @@
     {
       "layout": "report-block",
       "content": {
-        "title": "Cronologia dos primeiros meses",
+        "title": "Cronologia e a Declaração dos Direitos",
         "compact": true,
         "blocks": [
           {
@@ -154,65 +145,42 @@
                 "text": "Luís XVI convoca os três estados"
               },
               {
-                "date": "17 jun 1789",
+                "date": "17 jun",
                 "status": "done",
                 "title": "Assembleia Nacional",
-                "text": "Terceiro Estado se proclama representante da nação"
+                "text": "Terceiro Estado toma o poder"
               },
               {
-                "date": "20 jun 1789",
+                "date": "20 jun",
                 "status": "done",
-                "title": "Juramento da Sala do Jogo da Pela",
-                "text": "Prometem não parar até ter uma Constituição"
+                "title": "Juramento",
+                "text": "Prometem uma Constituição"
               },
               {
-                "date": "14 jul 1789",
+                "date": "14 jul",
                 "status": "done",
                 "title": "Queda da Bastilha",
-                "text": "Povo de Paris toma a prisão-fortaleza real"
+                "text": "Povo toma a prisão real"
               },
               {
-                "date": "4 ago 1789",
+                "date": "4 ago",
                 "status": "done",
-                "title": "Noite do 4 de Agosto",
-                "text": "Abolição dos privilégios feudais"
+                "title": "Fim dos privilégios",
+                "text": "Noite do 4 de Agosto"
               },
               {
-                "date": "26 ago 1789",
+                "date": "26 ago",
                 "status": "done",
                 "title": "Declaração dos Direitos",
-                "text": "Marco dos direitos humanos universais"
+                "text": "Marco dos direitos humanos"
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "layout": "report-block",
-      "content": {
-        "title": "Declaração dos Direitos do Homem e do Cidadão",
-        "compact": true,
-        "blocks": [
+          },
           {
             "type": "quote",
             "text": "Os homens nascem e permanecem livres e iguais em direitos.",
             "cite": "Artigo 1º",
             "author": "Declaração dos Direitos do Homem e do Cidadão"
-          },
-          {
-            "type": "pros-cons",
-            "pros": [
-              "Liberdade de expressão e pensamento",
-              "Igualdade perante a lei",
-              "Soberania popular",
-              "Devido processo legal"
-            ],
-            "cons": [
-              "Excluía mulheres do direito ao voto",
-              "Mantinha escravidão colonial",
-              "Propriedade como direito absoluto"
-            ]
           }
         ]
       }
@@ -221,7 +189,7 @@
       "layout": "section",
       "content": {
         "title": "Personagens centrais",
-        "subtitle": "Os protagonistas da Revolução"
+        "subtitle": "Os protagonistas"
       }
     },
     {
@@ -243,7 +211,7 @@
             "Luís XVI — rei, executado em 1793",
             "Maria Antonieta — rainha, executada em 1793",
             "Brissot — líder girondino",
-            "Madame Roland — salonnière influente"
+            "Madame Roland — salonnière"
           ]
         },
         "ratio": "50/50"
@@ -263,7 +231,7 @@
         "src": "https://upload.wikimedia.org/wikipedia/commons/a/aa/Death_of_Marat_by_David.jpg",
         "alt": "Morte de Marat",
         "caption": "Jacques-Louis David, 1793",
-        "text": "Jean-Paul Marat foi assassinado a facadas em seu banho por Charlotte Corday, 24 anos. A pintura de David tornou-se símbolo do martírio revolucionário.",
+        "text": "Jean-Paul Marat foi assassinado a facadas em seu banho por Charlotte Corday (24 anos). O pintor David imortalizou o momento — a obra tornou-se símbolo do martírio revolucionário.",
         "side": "left",
         "ratio": "35/65"
       }
@@ -271,7 +239,7 @@
     {
       "layout": "report-block",
       "content": {
-        "title": "O Terror em dados",
+        "title": "O Terror em números",
         "compact": true,
         "blocks": [
           {
@@ -279,36 +247,27 @@
             "columns": 4,
             "items": [
               {
-                "health": "critical",
                 "label": "Execuções oficiais",
-                "value": "16.594"
+                "value": "16.594",
+                "health": "critical"
               },
               {
-                "health": "critical",
-                "label": "Vítimas sem julgamento",
-                "value": "~25.000"
+                "label": "Sem julgamento",
+                "value": "~25.000",
+                "health": "critical"
               },
               {
-                "health": "attention",
                 "label": "Do Terceiro Estado",
-                "value": "85%"
+                "value": "85%",
+                "health": "attention"
               },
               {
-                "health": "healthy",
                 "label": "Duração",
-                "value": "16 meses"
+                "value": "16 meses",
+                "health": "healthy"
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "layout": "report-block",
-      "content": {
-        "title": "Executados pela Revolução",
-        "compact": true,
-        "blocks": [
+          },
           {
             "type": "table",
             "columns": [
@@ -328,7 +287,7 @@
                 "Maria Antonieta",
                 "Rainha",
                 "16 out 1793",
-                "Acusações infundadas"
+                "Acusações infundadas, processo de 3 dias"
               ],
               [
                 "Danton",
@@ -340,7 +299,7 @@
                 "Robespierre",
                 "Líder do Terror",
                 "28 jul 1794",
-                "Sem julgamento, guilhotinado no dia seguinte"
+                "Sem julgamento — no dia seguinte à prisão"
               ]
             ]
           }
@@ -370,7 +329,7 @@
           {
             "type": "callout",
             "kind": "warning",
-            "label": "Ironia histórica",
+            "label": "Ironia",
             "text": "Robespierre, que enviou milhares à guilhotina, foi executado por ela sem julgamento."
           }
         ]
@@ -396,7 +355,7 @@
                 "date": "1795",
                 "status": "done",
                 "title": "Diretório",
-                "text": "Governo de 5 diretores"
+                "text": "Governo de 5 diretores — corrupção e instabilidade"
               },
               {
                 "date": "1798",
@@ -408,7 +367,7 @@
                 "date": "9 nov 1799",
                 "status": "done",
                 "title": "18 Brumário",
-                "text": "Golpe de Napoleão, fim da Revolução"
+                "text": "Golpe de Bonaparte, fim da Revolução"
               },
               {
                 "date": "1804",
@@ -417,6 +376,10 @@
                 "text": "Napoleão se coroa Imperador"
               }
             ]
+          },
+          {
+            "type": "paragraph",
+            "text": "O Diretório foi marcado por corrupção e instabilidade. Napoleão, após campanhas vitoriosas na Itália e no Egito, deu o golpe do 18 Brumário (9 nov 1799) e estabeleceu o Consulado. A Revolução Francesa chegava ao fim."
           }
         ]
       }
@@ -429,9 +392,21 @@
       }
     },
     {
+      "layout": "image-text",
+      "content": {
+        "title": "A Liberdade guiando o povo",
+        "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/La_Libert%C3%A9_guidant_le_peuple_-_Eug%C3%A8ne_Delacroix_-_Mus%C3%A9e_du_Louvre_Peintures_RF_129_-_apr%C3%A8s_restauration_2024.jpg",
+        "alt": "Liberdade",
+        "caption": "Eugène Delacroix, 1830",
+        "text": "A Liberdade empunhando a bandeira tricolor — símbolo universal do ideal revolucionário.",
+        "side": "right",
+        "ratio": "50/50"
+      }
+    },
+    {
       "layout": "report-block",
       "content": {
-        "title": "Impacto global",
+        "title": "Impacto histórico",
         "compact": true,
         "blocks": [
           {
@@ -449,73 +424,23 @@
                 "note": "do mundo"
               },
               {
-                "label": "Repúblicas no mundo",
+                "label": "Repúblicas",
                 "value": "159",
                 "note": "em 194 países"
               },
               {
-                "label": "Revoluções inspiradas",
+                "label": "Revoluções",
                 "value": "50+",
-                "note": "em todos os continentes"
+                "note": "inspiradas no mundo"
               }
             ]
-          }
-        ]
-      }
-    },
-    {
-      "layout": "image-text",
-      "content": {
-        "title": "A Liberdade guiando o povo",
-        "src": "https://upload.wikimedia.org/wikipedia/commons/0/02/La_Libert%C3%A9_guidant_le_peuple_-_Eug%C3%A8ne_Delacroix_-_Mus%C3%A9e_du_Louvre_Peintures_RF_129_-_apr%C3%A8s_restauration_2024.jpg",
-        "alt": "Liberdade",
-        "caption": "Eugène Delacroix, 1830",
-        "text": "A Liberdade empunhando a bandeira tricolor — símbolo do ideal revolucionário.",
-        "side": "right",
-        "ratio": "50/50"
-      }
-    },
-    {
-      "layout": "report-block",
-      "content": {
-        "title": "Análise histórica",
-        "compact": true,
-        "blocks": [
+          },
           {
             "type": "executive-summary",
             "context": "A Revolução Francesa (1789-1799) foi o evento fundador da política moderna. Em dez anos, derrubou uma monarquia de mil anos.",
-            "findings": "O legado moldou a república, os direitos humanos, o sistema métrico e a separação Igreja-Estado.",
+            "findings": "Moldou a república, os direitos humanos, o sistema métrico e a separação Igreja-Estado.",
             "risks": "O Terror mostra como ideais elevados podem degenerar em autoritarismo.",
             "recommendations": "Liberdade e igualdade são conquistadas e defendidas por instituições sólidas."
-          }
-        ]
-      }
-    },
-    {
-      "layout": "report-block",
-      "content": {
-        "title": "Para saber mais",
-        "compact": true,
-        "blocks": [
-          {
-            "type": "references",
-            "items": [
-              {
-                "title": "Cidadãos: Uma Crônica da Revolução Francesa",
-                "source": "Simon Schama",
-                "note": "Narrativa"
-              },
-              {
-                "title": "A Era das Revoluções",
-                "source": "Eric Hobsbawm",
-                "note": "Análise estrutural"
-              },
-              {
-                "title": "Reflexões sobre a Revolução na França",
-                "source": "Edmund Burke",
-                "note": "Crítica conservadora"
-              }
-            ]
           }
         ]
       }
@@ -524,7 +449,7 @@
       "layout": "section",
       "content": {
         "title": "Fim",
-        "subtitle": "Material didático com Dia Slides"
+        "subtitle": "Material didático produzido com Dia Slides"
       }
     }
   ]
