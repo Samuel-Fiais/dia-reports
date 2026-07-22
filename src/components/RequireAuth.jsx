@@ -6,7 +6,8 @@ export default function RequireAuth({ children }) {
   const location = useLocation()
   const params = new URLSearchParams(location.search)
 
-  // Links compartilhados (?shared=1) nao exigem autenticacao
+  // ?shared=1 deixa a pagina renderizar pra API decidir acesso
+  // A API valida visibility=public; privado sem sessao retorna 404
   if (params.get('shared') === '1') return children
 
   if (loading) return null

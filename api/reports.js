@@ -28,14 +28,7 @@ export default async function handler(req, res) {
     const db = getPool()
     const { slug, admin, shared, share } = parseRoute(req)
 
-    // Links compartilhados (?shared=1) no GET individual nao exigem login
-    const isPublicRequest = req.method === 'GET' && slug && shared
-
     const user = await getSessionUser(req)
-    if (!user && !isPublicRequest) {
-      sendJson(res, 401, { error: 'Not authenticated' })
-      return
-    }
 
     const isAdminRequest = admin && user && requirePermission(user, 'reports.manage')
 
@@ -92,7 +85,7 @@ export default async function handler(req, res) {
       const { rows } = await db.query(
         `
         SELECT
-          r.slug, r.title, r.date, r.updated_at, r.content,
+          r.slug, r.title, r.date, r.updated_at, r.content, r.visibility,
           COALESCE(
             (SELECT array_agg(rgm.group_id) FROM dia_reports.report_group_members rgm WHERE rgm.report_slug = r.slug),
             ARRAY[]::uuid[]
@@ -105,11 +98,33 @@ export default async function handler(req, res) {
 
       const report = rows[0]
 
+      if (!report) {
+        sendJson(res, 404, { error: 'Report not found' })
+        return
+      }
+
+      // ?shared=1 + visibility=public → acesso publico intencional (The Foreword)
+      if (shared && report.visibility === 'public') {
+        sendJson(res, 200, {
+          slug: report.slug,
+          title: report.title,
+          date: normalizeDate(report.date),
+          updatedAt: normalizeDate(report.updated_at),
+          content: report.content,
+          groupIds: report.group_ids ?? [],
+        })
+        return
+      }
+
+      // Sem sessão não pode acessar relatório privado
+      if (!user) {
+        sendJson(res, 401, { error: 'Not authenticated' })
+        return
+      }
+
       // 404 (não 403) tanto pra relatório inexistente quanto pra sem permissão —
-      // não vaza se o relatório existe mas está fora do alcance do usuário. Modo
-      // admin ignora a visibilidade por grupo. Modo shared permite acesso publico
-      // ao relatorio individual (sem groupIds).
-      if (!report || (!isAdminRequest && !shared && !canViewReport(user, report.group_ids))) {
+      // não vaza se o relatório existe mas está fora do alcance do usuário.
+      if (!isAdminRequest && !canViewReport(user, report.group_ids)) {
         sendJson(res, 404, { error: 'Report not found' })
         return
       }
