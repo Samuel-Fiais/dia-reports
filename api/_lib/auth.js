@@ -128,3 +128,33 @@ export function canViewReport(user, reportGroupIds) {
   if (!reportGroupIds || reportGroupIds.length === 0) return true
   return reportGroupIds.some((id) => user.allowedGroupIds.includes(id))
 }
+
+export const REPORT_VISIBILITY = {
+  PUBLIC: 'public',
+  PRIVATE: 'private',
+}
+
+export function normalizeReportVisibility(value) {
+  return value === REPORT_VISIBILITY.PUBLIC ? REPORT_VISIBILITY.PUBLIC : REPORT_VISIBILITY.PRIVATE
+}
+
+/** POST/PUT: reject invalid values; create defaults missing to private; update leaves missing unchanged. */
+export function parseReportVisibilityForWrite(value, mode) {
+  if (value === undefined) {
+    return mode === 'create' ? REPORT_VISIBILITY.PRIVATE : null
+  }
+  if (value !== REPORT_VISIBILITY.PUBLIC && value !== REPORT_VISIBILITY.PRIVATE) {
+    const err = new Error('visibility inválida — use "public" ou "private"')
+    err.statusCode = 400
+    throw err
+  }
+  return value
+}
+
+/** Leitura via GET /api/reports/:slug (não inclui token /api/shared). */
+export function canReadReport({ user, visibility, groupIds, isAdmin }) {
+  if (isAdmin) return true
+  if (normalizeReportVisibility(visibility) === REPORT_VISIBILITY.PUBLIC) return true
+  if (!user) return false
+  return canViewReport(user, groupIds)
+}

@@ -1,6 +1,12 @@
 import { getPool } from './_lib/db.js'
 import { sendJson, handleOptions, normalizeDate, readJsonBody } from './_lib/http.js'
-import { getSessionUser, canViewReport, requirePermission } from './_lib/auth.js'
+import {
+  getSessionUser,
+  requirePermission,
+  canReadReport,
+  normalizeReportVisibility,
+  parseReportVisibilityForWrite,
+} from './_lib/auth.js'
 
 export const config = {
   runtime: 'nodejs',
@@ -17,7 +23,6 @@ function parseRoute(req) {
     slug: slugMatch?.[1] ? decodeURIComponent(slugMatch[1]) : null,
     share: shareMatch?.[1] ? decodeURIComponent(shareMatch[1]) : null,
     admin: url.searchParams.get('admin') === '1',
-    shared: url.searchParams.get('shared') === '1',
   }
 }
 
@@ -26,9 +31,14 @@ export default async function handler(req, res) {
 
   try {
     const db = getPool()
-    const { slug, admin, shared, share } = parseRoute(req)
+    const { slug, admin, share } = parseRoute(req)
 
     const user = await getSessionUser(req)
+    const isPublicSlugGet = req.method === 'GET' && Boolean(slug)
+    if (!user && !isPublicSlugGet) {
+      sendJson(res, 401, { error: 'Not authenticated' })
+      return
+    }
 
     const isAdminRequest = admin && user && requirePermission(user, 'reports.manage')
 
@@ -42,6 +52,7 @@ export default async function handler(req, res) {
           r.title,
           r.date,
           r.updated_at,
+          COALESCE(r.visibility, 'private') AS visibility,
           r.content ->> 'from' AS from,
           r.content -> 'headline' AS headline,
           r.content -> 'intro' ->> 0 AS intro_first,
@@ -59,7 +70,16 @@ export default async function handler(req, res) {
         ORDER BY r.updated_at DESC
       `)
 
-      const visible = isAdminRequest ? rows : rows.filter((row) => canViewReport(user, row.group_ids))
+      const visible = isAdminRequest
+        ? rows
+        : rows.filter((row) =>
+            canReadReport({
+              user,
+              visibility: row.visibility,
+              groupIds: row.group_ids,
+              isAdmin: false,
+            }),
+          )
 
       sendJson(
         res,
@@ -85,7 +105,7 @@ export default async function handler(req, res) {
       const { rows } = await db.query(
         `
         SELECT
-          r.slug, r.title, r.date, r.updated_at, r.content, r.visibility,
+          r.slug, r.title, r.date, r.updated_at, r.content, COALESCE(r.visibility, 'private') AS visibility,
           COALESCE(
             (SELECT array_agg(rgm.group_id) FROM dia_reports.report_group_members rgm WHERE rgm.report_slug = r.slug),
             ARRAY[]::uuid[]
@@ -98,33 +118,16 @@ export default async function handler(req, res) {
 
       const report = rows[0]
 
-      if (!report) {
-        sendJson(res, 404, { error: 'Report not found' })
-        return
-      }
-
-      // ?shared=1 + visibility=public → acesso publico intencional (The Foreword)
-      if (shared && report.visibility === 'public') {
-        sendJson(res, 200, {
-          slug: report.slug,
-          title: report.title,
-          date: normalizeDate(report.date),
-          updatedAt: normalizeDate(report.updated_at),
-          content: report.content,
-          groupIds: report.group_ids ?? [],
+      // 404 (não 403) para inexistente ou sem permissão.
+      if (
+        !report ||
+        !canReadReport({
+          user,
+          visibility: report.visibility,
+          groupIds: report.group_ids,
+          isAdmin: isAdminRequest,
         })
-        return
-      }
-
-      // Sem sessão não pode acessar relatório privado
-      if (!user) {
-        sendJson(res, 401, { error: 'Not authenticated' })
-        return
-      }
-
-      // 404 (não 403) tanto pra relatório inexistente quanto pra sem permissão —
-      // não vaza se o relatório existe mas está fora do alcance do usuário.
-      if (!isAdminRequest && !canViewReport(user, report.group_ids)) {
+      ) {
         sendJson(res, 404, { error: 'Report not found' })
         return
       }
@@ -134,6 +137,7 @@ export default async function handler(req, res) {
         title: report.title,
         date: normalizeDate(report.date),
         updatedAt: normalizeDate(report.updated_at),
+        visibility: normalizeReportVisibility(report.visibility),
         content: report.content,
         groupIds: report.group_ids ?? [],
       })
@@ -175,17 +179,19 @@ export default async function handler(req, res) {
         return
       }
       const date = body.date || content.date || new Date().toISOString()
+      const visibility = parseReportVisibilityForWrite(body.visibility, 'create')
 
       try {
         const { rows } = await db.query(
-          'INSERT INTO reports (slug, title, date, content) VALUES ($1, $2, $3, $4::jsonb) RETURNING slug, title, date, updated_at',
-          [newSlug, title, date, JSON.stringify(content)],
+          'INSERT INTO reports (slug, title, date, content, visibility) VALUES ($1, $2, $3, $4::jsonb, $5) RETURNING slug, title, date, updated_at, visibility',
+          [newSlug, title, date, JSON.stringify(content), visibility],
         )
         sendJson(res, 201, {
           slug: rows[0].slug,
           title: rows[0].title,
           date: normalizeDate(rows[0].date),
           updatedAt: normalizeDate(rows[0].updated_at),
+          visibility: normalizeReportVisibility(rows[0].visibility),
         })
       } catch (err) {
         if (err.code === '23505') {
@@ -211,10 +217,15 @@ export default async function handler(req, res) {
         return
       }
       const date = body.date || content.date || new Date().toISOString()
+      const visibility = parseReportVisibilityForWrite(body.visibility, 'update')
 
       const { rows } = await db.query(
-        'UPDATE reports SET title = $1, date = $2, content = $3::jsonb WHERE slug = $4 RETURNING slug, title, date, updated_at',
-        [title, date, JSON.stringify(content), slug],
+        visibility === null
+          ? 'UPDATE reports SET title = $1, date = $2, content = $3::jsonb WHERE slug = $4 RETURNING slug, title, date, updated_at, visibility'
+          : 'UPDATE reports SET title = $1, date = $2, content = $3::jsonb, visibility = $5 WHERE slug = $4 RETURNING slug, title, date, updated_at, visibility',
+        visibility === null
+          ? [title, date, JSON.stringify(content), slug]
+          : [title, date, JSON.stringify(content), slug, visibility],
       )
       if (rows.length === 0) {
         sendJson(res, 404, { error: 'Relatório não encontrado' })
@@ -225,6 +236,7 @@ export default async function handler(req, res) {
         title: rows[0].title,
         date: normalizeDate(rows[0].date),
         updatedAt: normalizeDate(rows[0].updated_at),
+        visibility: normalizeReportVisibility(rows[0].visibility),
       })
       return
     }
