@@ -28,7 +28,7 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/shared/:token" element={<SharedReport />} />
             <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
-            <Route path="/report/:id" element={<RequireAuth><ReportPage /></RequireAuth>} />
+            <Route path="/report/:id" element={<ReportPage />} />
             <Route
               path="/admin/report-groups"
               element={

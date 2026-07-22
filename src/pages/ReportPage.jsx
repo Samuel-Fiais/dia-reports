@@ -1,32 +1,35 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { getReport } from "../lib/registry.js";
 import { applyTheme, loadSettings, saveSettings } from "../lib/theme.js";
 import { useAppTheme } from "../context/ThemeContext.jsx";
+import { useAuth } from "../context/AuthContext.jsx";
 import ReportView from "../components/ReportView.jsx";
 import SettingsPanel from "../components/SettingsPanel.jsx";
 import ShareButton from "../components/ShareButton.jsx";
 
+function defaultSettings(report) {
+  return {
+    colorIndex: report?.settings?.colorIndex ?? 0,
+    fontIndex: report?.settings?.fontIndex ?? 0,
+    chartStyleIndex: report?.settings?.chartStyleIndex ?? 2,
+    widthMode: report?.settings?.widthMode ?? "standard",
+    fontScale: report?.settings?.fontScale ?? "default",
+  };
+}
+
 export default function ReportPage() {
   const { id } = useParams();
-  const [searchParams] = useSearchParams();
-  const shared = searchParams.get("shared") === "1";
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const guestView = !user;
   const { appTheme } = useAppTheme();
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const [settings, setSettings] = useState(() => {
-    const reportSettings = {
-      colorIndex: report?.settings?.colorIndex ?? 0,
-      fontIndex: report?.settings?.fontIndex ?? 0,
-      chartStyleIndex: report?.settings?.chartStyleIndex ?? 2,
-      widthMode: report?.settings?.widthMode ?? "standard",
-      fontScale: report?.settings?.fontScale ?? "default",
-    };
-    return shared ? reportSettings : loadSettings(id, reportSettings);
-  });
+  const [settings, setSettings] = useState(() => defaultSettings(null));
 
   useEffect(() => {
     let cancelled = false;
@@ -35,20 +38,17 @@ export default function ReportPage() {
       try {
         setLoading(true);
         setError(null);
-        const data = await getReport(id, shared);
+        const data = await getReport(id);
         if (cancelled) return;
         setReport(data);
-        setSettings(
-          loadSettings(id, {
-            colorIndex: data?.settings?.colorIndex ?? 0,
-            fontIndex: data?.settings?.fontIndex ?? 0,
-            chartStyleIndex: data?.settings?.chartStyleIndex ?? 2,
-            widthMode: data?.settings?.widthMode ?? "standard",
-            fontScale: data?.settings?.fontScale ?? "default",
-          }),
-        );
+        const base = defaultSettings(data);
+        setSettings(guestView ? base : loadSettings(id, base));
       } catch (err) {
         if (!cancelled) {
+          if (err?.code === "UNAUTHENTICATED") {
+            navigate("/login", { replace: true, state: { from: { pathname: `/report/${id}` } } });
+            return;
+          }
           setReport(null);
           setError(err);
         }
@@ -62,7 +62,7 @@ export default function ReportPage() {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [id, guestView, navigate]);
 
   useEffect(() => {
     applyTheme(settings, appTheme);
@@ -103,7 +103,7 @@ export default function ReportPage() {
           <div className="report-intro">
             <p>
               A API não respondeu como esperado.{" "}
-              <Link to="/">Voltar ao dashboard</Link>.
+              {user ? <Link to="/">Voltar ao dashboard</Link> : null}
             </p>
           </div>
         </div>
@@ -124,7 +124,7 @@ export default function ReportPage() {
           <div className="report-intro">
             <p>
               Nenhum relatório com o id <code>{id}</code>.{" "}
-              <Link to="/">Voltar ao dashboard</Link>.
+              {user ? <Link to="/">Voltar ao dashboard</Link> : null}
             </p>
           </div>
         </div>
@@ -134,23 +134,25 @@ export default function ReportPage() {
 
   const handleChange = (next) => {
     setSettings(next);
-    saveSettings(id, next);
+    if (!guestView) saveSettings(id, next);
   };
 
   return (
     <>
-      {!shared && (
+      {!guestView && (
         <nav className="report-backnav">
           <Link to="/">
             <ArrowLeft size={12} aria-hidden="true" /> Relatórios
           </Link>
         </nav>
       )}
-      <div className="report-topnav">
-        <ShareButton reportId={report.id} />
-      </div>
+      {!guestView && (
+        <div className="report-topnav">
+          <ShareButton reportId={report.id} />
+        </div>
+      )}
       <ReportView report={report} settings={settings} />
-      {!shared && <SettingsPanel settings={settings} onChange={handleChange} />}
+      {!guestView && <SettingsPanel settings={settings} onChange={handleChange} />}
     </>
   );
 }

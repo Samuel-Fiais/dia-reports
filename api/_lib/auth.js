@@ -128,3 +128,20 @@ export function canViewReport(user, reportGroupIds) {
   if (!reportGroupIds || reportGroupIds.length === 0) return true
   return reportGroupIds.some((id) => user.allowedGroupIds.includes(id))
 }
+
+export const REPORT_VISIBILITY = {
+  PUBLIC: 'public',
+  PRIVATE: 'private',
+}
+
+export function normalizeReportVisibility(value) {
+  return value === REPORT_VISIBILITY.PUBLIC ? REPORT_VISIBILITY.PUBLIC : REPORT_VISIBILITY.PRIVATE
+}
+
+/** Leitura via GET /api/reports/:slug (não inclui token /api/shared). */
+export function canReadReport({ user, visibility, groupIds, isAdmin }) {
+  if (isAdmin) return true
+  if (normalizeReportVisibility(visibility) === REPORT_VISIBILITY.PUBLIC) return true
+  if (!user) return false
+  return canViewReport(user, groupIds)
+}
