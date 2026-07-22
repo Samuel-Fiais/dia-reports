@@ -81,7 +81,7 @@ export function renderFallbackShell(origin, { imageUrl } = {}) {
 }
 
 export function defaultOgImageUrl(origin) {
-  return `${origin}/og-default.svg`
+  return `${origin}/og-default.png`
 }
 
 export function requestOrigin(req) {
