@@ -8,6 +8,8 @@
     { "source": "/api/shared/:path*", "destination": "/api/shared" },
     { "source": "/api/ai/:path*", "destination": "/api/ai" },
     { "source": "/api/slides/:path*", "destination": "/api/slides" },
+    { "source": "/report/:slug", "destination": "/api/document?kind=report&slug=:slug" },
+    { "source": "/shared/:token", "destination": "/api/document?kind=shared&token=:token" },
     { "source": "/((?!api/|@)(?!.*\\.[a-zA-Z0-9]+$).*)", "destination": "/index.html" }
   ]
 }
