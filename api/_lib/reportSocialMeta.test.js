@@ -1,7 +1,7 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { extractReportDescription, buildReportSocialMeta } from './reportSocialMeta.js'
-import { escapeHtml, renderSpaShell } from './spaShell.js'
+import { extractReportDescription, buildReportSocialMeta, stripMarkdown } from './reportSocialMeta.js'
+import { escapeHtml, renderSpaShell, defaultOgImageUrl } from './spaShell.js'
 
 describe('extractReportDescription', () => {
   it('prefers headline string', () => {
@@ -10,6 +10,19 @@ describe('extractReportDescription', () => {
 
   it('uses intro when headline missing', () => {
     assert.equal(extractReportDescription({ intro: ['Primeiro parágrafo.'] }), 'Primeiro parágrafo.')
+  })
+
+  it('strips markdown from intro', () => {
+    assert.equal(
+      extractReportDescription({ intro: ['**Destaque** do dia'] }),
+      'Destaque do dia',
+    )
+  })
+})
+
+describe('stripMarkdown', () => {
+  it('removes bold markers', () => {
+    assert.equal(stripMarkdown('**negrito**'), 'negrito')
   })
 })
 
@@ -31,7 +44,7 @@ describe('renderSpaShell', () => {
       title: 'A & B',
       description: 'Desc <script>',
       canonicalUrl: 'https://dia.example/report/x',
-      imageUrl: 'https://dia.example/favicon.ico',
+      imageUrl: defaultOgImageUrl('https://dia.example'),
     })
     assert.match(html, /og:title" content="A &amp; B"/)
     assert.doesNotMatch(html, /<script>/)

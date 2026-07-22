@@ -11,5 +11,10 @@
     { "source": "/report/:slug", "destination": "/api/document?kind=report&slug=:slug" },
     { "source": "/shared/:token", "destination": "/api/document?kind=shared&token=:token" },
     { "source": "/((?!api/|@)(?!.*\\.[a-zA-Z0-9]+$).*)", "destination": "/index.html" }
-  ]
+  ],
+  "functions": {
+    "api/document.js": {
+      "includeFiles": "dist/index.html"
+    }
+  }
 }

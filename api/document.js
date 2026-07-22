@@ -1,17 +1,23 @@
 import { getPool } from './_lib/db.js'
 import { handleOptions } from './_lib/http.js'
-import { getSessionUser, canReadReport } from './_lib/auth.js'
+import { getSessionUser, canReadReport, normalizeReportVisibility, REPORT_VISIBILITY } from './_lib/auth.js'
 import { buildReportSocialMeta } from './_lib/reportSocialMeta.js'
-import { renderFallbackShell, renderSpaShell, requestOrigin } from './_lib/spaShell.js'
+import {
+  CACHE,
+  defaultOgImageUrl,
+  renderFallbackShell,
+  renderSpaShell,
+  requestOrigin,
+} from './_lib/spaShell.js'
 
 export const config = {
   runtime: 'nodejs',
 }
 
-function sendHtml(res, status, html) {
+function sendHtml(res, status, html, cacheControl) {
   res.status(status)
   res.setHeader('Content-Type', 'text/html; charset=utf-8')
-  res.setHeader('Cache-Control', 'public, max-age=60, s-maxage=300, stale-while-revalidate=600')
+  res.setHeader('Cache-Control', cacheControl)
   res.end(html)
 }
 
@@ -24,8 +30,10 @@ function parseQuery(req) {
   }
 }
 
-function defaultOgImage(origin) {
-  return `${origin}/favicon.ico`
+function cacheForPublicReport({ visibility, user }) {
+  const isPublic = normalizeReportVisibility(visibility) === REPORT_VISIBILITY.PUBLIC
+  if (isPublic && !user) return CACHE.PUBLIC_SHORT
+  return CACHE.PRIVATE
 }
 
 export default async function handler(req, res) {
@@ -36,6 +44,7 @@ export default async function handler(req, res) {
   }
 
   const origin = requestOrigin(req)
+  const ogImage = defaultOgImageUrl(origin)
   const { kind, slug, token } = parseQuery(req)
 
   try {
@@ -63,7 +72,7 @@ export default async function handler(req, res) {
         })
 
       if (!allowed) {
-        sendHtml(res, 404, renderFallbackShell(origin))
+        sendHtml(res, 404, renderFallbackShell(origin, { imageUrl: ogImage }), CACHE.PRIVATE)
         return
       }
 
@@ -72,9 +81,10 @@ export default async function handler(req, res) {
         title: report.title,
         content: report.content,
         canonicalUrl,
-        imageUrl: defaultOgImage(origin),
+        imageUrl: ogImage,
       })
-      sendHtml(res, 200, renderSpaShell(meta))
+      const cacheControl = cacheForPublicReport({ visibility: report.visibility, user })
+      sendHtml(res, 200, renderSpaShell(meta), cacheControl)
       return
     }
 
@@ -88,7 +98,7 @@ export default async function handler(req, res) {
       )
 
       if (rows.length === 0) {
-        sendHtml(res, 404, renderFallbackShell(origin))
+        sendHtml(res, 404, renderFallbackShell(origin, { imageUrl: ogImage }), CACHE.PRIVATE)
         return
       }
 
@@ -98,15 +108,20 @@ export default async function handler(req, res) {
         title: report.title,
         content: report.content,
         canonicalUrl,
-        imageUrl: defaultOgImage(origin),
+        imageUrl: ogImage,
       })
-      sendHtml(res, 200, renderSpaShell(meta))
+      sendHtml(
+        res,
+        200,
+        renderSpaShell({ ...meta, robots: 'noindex, nofollow' }),
+        CACHE.PRIVATE,
+      )
       return
     }
 
-    sendHtml(res, 404, renderFallbackShell(origin))
+    sendHtml(res, 404, renderFallbackShell(origin, { imageUrl: ogImage }), CACHE.PRIVATE)
   } catch (error) {
     console.error('document handler', error)
-    sendHtml(res, 500, renderFallbackShell(origin))
+    sendHtml(res, 500, renderFallbackShell(origin, { imageUrl: ogImage }), CACHE.PRIVATE)
   }
 }

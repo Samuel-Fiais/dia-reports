@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="Dia Relatórios">
+  <rect width="1200" height="630" fill="#1b1b19"/>
+  <path d="M360 195h130c110 0 180 60 180 120s-70 120-180 120H360V195Zm120 180c70 0 100-30 100-60s-30-60-100-60h-30v120h30Z" fill="#f4f2eb"/>
+  <text x="360" y="460" fill="#a8a59c" font-family="system-ui,sans-serif" font-size="36">dia.yellowduck.com.br</text>
+</svg>
