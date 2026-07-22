@@ -1,4 +1,6 @@
 -- Run once against the Neon database (dia_reports / public schema).
+BEGIN;
+
 ALTER TABLE reports
   ADD COLUMN IF NOT EXISTS visibility text NOT NULL DEFAULT 'private';
 
@@ -12,3 +14,5 @@ ALTER TABLE reports
 UPDATE reports
 SET visibility = 'public'
 WHERE slug LIKE 'the-foreword-%';
+
+COMMIT;

@@ -1,6 +1,12 @@
 import { getPool } from './_lib/db.js'
 import { sendJson, handleOptions, normalizeDate, readJsonBody } from './_lib/http.js'
-import { getSessionUser, requirePermission, canReadReport, normalizeReportVisibility } from './_lib/auth.js'
+import {
+  getSessionUser,
+  requirePermission,
+  canReadReport,
+  normalizeReportVisibility,
+  parseReportVisibilityForWrite,
+} from './_lib/auth.js'
 
 export const config = {
   runtime: 'nodejs',
@@ -173,7 +179,7 @@ export default async function handler(req, res) {
         return
       }
       const date = body.date || content.date || new Date().toISOString()
-      const visibility = normalizeReportVisibility(body.visibility)
+      const visibility = parseReportVisibilityForWrite(body.visibility, 'create')
 
       try {
         const { rows } = await db.query(
@@ -211,8 +217,7 @@ export default async function handler(req, res) {
         return
       }
       const date = body.date || content.date || new Date().toISOString()
-      const visibility =
-        body.visibility === undefined ? null : normalizeReportVisibility(body.visibility)
+      const visibility = parseReportVisibilityForWrite(body.visibility, 'update')
 
       const { rows } = await db.query(
         visibility === null
