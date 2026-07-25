@@ -6,7 +6,6 @@
     { "source": "/api/profiles/:path*", "destination": "/api/profiles" },
     { "source": "/api/users/:path*", "destination": "/api/users" },
     { "source": "/api/shared/:path*", "destination": "/api/shared" },
-    { "source": "/api/ai/:path*", "destination": "/api/ai" },
     { "source": "/api/slides/:path*", "destination": "/api/slides" },
     { "source": "/report/:slug", "destination": "/api/document?kind=report&slug=:slug" },
     { "source": "/shared/:token", "destination": "/api/document?kind=shared&token=:token" },

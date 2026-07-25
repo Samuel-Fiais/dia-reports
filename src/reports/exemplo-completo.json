@@ -669,7 +669,7 @@
           "title": "`mermaid` — diagramas declarativos",
           "description": "Propriedades: `code`, `align` e `caption`. A definição Mermaid é renderizada como SVG e atualizada na prévia do editor.",
           "blocks": [
-            { "type": "mermaid", "code": "flowchart LR\n  Brief[Brief] --> Editor[Editor visual]\n  Editor --> Preview[Prévia]\n  Preview --> Publish[Publicação]", "align": "center", "caption": "Fluxo de criação de um relatório." }
+            { "type": "mermaid", "code": "flowchart LR\n  Brief[Brief] --> JSON[JSON validado]\n  JSON --> Preview[Prévia]\n  Preview --> Publish[Publicação externa]", "align": "center", "caption": "Fluxo de criação de um relatório." }
           ]
         },
         {

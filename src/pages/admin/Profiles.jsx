@@ -16,7 +16,7 @@ const MODULES = [
   { key: 'report_groups.manage', label: 'Gerenciar grupos de relatórios' },
   { key: 'profiles.manage', label: 'Gerenciar perfis' },
   { key: 'users.manage', label: 'Gerenciar usuários' },
-  { key: 'reports.manage', label: 'Gerenciar relatórios (editor)' },
+  { key: 'reports.manage', label: 'Gerenciar apresentações e compartilhamento' },
 ]
 
 function emptyForm() {

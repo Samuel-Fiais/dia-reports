@@ -9,9 +9,10 @@ npm install       # install deps
 npm run dev       # vite dev server
 npm run build     # production build (dist/)
 npm run preview   # preview the production build
+npm test          # node:test suite for API helpers
 ```
 
-No test runner or linter is configured in this project.
+No linter is configured in this project.
 
 The API route (`api/reports.js`) is a Vercel serverless function and needs `DATABASE_URL`
 (Neon Postgres connection string, see `.env.local`) to respond — `npm run dev` alone (plain
@@ -23,11 +24,11 @@ Vite) won't serve `/api/*`. Use `vercel dev` if you need to exercise the API loc
 `exemplo-completo.json`) are schema references/examples only — the running app does **not**
 import them. `src/lib/registry.js` fetches report data over HTTP from `/api/reports` (list)
 and `/api/reports/:slug` (single), and `api/reports.js` queries a Postgres `reports` table
-(via `@neondatabase/serverless`) with columns `slug`, `title`, `date`, `content` (jsonb). If
-you're asked to add/edit a report, the content needs to end up as a row in that table — editing
-or adding a file under `src/reports/` alone has no effect on the deployed/dev app. Routing to
-the API is done via `vercel.json` rewrites (`/api/reports/:path*` → `/api/reports`, catch-all
-`[[...slug]].js`-style single function).
+(via `@neondatabase/serverless`) with columns `slug`, `title`, `date`, `content` (jsonb).
+This repository is only the renderer/admin shell; report content is published by an external
+authorized process writing to Postgres. Editing or adding a file under `src/reports/` alone has
+no effect on the deployed/dev app. Routing to the API is done via `vercel.json` rewrites
+(`/api/reports/:path*` → `/api/reports`, catch-all `[[...slug]].js`-style single function).
 
 **Report rendering pipeline**: `pages/ReportPage.jsx` fetches one report by `:id` and renders
 it through `components/ReportView.jsx`. Each `body` block's `type` is dispatched by the giant
@@ -50,10 +51,10 @@ the "Customize Report" (⚙) panel (`components/SettingsPanel.jsx`), persisted t
 `localStorage` keyed by report id. Dark/light app theme is separate, global, and lives in
 `context/ThemeContext.jsx`.
 
-**No auth**: the "Share" button (`components/ShareButton.jsx`) just copies a
-`/report/<id>?shared=1` link for UI convenience (hides the back-to-dashboard chrome) — it is
-not access control. Don't imply otherwise when discussing "sharing" a report with sensitive
-data.
+**Auth and sharing**: report reads are filtered by visibility and report groups in
+`api/_lib/auth.js`. The "Share" button (`components/ShareButton.jsx`) asks the API to create a
+share token and copies `/shared/<token>`; do not model report visibility as a JSON field in
+`content`.
 
 ## Language
 

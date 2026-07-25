@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom'
 import { ArrowLeft, Plus } from 'lucide-react'
 import { formatReportDate } from '../../lib/theme.js'
 
-// Casca de página compartilhada por todas as telas administrativas (grupos,
-// perfis, usuários, editor de relatórios): mesmo header/headline/intro do resto
-// do app, mais o cabeçalho de seção com o botão "+ Novo X".
+// Casca de página compartilhada pelas telas administrativas: mesmo
+// header/headline/intro do resto do app, mais o cabeçalho de seção com o botão
+// "+ Novo X".
 export default function AdminPage({ title, description, sectionHeading, newLabel, onNew, children }) {
   return (
     <div className="report ready">

@@ -9,8 +9,6 @@ export const config = {
 function parsePath(req) {
   const url = new URL(req.url, `http://${req.headers.host ?? 'localhost'}`)
   const path = url.pathname.replace(/\/+$/, '')
-  const byReport = path.match(/^\/api\/report-groups\/by-report\/([^/]+)$/)
-  if (byReport) return { kind: 'by-report', slug: decodeURIComponent(byReport[1]) }
   const byId = path.match(/^\/api\/report-groups\/([^/]+)$/)
   if (byId) return { kind: 'by-id', id: decodeURIComponent(byId[1]) }
   return { kind: 'collection' }
@@ -28,50 +26,6 @@ export default async function handler(req, res) {
 
     const db = getPool()
     const route = parsePath(req)
-
-    if (route.kind === 'by-report') {
-      if (req.method === 'GET') {
-        const { rows } = await db.query(
-          'SELECT group_id FROM dia_reports.report_group_members WHERE report_slug = $1',
-          [route.slug],
-        )
-        sendJson(res, 200, rows.map((r) => r.group_id))
-        return
-      }
-
-      if (req.method === 'PUT') {
-        if (!requirePermission(user, 'reports.manage')) {
-          sendJson(res, 403, { error: 'Sem permissão' })
-          return
-        }
-        const body = await readJsonBody(req)
-        const groupIds = Array.isArray(body.groupIds) ? body.groupIds : []
-
-        const client = await db.connect()
-        try {
-          await client.query('BEGIN')
-          await client.query('DELETE FROM dia_reports.report_group_members WHERE report_slug = $1', [route.slug])
-          for (const groupId of groupIds) {
-            await client.query(
-              'INSERT INTO dia_reports.report_group_members (report_slug, group_id) VALUES ($1, $2)',
-              [route.slug, groupId],
-            )
-          }
-          await client.query('COMMIT')
-        } catch (err) {
-          await client.query('ROLLBACK')
-          throw err
-        } finally {
-          client.release()
-        }
-
-        sendJson(res, 200, { groupIds })
-        return
-      }
-
-      sendJson(res, 405, { error: 'Method not allowed' })
-      return
-    }
 
     // Leitura (lista/detalhe) exige só sessão válida; escrita exige permissão.
     if (req.method === 'GET' && route.kind === 'collection') {
