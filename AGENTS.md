@@ -1,32 +1,27 @@
 # Guia para agentes de IA: como criar um relatório
 
-Este arquivo é para você, agente de IA, gerando relatórios para este projeto.
-Leia isto antes de criar ou editar o conteúdo de qualquer relatório.
+Este arquivo é para você, agente de IA, gerando JSON de relatórios para este projeto.
+Leia isto antes de criar ou revisar qualquer conteúdo de relatório.
 
 ## Onde o relatório realmente vive
 
 Relatórios são linhas na tabela `reports` do Postgres (`slug`, `title`, `date`, `content`
 jsonb), servidas por `api/reports.js`, **não** arquivos `.json` em `src/reports/`. Os arquivos
 dessa pasta (`exemplo-completo.json` etc.) são só material de referência — editá-los ou criar
-um novo não tem nenhum efeito no app rodando. Editar ou criar um relatório de verdade exige
-uma chamada autenticada à API (ou o editor visual/tela admin, se você estiver operando no
-navegador em nome de alguém já logado):
+um novo não tem nenhum efeito no app rodando. Este repositório é apenas renderizador: não há
+fluxo interno nem endpoint para gravar conteúdo de relatório.
 
-- `POST /api/reports` com `{ slug, title, date?, content }` — cria.
-- `PUT /api/reports/:slug` com `{ title, date?, content }` — atualiza.
-- Ambos exigem sessão autenticada com a permissão `reports.manage`; sem isso a API responde
-  403. Se você não tem como autenticar (execução non-interativa, sem cookie de sessão),
-  **não finja que publicou** — entregue o JSON pronto e diga explicitamente que falta alguém
-  com acesso salvar via `/admin/reports` (colar/importar o JSON) ou pelo editor visual em
-  `/admin/reports/:slug/edit`.
+- Para publicar de verdade, um processo externo autorizado precisa gravar/atualizar a linha em
+  `reports` no Postgres.
+- Se você não tem acesso a esse processo, **não finja que publicou** — entregue o JSON pronto e
+  diga explicitamente que falta alguém com acesso persistir o conteúdo no banco.
 - Visibilidade por leitor é controlada por grupos (`report_group_members`), não pelo JSON do
-  relatório — se o pedido mencionar restringir quem vê o relatório, isso se resolve na tela
-  admin (associação relatório↔grupo), não como um campo em `content`.
+  relatório — se o pedido mencionar restringir quem vê o relatório, isso se resolve no processo
+  administrativo que associa relatório↔grupo, não como um campo em `content`.
 
 ## O que você pode e não pode tocar
 
-- **Pode**: montar o objeto `content` (o JSON do relatório) e, se tiver acesso autenticado,
-  enviá-lo via API/admin.
+- **Pode**: montar o objeto `content` (o JSON do relatório) para publicação externa.
 - **Não precisa tocar** (e normalmente não deve): nada em `src/components/`, `src/pages/`,
   `src/lib/` ou `src/styles/dia.css`. O visualizador já sabe renderizar qualquer relatório que
   siga o schema — você só escreve dados.
@@ -39,15 +34,15 @@ navegador em nome de alguém já logado):
 ## Fluxo de trabalho
 
 1. Escolha um `slug`/`id` em kebab-case, único, sem espaços (`analise-churn-q3`, não
-   `Análise de Churn Q3`). Vira a URL (`/report/<slug>`) — a API rejeita slugs fora do padrão
-   `^[a-z0-9]+(-[a-z0-9]+)*$` e um slug já existente (409).
+   `Análise de Churn Q3`). Vira a URL (`/report/<slug>`); use o padrão
+   `^[a-z0-9]+(-[a-z0-9]+)*$`.
 2. Escreva o JSON seguindo o schema completo em [REPORT-SCHEMA.md](REPORT-SCHEMA.md) (leia
    esse arquivo — este aqui é só a camada de orientação, não repete a referência de cada
    bloco).
 3. Use `src/reports/exemplo-completo.json` como referência viva: ele contém pelo menos um
    exemplo de cada bloco existente, com explicações inline em `description`.
-4. Publique via API/admin conforme a seção anterior. Não existe descoberta automática de
-   arquivo — sem essa chamada, o relatório não aparece em lugar nenhum.
+4. Entregue o JSON para publicação externa no Postgres. Não existe descoberta automática de
+   arquivo — sem persistência no banco, o relatório não aparece em lugar nenhum.
 5. Valide o JSON (chaves fechadas, vírgulas, aspas) antes de finalizar — um JSON inválido
    quebra a renderização do relatório inteiro.
 
@@ -103,13 +98,12 @@ usuário não pedir uma aparência específica.
 
 ## Compartilhamento e visibilidade — não confunda os dois mecanismos
 
-O botão "Share" copia um link direto (`/report/<slug>?shared=1`) — é conveniência de
-navegação (esconde o link de volta ao dashboard), **não é o controle de acesso**. Quem
-efetivamente pode ver um relatório é decidido pelos grupos associados a ele
-(`report_group_members`) e pela permissão do usuário logado, verificados pela API antes de
-qualquer conteúdo ser servido — sem sessão válida, a API responde 401/404 mesmo para o link
-direto. Se o usuário pedir para "restringir a um time" ou "enviar só para fulano", isso se
-resolve associando o relatório ao grupo certo na tela admin, não com um campo no JSON.
+O botão "Share" cria um token e copia um link `/shared/<token>`. Isso é diferente da
+visibilidade normal por grupos: quem vê `/report/<slug>` é decidido pelos grupos associados ao
+relatório (`report_group_members`) e pela permissão do usuário logado, verificados pela API
+antes de qualquer conteúdo ser servido. Se o usuário pedir para "restringir a um time" ou
+"enviar só para fulano", isso se resolve associando o relatório ao grupo certo no processo
+administrativo externo, não com um campo no JSON.
 
 ## Checklist antes de entregar
 
@@ -120,6 +114,5 @@ resolve associando o relatório ao grupo certo na tela admin, não com um campo 
 - [ ] Blocos usam apenas os `type` documentados em [REPORT-SCHEMA.md](REPORT-SCHEMA.md) /
       `src/lib/blockRegistry.js`.
 - [ ] JSON válido (sem vírgula sobrando, aspas fechadas).
-- [ ] Deixou claro como o conteúdo será publicado (API autenticada vs. entregar o JSON para
-      alguém colar no admin) — nunca reportado como "publicado" sem confirmação de que a
-      chamada foi de fato aceita (201/200, não 401/403).
+- [ ] Deixou claro como o conteúdo será publicado externamente — nunca reporte como
+      "publicado" sem confirmação de que a linha foi persistida no Postgres.

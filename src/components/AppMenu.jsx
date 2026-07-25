@@ -16,9 +16,6 @@ const MENU_ITEMS = [
   { type: 'link', key: 'report-groups', label: 'Grupos de relatórios', icon: FolderKanban, to: '/admin/report-groups', permission: 'report_groups.manage' },
   { type: 'link', key: 'profiles', label: 'Perfis', icon: ShieldCheck, to: '/admin/profiles', permission: 'profiles.manage' },
   { type: 'link', key: 'users', label: 'Usuários', icon: User, to: '/admin/users', permission: 'users.manage' },
-  // Editor visual removido — relatórios são gerenciados via JSON direto no ReportsAdmin
-  // { key: 'reports-admin', label: 'Editor de relatórios', icon: FileEdit, to: '/admin/reports', permission: 'reports.manage' },
-  { type: 'link', key: 'reports-admin', label: 'Gerenciar relatórios', icon: Settings, to: '/admin/reports', permission: 'reports.manage' },
   { type: 'separator' },
   { type: 'label', key: 'slides-label', label: 'Apresentações' },
   { type: 'link', key: 'slides', label: 'Apresentações', icon: Presentation, to: '/slides' },

@@ -3,7 +3,7 @@ import Dialog from './Dialog.jsx'
 import FormActions from './FormActions.jsx'
 
 // Modal de confirmação genérico — substitui window.confirm/window.alert em fluxos
-// destrutivos (excluir grupo, perfil, usuário, relatório...) mantendo a imersão do
+// destrutivos (excluir grupo, perfil, usuário...) mantendo a imersão do
 // app. `error`, se presente, mostra a mensagem sem fechar o modal (ex.: falha na
 // exclusão), permitindo tentar de novo ou cancelar.
 export default function ConfirmDialog({

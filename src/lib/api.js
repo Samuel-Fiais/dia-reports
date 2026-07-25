@@ -16,7 +16,3 @@ export function jsonBody(data) {
     body: JSON.stringify(data),
   }
 }
-
-export async function askAi(payload) {
-  return fetchJson('/api/ai', { method: 'POST', ...jsonBody(payload) })
-}

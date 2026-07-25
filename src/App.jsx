@@ -6,9 +6,6 @@ import Login from './pages/Login.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
-import ReportsAdmin from './pages/admin/ReportsAdmin.jsx'
-// Editor visual removido — gerenciamento de relatórios via JSON direto no ReportsAdmin
-// import ReportEditorPage from './components/editor/ReportEditorPage.jsx'
 import SlidesHome from './pages/SlidesHome.jsx'
 import SlideViewer from './pages/SlideViewer.jsx'
 import SlideDetailPage from './pages/SlideDetailPage.jsx'
@@ -59,27 +56,6 @@ export default function App() {
                 </RequireAuth>
               }
             />
-            <Route
-              path="/admin/reports"
-              element={
-                <RequireAuth>
-                  <RequirePermission module="reports.manage">
-                    <ReportsAdmin />
-                  </RequirePermission>
-                </RequireAuth>
-              }
-            />
-            {/* Editor visual removido */}
-            {/* <Route
-              path="/admin/reports/:slug/edit"
-              element={
-                <RequireAuth>
-                  <RequirePermission module="reports.manage">
-                    <ReportEditorPage />
-                  </RequirePermission>
-                </RequireAuth>
-              }
-            /> */}
             <Route path="/slides" element={<RequireAuth><SlidesHome /></RequireAuth>} />
             <Route path="/slides/:id" element={<RequireAuth><SlideViewer /></RequireAuth>} />
             <Route path="/slides/:id/view" element={<RequireAuth><SlideDetailPage /></RequireAuth>} />

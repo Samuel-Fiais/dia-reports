@@ -214,12 +214,12 @@ export default function SlidesAdmin() {
         <Dialog
           eyebrow="Apresentações"
           title={editingSlug ? 'Editar deck' : 'Novo deck'}
-          className="dia-modal--report-editor"
+          className="dia-modal--deck-json"
           onClose={() => setModalOpen(false)}
         >
           <form className="admin-form" onSubmit={handleSubmit}>
-            <div className="report-editor-grid">
-              <div className="report-editor-col report-editor-col--left">
+            <div className="deck-json-grid">
+              <div className="deck-json-col deck-json-col--left">
                 <FormField label="Slug (URL do deck)">
                   <input
                     type="text"
@@ -236,7 +236,7 @@ export default function SlidesAdmin() {
                 </FormField>
               </div>
 
-              <div className="report-editor-col report-editor-col--right">
+              <div className="deck-json-col deck-json-col--right">
                 <FormField label="JSON">
                   <JsonEditor value={jsonText} onChange={setJsonText} valid={Boolean(parsed)} />
                 </FormField>

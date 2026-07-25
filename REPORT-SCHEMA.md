@@ -4,13 +4,9 @@ Todo relatório é um objeto JSON guardado na coluna `content` (jsonb) da tabela
 no Postgres — **não** um arquivo em `src/reports/`. Os arquivos dessa pasta
 (`exemplo-completo.json` etc.) são só referência: o app em execução nunca os lê.
 
-Para publicar um relatório, o JSON precisa ser enviado por uma das vias abaixo (ver
-[AGENTS.md](AGENTS.md) para o fluxo completo):
-
-- Editor visual em `/admin/reports/:slug/edit` (grid de blocos com inspector lateral).
-- Colar/importar o JSON na tela `/admin/reports` (`JsonEditor`).
-- Diretamente na API: `POST /api/reports` (criar) / `PUT /api/reports/:slug` (atualizar),
-  autenticado e com a permissão `reports.manage`.
+Este repositório não inclui editor nem endpoint de escrita de relatórios. Para publicar, um
+processo externo autorizado deve gravar o JSON na tabela `reports`; o app apenas lista e
+renderiza o que já está salvo.
 
 ## Estrutura raiz
 
@@ -31,10 +27,10 @@ Para publicar um relatório, o JSON precisa ser enviado por uma das vias abaixo 
 
 | Campo | Obrigatório | Descrição |
 |---|---|---|
-| `id` | não (na criação vira `slug`) | Slug da URL (`/report/<slug>`), kebab-case. Definido no ato de criar o relatório; não muda depois. |
-| `title` | sim | Título do documento (aba do navegador) e da listagem admin. |
+| `id` | não | Slug canônico da URL (`/report/<slug>`), kebab-case. Normalmente espelha a coluna `slug`. |
+| `title` | sim | Título do documento (aba do navegador e listagem). |
 | `from` | não | Rótulo em caixa alta no topo esquerdo. Default: o próprio `title`. |
-| `date` | sim | ISO 8601. Se omitido na criação/edição, usa o momento do salvamento. |
+| `date` | sim | ISO 8601. |
 | `settings` | não | Aparência inicial (o leitor pode mudar no seletor ⚙ "Customize Report"; a escolha dele fica em `localStorage`, não altera o JSON salvo). |
 | `headline` | sim | Título grande. Array = uma linha por item (quebra com `<br>`). Curto: 1-2 linhas de poucas palavras. |
 | `cover` | não | Capa/hero integrada ao título. Sem `cover.src`, o hero renderiza em modo "plano" (só data). |
