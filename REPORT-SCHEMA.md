@@ -7,6 +7,18 @@ ou tipos que embutam linguagem de reunião, incidente, decisão ou qualquer outr
 `src/lib/blockManifest.js` é a fonte única dos nomes canônicos, campos editáveis, variantes,
 posicionamentos, valores iniciais e renderizador de cada bloco.
 
+## Catálogo vivo
+
+`/componentes` renderiza um documento virtual gerado por `src/lib/componentCatalog.js`.
+O gerador percorre todas as entradas do manifesto, preenche os campos de acordo com seus
+tipos e organiza os exemplos por categoria. Ele não é salvo na tabela `reports`.
+
+A cobertura é automática: todo tipo canônico deve aparecer no catálogo. Ao adicionar um
+componente, os testes falham se faltar renderizador, posicionamento ou suporte ao tipo de campo
+usado pelo exemplo. Refinamentos específicos servem apenas para dados que precisam ser
+semanticamente válidos, como uma definição Mermaid; eles não controlam quais tipos entram no
+documento.
+
 ## Estrutura raiz
 
 ```json

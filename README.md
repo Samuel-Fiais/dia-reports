@@ -4,6 +4,8 @@ Renderizador de publicações estruturadas em React.
 
 - **Home/dashboard** lista relatórios lidos da API (`GET /api/reports`), com conteúdo vindo da tabela Postgres `reports`.
 - **Clicar em um relatório** abre `/report/<slug>` renderizado a partir do JSON salvo no banco.
+- **Catálogo vivo de componentes** em `/componentes`: documento virtual gerado diretamente
+  por `blockManifest.js`, com um exemplo preenchido de cada componente. Não depende do banco.
 - **Seletor ⚙ "Customize Report"** no canto inferior direito: paleta de fundos, estilos de gráfico, 4 temas tipográficos e 3 tratamentos de componentes (Editorial, Estruturado e Minimalista). A escolha é salva por relatório no `localStorage`.
 - **Tema escuro**: ícone de sol/lua ao lado do ⚙, afeta o app inteiro (dashboard + relatórios); preferência salva no navegador.
 - **Share**: botão no topo de cada relatório cria/copia um link `/shared/<token>` quando permitido; o acesso ao conteúdo continua passando pela API.

@@ -9,6 +9,10 @@ Publicações são linhas na tabela `reports` do Postgres (`slug`, `title`, `dat
 jsonb), servidas por `api/reports.js`. Este repositório é apenas renderizador: não há
 fluxo interno nem endpoint para gravar conteúdo.
 
+A única exceção é `/componentes`: ele é um documento de sistema, gerado em tempo de execução
+por `src/lib/componentCatalog.js` a partir de `src/lib/blockManifest.js`. Não trate esse
+catálogo como conteúdo publicável nem tente persistir suas amostras no banco.
+
 - Para publicar de verdade, um processo externo autorizado precisa gravar/atualizar a linha em
   `reports` no Postgres.
 - Se você não tem acesso a esse processo, **não finja que publicou** — entregue o JSON pronto e
