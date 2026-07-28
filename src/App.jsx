@@ -6,9 +6,6 @@ import Login from './pages/Login.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
-import SlidesHome from './pages/SlidesHome.jsx'
-import SlideViewer from './pages/SlideViewer.jsx'
-import SlideDetailPage from './pages/SlideDetailPage.jsx'
 import { ThemeProvider } from './context/ThemeContext.jsx'
 import { AuthProvider } from './context/AuthContext.jsx'
 import RequireAuth from './components/RequireAuth.jsx'
@@ -56,9 +53,6 @@ export default function App() {
                 </RequireAuth>
               }
             />
-            <Route path="/slides" element={<RequireAuth><SlidesHome /></RequireAuth>} />
-            <Route path="/slides/:id" element={<RequireAuth><SlideViewer /></RequireAuth>} />
-            <Route path="/slides/:id/view" element={<RequireAuth><SlideDetailPage /></RequireAuth>} />
           </Routes>
         </BrowserRouter>
       </ThemeProvider>
