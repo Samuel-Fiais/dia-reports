@@ -2966,6 +2966,33 @@ blockquote footer a:hover {
   font-size: 0.78rem;
 }
 
+.reference-security-grid article > label {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.45fr) minmax(0, 1fr);
+  align-items: center;
+  gap: 1.25rem;
+  padding-top: 0.75rem;
+  border-top: 0.5px solid var(--hairline);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.reference-security-grid input {
+  min-width: 0;
+  padding: 0.55rem 0.65rem;
+  color: var(--ink);
+  background: var(--surface);
+  border: 0.5px solid var(--hairline);
+  border-radius: var(--control-radius);
+  outline: 0;
+  font: inherit;
+}
+
+.reference-security-grid input:focus {
+  border-color: var(--hairline-strong);
+}
+
 .reference-guides {
   max-width: 68rem;
   display: grid;
@@ -3984,42 +4011,23 @@ blockquote footer a:hover {
   font-size: 0.68rem;
 }
 
-.reference-show-more {
-  grid-column: 2;
-  width: fit-content;
-  justify-self: end;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.25rem 0;
-  color: var(--ink-secondary);
-  border-bottom: 0.5px solid var(--hairline-strong);
-  text-decoration: none;
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-}
-
-.reference-show-more:hover {
-  color: var(--ink);
-  border-bottom-color: var(--ink);
-  text-decoration: none;
-}
-
-.reference-show-more span {
-  transition: transform 0.15s ease;
-}
-
-.reference-show-more:hover span {
-  transform: translateX(0.2rem);
-}
-
 .reference-operations-header,
 .reference-tag-group {
   max-width: 88rem;
 }
 
 .reference-tag-group {
-  padding-top: 7rem;
+  padding-top: 5rem;
+  border-top: 0.5px solid var(--hairline);
+}
+
+.reference-tag-overview--mixed {
+  padding: 0 0 2.25rem;
+  border-top: 0;
+}
+
+.reference-tag-details .reference-operation:first-child {
+  margin-top: 0;
 }
 
 .reference-operation {
@@ -4448,10 +4456,6 @@ blockquote footer a:hover {
     grid-template-columns: 1fr;
   }
 
-  .reference-show-more {
-    grid-column: 1;
-  }
-
   .reference-operation-facts {
     grid-template-columns: 1fr;
   }
@@ -4475,6 +4479,11 @@ blockquote footer a:hover {
 
   .reference-security-grid article {
     grid-template-columns: 1fr;
+  }
+
+  .reference-security-grid article > label {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
   }
 
   .reference-hero h1 {

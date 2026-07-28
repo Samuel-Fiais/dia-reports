@@ -896,7 +896,7 @@ function Models({ models }) {
   )
 }
 
-function SecurityOverview({ schemes }) {
+function SecurityOverview({ schemes, credentials, onCredentialChange }) {
   if (!schemes.length) return null
   return (
     <section id="reference-authentication" className="reference-overview-section">
@@ -904,8 +904,7 @@ function SecurityOverview({ schemes }) {
       <div>
         <h2>Autenticação</h2>
         <p>
-          Configure as credenciais dentro de “Test Request”. Elas permanecem apenas nesta
-          página e não são salvas.
+          As credenciais abaixo são usadas nos testes desta página e não são salvas.
         </p>
         <div className="reference-security-grid">
           {schemes.map((scheme) => (
@@ -918,6 +917,22 @@ function SecurityOverview({ schemes }) {
                 </div>
               </div>
               {scheme.description && <p>{renderInline(scheme.description)}</p>}
+              <label>
+                <span>
+                  {scheme.type === 'apiKey'
+                    ? scheme.parameterName || 'Chave da API'
+                    : scheme.scheme === 'basic'
+                      ? 'Usuário:senha'
+                      : 'Token'}
+                </span>
+                <input
+                  type="password"
+                  value={credentials[scheme.name] ?? ''}
+                  autoComplete="off"
+                  placeholder="Inserir credencial para testar"
+                  onChange={(event) => onCredentialChange(scheme.name, event.target.value)}
+                />
+              </label>
             </article>
           ))}
         </div>
@@ -1153,7 +1168,11 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
               </div>
             </section>
 
-            <SecurityOverview schemes={reference.securitySchemes} />
+            <SecurityOverview
+              schemes={reference.securitySchemes}
+              credentials={credentials}
+              onCredentialChange={handleCredentialChange}
+            />
 
             {publication.body?.length > 0 && (
               <PublicationBody
@@ -1163,44 +1182,27 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
               />
             )}
 
-            <div className="reference-tag-overviews">
-              {groupedOperations.map((tag) => (
-                <section key={`overview-${tag.name}`} className="reference-tag-overview">
+            {groupedOperations.map((tag) => (
+              <section key={tag.name} className="reference-tag-group">
+                <div className="reference-tag-overview reference-tag-overview--mixed">
                   <div>
                     <h2>{tag.name}</h2>
                     {tag.description && <p>{renderInline(tag.description)}</p>}
                   </div>
                   <OperationList operations={tag.operations} />
-                  <a className="reference-show-more" href={`#${tag.operations[0]?.anchor}`}>
-                    Abrir operações <span aria-hidden="true">→</span>
-                  </a>
-                </section>
-              ))}
-            </div>
-
-            <div className="reference-operations-header">
-              <span>Referência</span>
-              <strong>
-                {visibleOperations.length} de {reference.operations.length} operações
-              </strong>
-            </div>
-
-            {groupedOperations.map((tag) => (
-              <section key={tag.name} className="reference-tag-group">
-                <div className="reference-tag-head">
-                  <h2>{tag.name}</h2>
-                  {tag.description && <p>{renderInline(tag.description)}</p>}
                 </div>
-                {tag.operations.map((operation) => (
-                  <Operation
-                    key={operation.id}
-                    operation={operation}
-                    serverUrl={server?.url}
-                    credentials={credentials}
-                    securitySchemes={reference.securitySchemes}
-                    onCredentialChange={handleCredentialChange}
-                  />
-                ))}
+                <div className="reference-tag-details">
+                  {tag.operations.map((operation) => (
+                    <Operation
+                      key={operation.id}
+                      operation={operation}
+                      serverUrl={server?.url}
+                      credentials={credentials}
+                      securitySchemes={reference.securitySchemes}
+                      onCredentialChange={handleCredentialChange}
+                    />
+                  ))}
+                </div>
               </section>
             ))}
 
