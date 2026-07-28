@@ -64,11 +64,11 @@
   /* Ink/superfície neutros que trocam de lado no dark mode */
   --hairline: rgba(0, 0, 0, 0.12);
   --hairline-strong: rgba(0, 0, 0, 0.3);
-  --surface: color-mix(in srgb, var(--bg) 95%, var(--ink) 5%);
-  --surface-raised: color-mix(in srgb, var(--bg) 91%, var(--ink) 9%);
-  --surface-strong: color-mix(in srgb, var(--bg) 86%, var(--ink) 14%);
+  --surface: color-mix(in srgb, var(--bg) 98%, var(--ink) 2%);
+  --surface-raised: color-mix(in srgb, var(--bg) 96%, var(--ink) 4%);
+  --surface-strong: color-mix(in srgb, var(--bg) 92%, var(--ink) 8%);
   --surface-inset: var(--surface-strong);
-  --surface-hover: color-mix(in srgb, var(--bg) 89%, var(--ink) 11%);
+  --surface-hover: color-mix(in srgb, var(--bg) 94%, var(--ink) 6%);
   --shadow-color: transparent;
 }
 
