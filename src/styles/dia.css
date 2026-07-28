@@ -3924,7 +3924,8 @@ blockquote footer a:hover {
 .reference-tag-overview {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.9fr);
-  gap: clamp(2rem, 6vw, 6rem);
+  column-gap: clamp(2rem, 6vw, 6rem);
+  row-gap: 0.65rem;
   padding: 5rem 0;
   border-top: 0.5px solid var(--hairline);
 }
@@ -3973,16 +3974,32 @@ blockquote footer a:hover {
 }
 
 .reference-show-more {
-  grid-column: 1 / -1;
+  grid-column: 2;
   width: fit-content;
-  justify-self: center;
-  padding: 0.45rem 0.7rem;
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.25rem 0;
   color: var(--ink-secondary);
-  border: 0.5px solid var(--hairline);
-  border-radius: 999px;
+  border-bottom: 0.5px solid var(--hairline-strong);
   text-decoration: none;
   font-family: var(--font-mono);
   font-size: 0.62rem;
+}
+
+.reference-show-more:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+  text-decoration: none;
+}
+
+.reference-show-more span {
+  transition: transform 0.15s ease;
+}
+
+.reference-show-more:hover span {
+  transform: translateX(0.2rem);
 }
 
 .reference-operations-header,
@@ -4367,6 +4384,10 @@ blockquote footer a:hover {
   .reference-hero,
   .reference-tag-overview {
     grid-template-columns: 1fr;
+  }
+
+  .reference-show-more {
+    grid-column: 1;
   }
 
   .reference-hero {

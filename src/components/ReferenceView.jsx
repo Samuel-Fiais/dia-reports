@@ -1118,7 +1118,7 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                   </div>
                   <OperationList operations={tag.operations} />
                   <a className="reference-show-more" href={`#${tag.operations[0]?.anchor}`}>
-                    Ver detalhes <span aria-hidden="true">⌄</span>
+                    Abrir operações <span aria-hidden="true">→</span>
                   </a>
                 </section>
               ))}
