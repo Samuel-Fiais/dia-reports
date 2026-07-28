@@ -62,3 +62,21 @@ export function Freshness({ date, label }) {
     </span>
   )
 }
+
+export function Indicator({ block }) {
+  switch (block.kind) {
+    case 'priority':
+      return <PriorityBadge priority={block.value} />
+    case 'trend':
+      return <TrendIndicator trend={block.value} value={block.label} />
+    case 'health':
+      return <HealthDot health={block.value} label={block.label} />
+    case 'confidence':
+      return <Confidence level={Number(block.value)} label={block.label} />
+    case 'freshness':
+      return <Freshness date={block.value} label={block.label} />
+    case 'status':
+    default:
+      return <StatusBadge status={block.value} />
+  }
+}

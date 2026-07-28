@@ -1,26 +1,16 @@
 import { buildMonthGrid, WEEKDAYS_PT, MONTHS_PT } from '../lib/calendar.js'
 import { renderInline } from '../lib/inline.jsx'
+import { blockLabel } from '../lib/labels.js'
 import { useModal } from './Modal.jsx'
 
-/* Calendário mensal em estilo clássico: grade com linhas finas, número do dia
-   no canto e eventos dentro das células. Variantes:
-   - "detailed" (padrão): células altas com eventos visíveis
-   - "compact": grade pequena só com marcações (pontos)
-   Eventos: [{ date: "YYYY-MM-DD", title, time?, details? }].
-   Clicar em um dia com eventos abre um modal com a lista completa.
-   (`marks` do formato antigo continua aceito como atalho.) */
 export default function CalendarMonth({ block }) {
   const { openModal } = useModal()
-  const cells = buildMonthGrid(block.month)
-  const [y, m] = block.month.split('-').map(Number)
+  const month = block.month || new Date().toISOString().slice(0, 7)
+  const cells = buildMonthGrid(month)
+  const [y, m] = month.split('-').map(Number)
   const compact = block.variant === 'compact'
 
-  const events = [
-    ...(block.events ?? []),
-    ...(block.marks ?? []).map((mark) =>
-      typeof mark === 'string' ? { date: mark, title: '' } : { date: mark.date, title: mark.label ?? '' },
-    ),
-  ]
+  const events = block.items ?? []
   const byDay = new Map()
   for (const ev of events) {
     if (!byDay.has(ev.date)) byDay.set(ev.date, [])
@@ -36,12 +26,16 @@ export default function CalendarMonth({ block }) {
     if (dayEvents.length === 1 && dayEvents[0].details) return openModal(dayEvents[0].details)
     openModal({
       eyebrow: title,
-      title: `Dia ${cell.day}`,
+      title: `${blockLabel(block, 'day', 'Dia')} ${cell.day}`,
       blocks: [
         {
-          type: 'agenda',
+          type: 'schedule-list',
           clickable: false,
-          items: dayEvents.map((ev) => ({ time: ev.time ?? '—', title: ev.title || 'Evento', text: ev.text })),
+          items: dayEvents.map((ev) => ({
+            time: ev.time ?? '—',
+            title: ev.title || blockLabel(block, 'entry', 'Item'),
+            text: ev.text,
+          })),
         },
       ],
     })
@@ -69,12 +63,20 @@ export default function CalendarMonth({ block }) {
                 has && block.clickable !== false ? 'clickable' : '',
               ].filter(Boolean).join(' ')}
               onClick={has ? () => openDay(cell) : undefined}
+              onKeyDown={has ? (event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  openDay(cell)
+                }
+              } : undefined}
+              role={has && block.clickable !== false ? 'button' : undefined}
+              tabIndex={has && block.clickable !== false ? 0 : undefined}
             >
               <span className="calendar-cell-day">{cell.day}</span>
               {compact
                 ? has && <span className="calendar-cell-dot" />
                 : dayEvents.slice(0, block.maxPerDay ?? 2).map((ev, j) => (
-                    <span key={j} className="calendar-event-chip" title={ev.title}>
+                    <span key={ev.id ?? j} className="calendar-event-chip" title={ev.title}>
                       {ev.time && <span className="calendar-event-time">{ev.time}</span>}
                       {renderInline(ev.title || '•')}
                     </span>

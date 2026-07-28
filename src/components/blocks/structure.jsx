@@ -1,113 +1,107 @@
 import { renderInline } from '../../lib/inline.jsx'
-import { StatusBadge, PriorityBadge, Confidence } from '../Badges.jsx'
+import { StatusBadge, PriorityBadge } from '../Badges.jsx'
 import { useModal } from '../Modal.jsx'
 
-/* executive-summary: contexto, conclusões, riscos e recomendações. */
-export function ExecutiveSummary({ block }) {
-  const groups = [
-    { key: 'context', label: block.contextLabel ?? 'Contexto' },
-    { key: 'findings', label: block.findingsLabel ?? 'Principais conclusões' },
-    { key: 'risks', label: block.risksLabel ?? 'Riscos' },
-    { key: 'recommendations', label: block.recommendationsLabel ?? 'Recomendações' },
-  ]
-  return (
-    <div className="exec-summary">
-      {groups.map(({ key, label }) => {
-        const content = block[key]
-        if (!content) return null
-        const items = Array.isArray(content) ? content : [content]
-        return (
-          <div key={key} className="exec-summary-group">
-            <div className="exec-summary-label">{label}</div>
-            {items.length === 1 ? (
-              <p>{renderInline(items[0])}</p>
-            ) : (
-              <ul className="item-bullets">
-                {items.map((item, i) => (
-                  <li key={i}>{renderInline(item)}</li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
+const humanize = (value) => String(value)
+  .replaceAll('-', ' ')
+  .replaceAll('_', ' ')
+  .replace(/\b\w/g, (character) => character.toUpperCase())
 
-/* key-takeaways: aprendizados numerados em destaque. Também usado por "assumptions". */
-export function KeyTakeaways({ block }) {
+export function GroupedSummary({ block }) {
   return (
-    <ol className="takeaways">
-      {(block.items ?? []).map((item, i) => (
-        <li key={i} className="takeaway">
-          <span className="takeaway-num">{String(i + 1).padStart(2, '0')}</span>
-          <p>{renderInline(typeof item === 'string' ? item : item.text)}</p>
-        </li>
+    <div className="grouped-summary">
+      {(block.groups ?? []).map((group, index) => (
+        <div key={group.id ?? group.label ?? index} className="grouped-summary-group">
+          {group.label && <div className="grouped-summary-label">{group.label}</div>}
+          {group.content && <p>{renderInline(group.content)}</p>}
+          {group.items?.length > 0 && (
+            <ul className="item-bullets">
+              {group.items.map((item, itemIndex) => (
+                <li key={item.id ?? itemIndex}>{renderInline(item.text ?? item)}</li>
+              ))}
+            </ul>
+          )}
+        </div>
       ))}
-    </ol>
-  )
-}
-
-/* decision: decisão registrada com justificativa, participantes e data. */
-export function Decision({ block }) {
-  return (
-    <div className="decision">
-      <div className="decision-head">
-        <span className="decision-stamp">{block.stamp ?? 'Decisão'}</span>
-        {block.date && <span className="decision-date">{block.date}</span>}
-      </div>
-      <p className="decision-title">{renderInline(block.title)}</p>
-      {block.rationale && (
-        <p className="decision-rationale">
-          <strong>{block.rationaleLabel ?? 'Por quê'}: </strong>
-          {renderInline(block.rationale)}
-        </p>
-      )}
-      <div className="decision-meta">
-        {block.owner && <span>{block.decidedByLabel ?? 'Decidido por'} {block.owner}</span>}
-        {block.participants?.length > 0 && <span>{block.withLabel ?? 'Com'} {block.participants.join(', ')}</span>}
-        {block.confidence != null && <Confidence level={block.confidence} />}
-      </div>
     </div>
   )
 }
 
-/* task-table: base de action-items, recommendations, blockers e risk-register. */
-export function TaskTable({ block, kind = 'action-items' }) {
+export function RecordCard({ block }) {
+  return (
+    <div className="record-card">
+      {(block.badge || block.date) && (
+        <div className="record-card-head">
+          {block.badge && <span className="record-card-badge">{block.badge}</span>}
+          {block.date && <span className="record-card-date">{block.date}</span>}
+        </div>
+      )}
+      {block.title && <p className="record-card-title">{renderInline(block.title)}</p>}
+      {block.text && <p className="record-card-text">{renderInline(block.text)}</p>}
+      {block.fields?.length > 0 && (
+        <dl className="record-card-fields">
+          {block.fields.map((field, index) => (
+            <div key={field.id ?? field.label ?? index}>
+              {field.label && <dt>{field.label}</dt>}
+              <dd>{renderInline(String(field.value ?? ''))}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {block.actions?.length > 0 && (
+        <div className="record-card-actions">
+          {block.actionsLabel && <div className="group-label">{block.actionsLabel}</div>}
+          <ul className="item-bullets">
+            {block.actions.map((action, index) => (
+              <li key={action.id ?? index}>{renderInline(action.text ?? action)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export function WorkItems({ block }) {
   const { openModal } = useModal()
-  const cols = {
-    'action-items': { title: 'Ação', extra: null },
-    recommendations: { title: 'Recomendação', extra: 'Impacto' },
-    blockers: { title: 'Bloqueio', extra: 'Impacto' },
-    'risk-register': { title: 'Risco', extra: 'Mitigação' },
-  }[kind]
+  const sample = block.items?.[0] ?? {}
+  const columns = block.columns?.length > 0
+    ? block.columns
+    : Object.keys(sample)
+        .filter((key) => !['id', 'details'].includes(key))
+        .map((key) => ({ key, label: humanize(key), kind: 'text' }))
+
+  const renderCell = (item, column) => {
+    const value = item[column.key]
+    if (column.kind === 'priority') return value ? <PriorityBadge priority={value} /> : '—'
+    if (column.kind === 'status') return value ? <StatusBadge status={value} /> : '—'
+    return value == null || value === '' ? '—' : renderInline(String(value))
+  }
 
   return (
     <table className="data-table task-table">
       <thead>
         <tr>
-          <th>{cols.title}</th>
-          {cols.extra && <th>{block.extraLabel ?? cols.extra}</th>}
-          <th>{block.ownerLabel ?? 'Responsável'}</th>
-          <th>{block.dueLabel ?? 'Prazo'}</th>
-          <th>{block.priorityLabel ?? 'Prioridade'}</th>
-          <th>{block.statusLabel ?? 'Status'}</th>
+          {columns.map((column) => <th key={column.key}>{column.label ?? humanize(column.key)}</th>)}
         </tr>
       </thead>
       <tbody>
-        {(block.items ?? []).map((item, i) => (
+        {(block.items ?? []).map((item, index) => (
           <tr
-            key={i}
+            key={item.id ?? index}
             className={item.details ? 'clickable' : undefined}
             onClick={item.details ? () => openModal(item.details) : undefined}
+            onKeyDown={item.details ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                openModal(item.details)
+              }
+            } : undefined}
+            tabIndex={item.details ? 0 : undefined}
           >
-            <td>{renderInline(item.title)}</td>
-            {cols.extra && <td>{renderInline(item.impact ?? item.mitigation ?? '')}</td>}
-            <td>{item.owner ?? '—'}</td>
-            <td>{item.due ?? '—'}</td>
-            <td>{item.priority ? <PriorityBadge priority={item.priority} /> : '—'}</td>
-            <td>{item.status ? <StatusBadge status={item.status} /> : '—'}</td>
+            {columns.map((column) => (
+              <td key={column.key}>{renderCell(item, column)}</td>
+            ))}
           </tr>
         ))}
       </tbody>
@@ -115,37 +109,34 @@ export function TaskTable({ block, kind = 'action-items' }) {
   )
 }
 
-/* references: fontes e links utilizados. */
 export function References({ block }) {
   return (
     <ol className="references">
-      {(block.items ?? []).map((ref, i) => (
-        <li key={i}>
-          {ref.href ? (
-            <a href={ref.href} target="_blank" rel="noopener noreferrer">
-              {ref.title}
+      {(block.items ?? []).map((reference, index) => (
+        <li key={reference.id ?? reference.href ?? index}>
+          {reference.href ? (
+            <a href={reference.href} target="_blank" rel="noopener noreferrer">
+              {reference.title}
             </a>
           ) : (
-            <span>{ref.title}</span>
+            <span>{reference.title}</span>
           )}
-          {ref.source && <span className="reference-source"> — {ref.source}</span>}
-          {ref.note && <span className="reference-note"> ({ref.note})</span>}
+          {reference.source && <span className="reference-source"> — {reference.source}</span>}
+          {reference.note && <span className="reference-note"> ({reference.note})</span>}
         </li>
       ))}
     </ol>
   )
 }
 
-/* table-of-contents: sumário gerado a partir das seções do relatório. */
-export function TableOfContents({ report }) {
-  const sections = (report?.body ?? []).filter((b) => b.type === 'section')
-  const slug = (s) => String(s).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-')
+export function TableOfContents({ publication }) {
+  const sections = (publication?.body ?? []).filter((block) => block.type === 'section')
   return (
     <nav className="toc">
       <ol>
-        {sections.map((s, i) => (
-          <li key={i}>
-            <a href={`#${slug(s.heading)}`}>{renderInline(s.heading)}</a>
+        {sections.map((section, index) => (
+          <li key={section._key ?? section.id ?? index}>
+            <a href={`#${sectionAnchor(section)}`}>{renderInline(section.heading)}</a>
           </li>
         ))}
       </ol>
@@ -157,29 +148,23 @@ export function sectionSlug(heading) {
   return String(heading).toLowerCase().replace(/[^\p{L}\p{N}]+/gu, '-')
 }
 
-/* report-metadata: autor, versão, status, período analisado. */
-export function ReportMetadata({ block }) {
-  const entries = [
-    ['Autor', block.author],
-    ['Versão', block.version],
-    ['Status', block.status],
-    ['Atualizado em', block.updated],
-    ['Período analisado', block.period],
-    ...(block.extra ?? []).map((e) => [e.label, e.value]),
-  ].filter(([, v]) => v)
+export function sectionAnchor(section) {
+  return section.id ?? sectionSlug(section.heading)
+}
+
+export function Metadata({ block }) {
   return (
     <dl className="report-metadata">
-      {entries.map(([label, value], i) => (
-        <div key={i} className="report-metadata-item">
-          <dt>{label}</dt>
-          <dd>{renderInline(String(value))}</dd>
+      {(block.entries ?? []).map((entry, index) => (
+        <div key={entry.id ?? entry.label ?? index} className="report-metadata-item">
+          {entry.label && <dt>{entry.label}</dt>}
+          <dd>{renderInline(String(entry.value ?? ''))}</dd>
         </div>
       ))}
     </dl>
   )
 }
 
-/* page-break: quebra explícita para impressão/PDF. */
 export function PageBreak() {
   return <div className="page-break" aria-hidden="true" />
 }

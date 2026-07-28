@@ -1,13 +1,13 @@
 import { ArrowRight, ArrowUp, ArrowDown } from 'lucide-react'
 
-// Vocabulário compartilhado de estados — usado por status-badge, kanban,
-// action-items, milestones, scorecard, project-health, etc.
+// Vocabulário compartilhado de estados para componentes genéricos.
 export const STATUS = {
   'not-started': { label: 'Não iniciado', tone: 'muted' },
   'in-progress': { label: 'Em andamento', tone: 'active' },
   blocked: { label: 'Bloqueado', tone: 'bad' },
   'at-risk': { label: 'Em risco', tone: 'warn' },
   completed: { label: 'Concluído', tone: 'good' },
+  approved: { label: 'Aprovado', tone: 'good' },
   cancelled: { label: 'Cancelado', tone: 'muted' },
 }
 

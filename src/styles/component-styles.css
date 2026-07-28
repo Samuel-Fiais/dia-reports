@@ -1,0 +1,181 @@
+/* Editorial remains the unmodified base treatment. */
+
+.report--components-structured .metrics-strip,
+.report--components-structured .report-item,
+.report--components-structured .body-block {
+  padding: 1.25rem;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.report--components-structured .metrics-strip-border {
+  display: none;
+}
+
+.report--components-structured .report-body,
+.report--components-structured .section-items {
+  row-gap: 1.25rem;
+}
+
+.report--components-structured .body-block-head {
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--divider);
+}
+
+.report--components-structured .data-table {
+  border: 1px solid var(--hairline-strong);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.report--components-structured .data-table th {
+  background: var(--surface-hover);
+}
+
+.report--components-structured .callout,
+.report--components-structured .record-card,
+.report--components-structured .quote-message {
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface-hover) 82%, transparent);
+}
+
+.report--components-structured .related-report {
+  border-radius: 8px;
+}
+
+.report--components-minimal .report-wrap {
+  max-width: 1060px;
+}
+
+.report--components-minimal .report-body {
+  row-gap: 3rem;
+}
+
+.report--components-minimal .report-section,
+.report--components-minimal .section-items {
+  row-gap: 1rem;
+}
+
+.report--components-minimal .metrics-strip {
+  padding: 0.7rem 0;
+  margin-top: 0.5rem;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.report--components-minimal .metrics-strip-border {
+  display: none;
+}
+
+.report--components-minimal .metric {
+  padding-left: 0;
+  border-right: 0;
+}
+
+.report--components-minimal .metric-value {
+  font-family: var(--font-body);
+  font-size: 1.2rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.report--components-minimal .metric-label,
+.report--components-minimal .metric-note {
+  font-size: 0.72rem;
+}
+
+.report--components-minimal .section-heading {
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.report--components-minimal .report-item {
+  row-gap: 0.45rem;
+}
+
+.report--components-minimal .item-label,
+.report--components-minimal .item-body {
+  grid-column: 1 / -1;
+}
+
+.report--components-minimal .item-label {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.65rem;
+}
+
+.report--components-minimal .item-title {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.report--components-minimal .item-badge {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  transform: none !important;
+}
+
+.report--components-minimal .body-block-head {
+  gap: 0.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.report--components-minimal .body-block-heading {
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.report--components-minimal .body-block-desc {
+  font-size: 0.76rem;
+}
+
+.report--components-minimal .data-table th,
+.report--components-minimal .data-table td {
+  padding-left: 0;
+  padding-right: 1rem;
+}
+
+.report--components-minimal .callout,
+.report--components-minimal .record-card,
+.report--components-minimal .quote-message {
+  padding: 0.35rem 0 0.35rem 0.9rem;
+  border: 0;
+  border-left: 1px solid var(--ink);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.report--components-minimal .related-report {
+  padding-left: 0;
+  padding-right: 0;
+  border-width: 0 0 1px;
+  border-radius: 0;
+}
+
+@media screen and (max-width: 760px) {
+  .report--components-structured .metrics-strip,
+  .report--components-structured .report-item,
+  .report--components-structured .body-block {
+    padding: 1rem;
+  }
+
+  .report--components-minimal .metrics-strip {
+    padding: 1rem 0;
+  }
+}

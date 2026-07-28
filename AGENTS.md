@@ -5,11 +5,9 @@ Leia isto antes de criar ou revisar qualquer conteúdo de relatório.
 
 ## Onde o relatório realmente vive
 
-Relatórios são linhas na tabela `reports` do Postgres (`slug`, `title`, `date`, `content`
-jsonb), servidas por `api/reports.js`, **não** arquivos `.json` em `src/reports/`. Os arquivos
-dessa pasta (`exemplo-completo.json` etc.) são só material de referência — editá-los ou criar
-um novo não tem nenhum efeito no app rodando. Este repositório é apenas renderizador: não há
-fluxo interno nem endpoint para gravar conteúdo de relatório.
+Publicações são linhas na tabela `reports` do Postgres (`slug`, `title`, `date`, `content`
+jsonb), servidas por `api/reports.js`. Este repositório é apenas renderizador: não há
+fluxo interno nem endpoint para gravar conteúdo.
 
 - Para publicar de verdade, um processo externo autorizado precisa gravar/atualizar a linha em
   `reports` no Postgres.
@@ -25,9 +23,9 @@ fluxo interno nem endpoint para gravar conteúdo de relatório.
 - **Não precisa tocar** (e normalmente não deve): nada em `src/components/`, `src/pages/`,
   `src/lib/` ou `src/styles/dia.css`. O visualizador já sabe renderizar qualquer relatório que
   siga o schema — você só escreve dados.
-- Se o pedido do usuário exigir um tipo de bloco que não existe (um mapa, uma tabela
-  dinâmica, etc.), diga isso explicitamente em vez de inventar um `type` novo — blocos com
-  `type` desconhecido são silenciosamente ignorados pelo visualizador. O catálogo completo e
+- Se o pedido do usuário exigir um tipo de bloco que não existe, componha a solução com os
+  blocos genéricos disponíveis ou explicite a limitação. Nunca invente um `type`: blocos
+  desconhecidos tornam a publicação inválida. O catálogo completo e
   autoritativo de tipos está em `src/lib/blockRegistry.js`; [REPORT-SCHEMA.md](REPORT-SCHEMA.md)
   é a versão legível dele.
 
@@ -39,11 +37,9 @@ fluxo interno nem endpoint para gravar conteúdo de relatório.
 2. Escreva o JSON seguindo o schema completo em [REPORT-SCHEMA.md](REPORT-SCHEMA.md) (leia
    esse arquivo — este aqui é só a camada de orientação, não repete a referência de cada
    bloco).
-3. Use `src/reports/exemplo-completo.json` como referência viva: ele contém pelo menos um
-   exemplo de cada bloco existente, com explicações inline em `description`.
-4. Entregue o JSON para publicação externa no Postgres. Não existe descoberta automática de
+3. Entregue o JSON para publicação externa no Postgres. Não existe descoberta automática de
    arquivo — sem persistência no banco, o relatório não aparece em lugar nenhum.
-5. Valide o JSON (chaves fechadas, vírgulas, aspas) antes de finalizar — um JSON inválido
+4. Valide o JSON e o catálogo de blocos antes de finalizar — conteúdo inválido
    quebra a renderização do relatório inteiro.
 
 ## Tom e voz
@@ -64,36 +60,33 @@ existentes. Evite genérico corporativo. Regras práticas:
 
 ## Escolhendo blocos
 
-- Dado tabular com 2+ dimensões → `table`. Comparação lado a lado de opções/critérios →
-  `comparison-table` ou `option-cards`.
+- Dado tabular com 2+ dimensões → `table`. Comparação entre valores → `value-comparison`;
+  comparação em quadrantes → `quadrant-grid`.
 - Série temporal ou comparação de categorias → `chart` (`line` para tendência, `bar` para
   comparação entre categorias, `doughnut`/`pie` para composição). Acúmulo com deltas
-  (entradas/saídas de um total) → `waterfall-chart`. Indicadores numéricos em grade →
-  `kpi-grid`; um único indicador em destaque → `metric-detail` ou `gauge`.
-- Uma decisão tomada por alguém, com contexto → `decision` (ou `paragraph` + `bullets`), e se
-  houver uma mensagem real do Slack por trás, adicione um bloco `slack` citando-a.
-- Trechos de artigo/entrevista/documento externo → `blockquote`. Trecho de e-mail → `email`.
-- Uma frase de efeito no meio do relatório → `quote-break` (nível de seção/corpo, não dentro
-  de um item).
-- Marcos com data → `timeline`, `roadmap` ou `gantt` conforme o nível de detalhe. Progresso
-  percentual → `progress`, `status-summary` ou `okr`. Mudança de um valor para outro →
-  `stat-comparison`. Reunião → `meeting-notes`. Incidente → `incident-summary` +
-  `root-cause`.
-- Vários relatórios longos → adicione `table-of-contents` no topo do `body` em vez de montar
+  (entradas/saídas de um total) → `chart` com `variant: "waterfall"`. Indicadores numéricos
+  em grade → `metric-grid`; um único indicador → `gauge`.
+- Conteúdo atribuído → `quote`; escolha uma apresentação genérica (`standard`, `featured`,
+  `break`, `message` ou `correspondence`) sem criar tipos ligados à origem.
+- Marcos com data → `timeline`; compromissos → `schedule-list`; planejamento espacial →
+  `calendar` ou `board`; progresso → `progress` ou `progress-summary`.
+- Contexto estruturado → `grouped-summary`, `record-card`, `step-list`, `metadata` ou
+  `definition-list`. Os rótulos pertencem aos dados, nunca ao componente.
+- Publicações longas → adicione `table-of-contents` no topo do `body` em vez de montar
   um sumário manual.
 - Não invente dados. Se o usuário não forneceu números reais, não preencha `metrics`,
   `chart.datasets`, `table` ou qualquer bloco analítico com valores fictícios sem avisar que
-  são ilustrativos (como o próprio `exemplo-completo.json` faz na intro). Prefira blocos de
-  texto/estrutura (`paragraph`, `bullets`, `callout`, `executive-summary`) quando não houver
+  são ilustrativos. Prefira blocos de
+  texto/estrutura (`paragraph`, `list`, `callout`, `grouped-summary`) quando não houver
   dado real suficiente.
 
 ## Configurações (`settings`) — são só o estado inicial
 
-`colorIndex`, `fontIndex`, `chartStyleIndex`, `widthMode` e `fontScale` em `settings` definem
+`colorIndex`, `fontIndex`, `chartStyleIndex`, `widthMode`, `fontScale` e `componentStyle` em `settings` definem
 a aparência **na primeira visita**; quem estiver lendo pode mudar tudo isso pelo seletor ⚙
 "Customize Report" (incluindo alternar para tema escuro, que é preferência do navegador de
 quem lê, não algo que você define no JSON). Não é necessário caprichar nessa escolha —
-`{ "colorIndex": 0, "fontIndex": 0, "chartStyleIndex": 2 }` é um bom default neutro se o
+`{ "colorIndex": 0, "fontIndex": 0, "chartStyleIndex": 2, "componentStyle": "editorial" }` é um bom default neutro se o
 usuário não pedir uma aparência específica.
 
 ## Compartilhamento e visibilidade — não confunda os dois mecanismos
@@ -113,6 +106,7 @@ administrativo externo, não com um campo no JSON.
       exemplo).
 - [ ] Blocos usam apenas os `type` documentados em [REPORT-SCHEMA.md](REPORT-SCHEMA.md) /
       `src/lib/blockRegistry.js`.
+- [ ] `schemaVersion` é `2` e `renderMode` é `report`.
 - [ ] JSON válido (sem vírgula sobrando, aspas fechadas).
 - [ ] Deixou claro como o conteúdo será publicado externamente — nunca reporte como
       "publicado" sem confirmação de que a linha foi persistida no Postgres.

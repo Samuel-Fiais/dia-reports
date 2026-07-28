@@ -1,11 +1,11 @@
-import { cloneElement, Fragment } from 'react'
+import { Fragment } from 'react'
 import { Link } from 'react-router-dom'
 import { renderInline } from '../lib/inline.jsx'
-import { formatReportDate, formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
-import { reports } from '../lib/registry.js'
+import { formatReportDate, formatShortDate, formatUpdatedAgo, normalizeComponentStyle } from '../lib/theme.js'
+import { blockLabel } from '../lib/labels.js'
 import { ModalProvider, useModal } from './Modal.jsx'
 import { ItemBlock, renderBlocks } from './blocks/index.jsx'
-import { TableOfContents, sectionSlug } from './blocks/structure.jsx'
+import { sectionAnchor, TableOfContents } from './blocks/structure.jsx'
 
 /* ── Item (label à esquerda, corpo à direita) ───────────────── */
 
@@ -32,11 +32,15 @@ function ReportItem({ item, chartStyleIndex, itemKey }) {
           const span = full ? columns : Math.max(1, Math.min(columns, Number(block.span) || 1))
           return (
             <div
-              key={i}
+              key={block._key ?? block.id ?? i}
               className={`item-block-cell${full ? ' item-block-cell--full' : ''}`}
               style={{ '--block-span': span }}
             >
-              <ItemBlock block={block} chartStyleIndex={chartStyleIndex} blockKey={`${itemKey}:${i}`} />
+              <ItemBlock
+                block={block}
+                chartStyleIndex={chartStyleIndex}
+                blockKey={block._key ?? block.id ?? `${itemKey}:${i}`}
+              />
             </div>
           )
         })}
@@ -48,6 +52,16 @@ function ReportItem({ item, chartStyleIndex, itemKey }) {
 /* ── Moldura para blocos avulsos no corpo (fora de seções) ──── */
 
 function BodyBlockFrame({ block, children }) {
+  if (block.presentation === 'break') {
+    return (
+      <div className={`body-block-break body-block-break--${block.type}`}>
+        <hr className="body-block-break-rule" aria-hidden="true" />
+        {children}
+        <hr className="body-block-break-rule" aria-hidden="true" />
+      </div>
+    )
+  }
+
   return (
     <div className={`body-block body-block--${block.type}`}>
       {(block.heading || block.description) && (
@@ -63,67 +77,72 @@ function BodyBlockFrame({ block, children }) {
 
 /* ── Blocos do corpo ────────────────────────────────────────── */
 
-function BodyBlockContent({ block, chartStyleIndex, bodyKey, report }) {
+function BodyBlockContent({
+  block,
+  chartStyleIndex,
+  bodyKey,
+  report,
+}) {
   switch (block.type) {
     case 'section':
       return (
-        <section className="report-section" id={sectionSlug(block.heading)}>
+        <section className="report-section" id={sectionAnchor(block)}>
           <div className="section-header">
             <h2 className="section-heading">{renderInline(block.heading)}</h2>
           </div>
           <div className="section-items">
             {(block.items ?? []).map((item, i) => (
-              <ReportItem key={i} item={item} chartStyleIndex={chartStyleIndex} itemKey={`${bodyKey}:${i}`} />
+              <ReportItem
+                key={item._key ?? item.id ?? i}
+                item={item}
+                chartStyleIndex={chartStyleIndex}
+                itemKey={item._key ?? item.id ?? `${bodyKey}:${i}`}
+              />
             ))}
           </div>
         </section>
       )
 
-    case 'quote-break':
-      return (
-        <div className="report-quote-break">
-          <hr className="report-image-break__rule" aria-hidden="true" />
-          <blockquote className="report-blockquote-break">
-            <p>{renderInline(block.text)}</p>
-            {block.cite && <cite>{renderInline(block.cite)}</cite>}
-          </blockquote>
-          <hr className="report-image-break__rule" aria-hidden="true" />
-        </div>
-      )
-
-    case 'image-break':
-      return (
-        <div className="report-image-break">
-          <hr className="report-image-break__rule" aria-hidden="true" />
-          <div className="report-image-break__body">
-            <img className="report-image-break__img" src={block.src} alt={block.alt ?? ''} />
-            {block.caption && <p className="fig-caption">{renderInline(block.caption)}</p>}
-          </div>
-          <hr className="report-image-break__rule" aria-hidden="true" />
-        </div>
-      )
-
     case 'table-of-contents':
       return (
         <BodyBlockFrame block={{ ...block, heading: block.heading ?? 'Sumário' }}>
-          <TableOfContents report={report} />
+          <TableOfContents publication={report} />
         </BodyBlockFrame>
       )
 
-    case 'related-reports': {
-      const ids = block.ids ?? []
-      const related = ids.length > 0 ? ids.map((id) => reports.find((r) => r.id === id)).filter(Boolean) : []
+    case 'related-content': {
+      const related = block.items ?? []
       return (
-        <BodyBlockFrame block={{ ...block, heading: block.heading ?? 'Relatórios relacionados' }}>
+        <BodyBlockFrame
+          block={{
+            ...block,
+            heading: block.heading ?? blockLabel(block, 'heading', 'Conteúdo relacionado'),
+          }}
+        >
           <div className="related-reports">
-            {related.map((r) => (
-              <Link key={r.id} to={`/report/${r.id}`} className="related-report">
-                <span className="related-report-title">
-                  {Array.isArray(r.headline) ? r.headline.join(' ') : r.headline ?? r.title}
-                </span>
-                <span className="related-report-date">{formatShortDate(r.updatedAt ?? r.date)}</span>
-              </Link>
-            ))}
+            {related.map((item, index) => {
+              const content = (
+                <>
+                  <span className="related-report-title">{item.title}</span>
+                  {item.meta && <span className="related-report-date">{item.meta}</span>}
+                </>
+              )
+              return item.href?.startsWith('/') ? (
+                <Link key={item.id ?? item.href ?? index} to={item.href} className="related-report">
+                  {content}
+                </Link>
+              ) : (
+                <a
+                  key={item.id ?? item.href ?? index}
+                  href={item.href}
+                  className="related-report"
+                  target={item.newTab ? '_blank' : undefined}
+                  rel={item.newTab ? 'noreferrer' : undefined}
+                >
+                  {content}
+                </a>
+              )
+            })}
           </div>
         </BodyBlockFrame>
       )
@@ -146,22 +165,18 @@ function BodyBlock(props) {
   const content = <BodyBlockContent {...props} />
   if (!block.details) return content
 
-  return cloneElement(content, {
-    className: `${content.props.className ?? ''} body-block-with-details clickable`.trim(),
-    role: 'button',
-    tabIndex: 0,
-    onClick: (event) => {
-      content.props.onClick?.(event)
-      if (!event.defaultPrevented) openModal(block.details)
-    },
-    onKeyDown: (event) => {
-      content.props.onKeyDown?.(event)
-      if (!event.defaultPrevented && (event.key === 'Enter' || event.key === ' ')) {
-        event.preventDefault()
-        openModal(block.details)
-      }
-    },
-  })
+  return (
+    <div className="body-block-details-shell">
+      {content}
+      <button
+        type="button"
+        className="drilldown"
+        onClick={() => openModal(block.details)}
+      >
+        {block.detailsLabel ?? 'Ver detalhes'}
+      </button>
+    </div>
+  )
 }
 
 function MetricCard({ metric, span }) {
@@ -233,17 +248,24 @@ function ReportHero({ report }) {
 
 /* ── Relatório completo ─────────────────────────────────────── */
 
-export default function ReportView({ report, settings = {} }) {
+export default function ReportView({
+  report,
+  settings = {},
+}) {
   const resolvedChartStyleIndex = settings.chartStyleIndex ?? report.settings?.chartStyleIndex ?? 2
   const widthMode = settings.widthMode ?? report.settings?.widthMode ?? 'standard'
+  const componentStyle = normalizeComponentStyle(settings.componentStyle ?? report.settings?.componentStyle)
 
   return (
     <ModalProvider renderBlocks={(blocks) => renderBlocks(blocks, resolvedChartStyleIndex)}>
-      <div className={`report ready report--${widthMode}`}>
+      <div
+        className={`publication publication--report report ready report--${widthMode} report--components-${componentStyle}`}
+        data-publication-mode={report.renderMode ?? 'report'}
+      >
         <div className="report-wrap">
           <header className="report-header">
             <div className="report-header-left">
-              <span className="report-from">{report.from ?? report.title ?? 'Relatório'}</span>
+              <span className="report-from">{report.from ?? report.title ?? 'Publicação'}</span>
             </div>
             <span className="report-date">{formatReportDate(report.updatedAt ?? report.date)}</span>
           </header>
@@ -253,7 +275,7 @@ export default function ReportView({ report, settings = {} }) {
           {report.intro?.length > 0 && (
             <div className="report-intro">
               {report.intro.map((p, i) => (
-                <p key={i}>{renderInline(p)}</p>
+                <p key={`${String(p).slice(0, 24)}-${i}`}>{renderInline(p)}</p>
               ))}
             </div>
           )}
@@ -263,7 +285,7 @@ export default function ReportView({ report, settings = {} }) {
               <div className="metrics-strip-border" />
               {report.metrics.map((metric, i) => (
                 <MetricCard
-                  key={i}
+                  key={metric._key ?? metric.id ?? i}
                   metric={metric}
                   span={metric.span ?? Math.floor(12 / report.metrics.length)}
                 />
@@ -276,10 +298,10 @@ export default function ReportView({ report, settings = {} }) {
           <main className="report-body">
             {(report.body ?? []).map((block, i) => (
               <BodyBlock
-                key={i}
+                key={block._key ?? block.id ?? i}
                 block={block}
                 chartStyleIndex={resolvedChartStyleIndex}
-                bodyKey={`${report.id}:${i}`}
+                bodyKey={block._key ?? block.id ?? `${report.id}:${i}`}
                 report={report}
               />
             ))}

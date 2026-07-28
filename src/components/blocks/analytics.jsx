@@ -1,8 +1,9 @@
 import { renderInline } from '../../lib/inline.jsx'
-import { TrendIndicator, HealthDot } from '../Badges.jsx'
+import { blockLabel } from '../../lib/labels.js'
+import { TrendIndicator, StatusBadge } from '../Badges.jsx'
 import { useModal } from '../Modal.jsx'
 
-/* Sparkline: SVG puro, sem Chart.js — para uso embutido em KPIs. */
+/* SVG compacto para séries embutidas em métricas. */
 export function Sparkline({ data = [], width = 96, height = 28 }) {
   if (data.length < 2) return null
   const min = Math.min(...data)
@@ -18,45 +19,63 @@ export function Sparkline({ data = [], width = 96, height = 28 }) {
   )
 }
 
-/* kpi-grid: grade de KPIs com valor, variação, meta, tendência e sparkline. */
-export function KpiGrid({ block }) {
+export function MetricGrid({ block }) {
   const { openModal } = useModal()
   return (
-    <div className={`kpi-grid${block.variant === 'detail' ? ' kpi-grid--detail' : ''}`} style={{ '--kpi-cols': block.columns ?? 3 }}>
-      {(block.items ?? []).map((kpi, i) => (
+    <div className="kpi-grid" style={{ '--kpi-cols': block.columns ?? 3 }}>
+      {(block.items ?? []).map((metric, index) => (
         <div
-          key={i}
-          className={`kpi${kpi.details ? ' clickable' : ''}`}
-          onClick={kpi.details ? () => openModal(kpi.details) : undefined}
+          key={metric.id ?? index}
+          className={`kpi${metric.details ? ' clickable' : ''}`}
+          onClick={metric.details ? () => openModal(metric.details) : undefined}
+          onKeyDown={metric.details ? (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              openModal(metric.details)
+            }
+          } : undefined}
+          role={metric.details ? 'button' : undefined}
+          tabIndex={metric.details ? 0 : undefined}
         >
-          <div className="kpi-label">{kpi.label}</div>
+          <div className="kpi-label">{metric.label}</div>
           <div className="kpi-value-row">
-            <span className="kpi-value">{kpi.value}</span>
-            {kpi.spark && <Sparkline data={kpi.spark} />}
+            <span className="kpi-value">{metric.value}</span>
+            {metric.spark && <Sparkline data={metric.spark} />}
           </div>
           <div className="kpi-meta">
-            {kpi.trend && <TrendIndicator trend={kpi.trend} value={kpi.change} />}
-            {kpi.target && <span className="kpi-target">Meta: {kpi.target}</span>}
+            {metric.trend && <TrendIndicator trend={metric.trend} value={metric.change} />}
+            {metric.reference && (
+              <span className="kpi-target">
+                {blockLabel(block, 'reference', 'Referência')}: {metric.reference}
+              </span>
+            )}
           </div>
-          {kpi.note && <div className="kpi-note">{renderInline(kpi.note)}</div>}
+          {metric.note && <div className="kpi-note">{renderInline(metric.note)}</div>}
         </div>
       ))}
     </div>
   )
 }
 
-/* scorecard: indicadores com estado saudável / atenção / crítico. */
 export function Scorecard({ block }) {
   const { openModal } = useModal()
   return (
     <div className="scorecard">
-      {(block.items ?? []).map((item, i) => (
+      {(block.items ?? []).map((item, index) => (
         <div
-          key={i}
+          key={item.id ?? index}
           className={`scorecard-row${item.details ? ' clickable' : ''}`}
           onClick={item.details ? () => openModal(item.details) : undefined}
+          onKeyDown={item.details ? (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              openModal(item.details)
+            }
+          } : undefined}
+          role={item.details ? 'button' : undefined}
+          tabIndex={item.details ? 0 : undefined}
         >
-          <HealthDot health={item.health} label={item.healthLabel} />
+          {item.state && <StatusBadge status={item.state} />}
           <span className="scorecard-label">{renderInline(item.label)}</span>
           <span className="scorecard-value">{item.value}</span>
           {item.note && <span className="scorecard-note">{renderInline(item.note)}</span>}
@@ -66,7 +85,6 @@ export function Scorecard({ block }) {
   )
 }
 
-/* funnel: funil de conversão entre etapas. */
 export function Funnel({ block }) {
   const items = block.steps ?? []
   const max = Math.max(...items.map((s) => Number(s.value) || 0), 1)
@@ -77,7 +95,7 @@ export function Funnel({ block }) {
         const prev = i > 0 ? Number(items[i - 1].value) || 0 : null
         const conv = prev ? Math.round(((Number(step.value) || 0) / prev) * 100) : null
         return (
-          <div key={i} className="funnel-step">
+          <div key={step.id ?? i} className="funnel-step">
             <div className="funnel-labels">
               <span className="funnel-name">{step.label}</span>
               <span className="funnel-value">
@@ -95,7 +113,6 @@ export function Funnel({ block }) {
   )
 }
 
-/* gauge: progresso em relação a uma meta (arco SVG). */
 export function Gauge({ block }) {
   const pct = Math.max(0, Math.min(100, Number(block.value) || 0))
   const r = 54
@@ -117,7 +134,11 @@ export function Gauge({ block }) {
         <span className="gauge-value">{block.display ?? `${pct}%`}</span>
         {block.label && <span className="gauge-label">{block.label}</span>}
       </div>
-      {block.target && <div className="gauge-target">Meta: {block.target}</div>}
+      {block.reference && (
+        <div className="gauge-target">
+          {blockLabel(block, 'reference', 'Referência')}: {block.reference}
+        </div>
+      )}
     </div>
   )
 }
@@ -139,7 +160,7 @@ export function Heatmap({ block }) {
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i}>
+            <tr key={row.id ?? i}>
               <th>{row.label}</th>
               {(row.values ?? []).map((v, j) => {
                 const heat = Math.max(0.04, (Number(v) || 0) / max)
@@ -163,39 +184,23 @@ export function Heatmap({ block }) {
   )
 }
 
-/* matrix: priorização em quadrantes (ex.: impacto × esforço). */
-export function Matrix({ block }) {
-  const quadrants = block.quadrants ?? []
-  return (
-    <div className="matrix">
-      <div className="matrix-axis matrix-axis--y">{block.yAxis ?? 'Impacto'}</div>
-      <div className="matrix-grid">
-        {quadrants.slice(0, 4).map((q, i) => (
-          <div key={i} className="matrix-quadrant">
-            <div className="matrix-quadrant-label">{q.label}</div>
-            <ul>
-              {(q.items ?? []).map((item, j) => (
-                <li key={j}>{renderInline(item)}</li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
-      <div className="matrix-axis matrix-axis--x">{block.xAxis ?? 'Esforço'}</div>
-    </div>
-  )
-}
-
-/* ranking: lista ordenada com posição, valor e variação. */
 export function Ranking({ block }) {
   const { openModal } = useModal()
   return (
     <ol className="ranking">
       {(block.items ?? []).map((item, i) => (
         <li
-          key={i}
+          key={item.id ?? i}
           className={`ranking-row${item.details ? ' clickable' : ''}`}
           onClick={item.details ? () => openModal(item.details) : undefined}
+          onKeyDown={item.details ? (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              openModal(item.details)
+            }
+          } : undefined}
+          role={item.details ? 'button' : undefined}
+          tabIndex={item.details ? 0 : undefined}
         >
           <span className="ranking-pos">{item.position ?? i + 1}</span>
           <span className="ranking-label">{renderInline(item.label)}</span>
@@ -207,33 +212,6 @@ export function Ranking({ block }) {
   )
 }
 
-/* variance: realizado × esperado × diferença. Também cobre "benchmark". */
-export function Variance({ block }) {
-  return (
-    <table className="data-table variance-table">
-      <thead>
-        <tr>
-          <th>{block.dimension ?? 'Item'}</th>
-          <th>{block.actualLabel ?? 'Realizado'}</th>
-          <th>{block.expectedLabel ?? 'Esperado'}</th>
-          <th>{block.deltaLabel ?? 'Diferença'}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {(block.rows ?? []).map((row, i) => (
-          <tr key={i}>
-            <td>{renderInline(row.label)}</td>
-            <td>{row.actual}</td>
-            <td>{row.expected}</td>
-            <td className={`variance-delta${String(row.delta).startsWith('-') ? ' negative' : ''}`}>{row.delta}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
-}
-
-/* breakdown: detalhamento hierárquico de uma métrica. */
 export function Breakdown({ block }) {
   const total = Number(block.total) || (block.items ?? []).reduce((s, it) => s + (Number(it.value) || 0), 0) || 1
   return (
@@ -247,7 +225,7 @@ export function Breakdown({ block }) {
       {(block.items ?? []).map((item, i) => {
         const pct = ((Number(item.value) || 0) / total) * 100
         return (
-          <div key={i} className="breakdown-row">
+          <div key={item.id ?? i} className="breakdown-row">
             <div className="breakdown-labels">
               <span>{renderInline(item.label)}</span>
               <span className="breakdown-value">{item.display ?? item.value}</span>
@@ -261,5 +239,3 @@ export function Breakdown({ block }) {
     </div>
   )
 }
-
-/* countdown / date-strip / time-range ficam em plan.jsx */

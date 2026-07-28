@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useId, useRef, useState } from 'react'
 import { X } from 'lucide-react'
 import { renderInline } from '../lib/inline.jsx'
 
@@ -34,9 +34,15 @@ export function useModal() {
    para evitar import circular com o switch de blocos). */
 export function ModalProvider({ renderBlocks, children }) {
   const [modal, setModal] = useState(null)
+  const dialogRef = useRef(null)
+  const returnFocusRef = useRef(null)
+  const titleId = useId()
 
   const openModal = useCallback((details) => {
-    if (details) setModal(details)
+    if (details) {
+      returnFocusRef.current = document.activeElement
+      setModal(details)
+    }
   }, [])
 
   const close = useCallback(() => setModal(null), [])
@@ -53,12 +59,29 @@ export function ModalProvider({ renderBlocks, children }) {
     }
     const onKey = (e) => {
       if (e.key === 'Escape') close()
+      if (e.key === 'Tab') {
+        const focusable = dialogRef.current?.querySelectorAll(
+          'button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        )
+        if (!focusable?.length) return
+        const first = focusable[0]
+        const last = focusable[focusable.length - 1]
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault()
+          last.focus()
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault()
+          first.focus()
+        }
+      }
     }
     document.addEventListener('keydown', onKey)
     const unlockBodyScroll = lockBodyScroll()
+    dialogRef.current?.querySelector('button, [href], [tabindex]:not([tabindex="-1"])')?.focus()
     return () => {
       document.removeEventListener('keydown', onKey)
       unlockBodyScroll()
+      returnFocusRef.current?.focus?.()
     }
   }, [modal, close])
 
@@ -67,12 +90,19 @@ export function ModalProvider({ renderBlocks, children }) {
       {children}
       {modal && (
         <div className="dia-modal-backdrop" onClick={close}>
-          <div className={`dia-modal dia-modal--${modal.size ?? 'medium'}`} role="dialog" aria-modal="true" onClick={(e) => e.stopPropagation()}>
+          <div
+            ref={dialogRef}
+            className={`dia-modal dia-modal--${modal.size ?? 'medium'}`}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={modal.title ? titleId : undefined}
+            onClick={(e) => e.stopPropagation()}
+          >
             <button type="button" className="dia-modal-close" onClick={close} aria-label="Fechar">
               <X size={18} />
             </button>
             {modal.eyebrow && <span className="dia-modal-eyebrow">{modal.eyebrow}</span>}
-            {modal.title && <h3 className="dia-modal-title">{renderInline(modal.title)}</h3>}
+            {modal.title && <h3 id={titleId} className="dia-modal-title">{renderInline(modal.title)}</h3>}
             {modal.subtitle && <p className="dia-modal-subtitle">{renderInline(modal.subtitle)}</p>}
             {modal.fields?.length > 0 && (
               <dl className="dia-modal-fields">

@@ -1,11 +1,20 @@
 import { useRef, useState } from 'react'
 import { Settings } from 'lucide-react'
-import { COLORS, COLORS_DARK, COLOR_NAMES, FONTS, FONT_SCALES } from '../lib/theme.js'
+import {
+  COLORS,
+  COLORS_DARK,
+  COLOR_NAMES,
+  COMPONENT_STYLES,
+  FONTS,
+  FONT_SCALES,
+  normalizeComponentStyle,
+  normalizeFontIndex,
+} from '../lib/theme.js'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import ThemeToggleButton from './ThemeToggleButton.jsx'
 
-export default function SettingsPanel({ settings, onChange, title = 'Personalizar relatório' }) {
+export default function SettingsPanel({ settings, onChange, title = 'Personalizar publicação' }) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const { appTheme } = useAppTheme()
@@ -54,7 +63,7 @@ export default function SettingsPanel({ settings, onChange, title = 'Personaliza
             <button
               key={font.label}
               type="button"
-              className={`font-option${settings.fontIndex === i ? ' active' : ''}`}
+              className={`font-option${normalizeFontIndex(settings.fontIndex) === i ? ' active' : ''}`}
               onClick={() => onChange({ ...settings, fontIndex: i })}
             >
               <span className="font-option-preview">
@@ -77,6 +86,20 @@ export default function SettingsPanel({ settings, onChange, title = 'Personaliza
               type="button"
               className={settings.widthMode === option.value ? 'active' : ''}
               onClick={() => onChange({ ...settings, widthMode: option.value })}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="settings-section-label">Estilo de componentes</div>
+        <div className="settings-segmented settings-segmented--three">
+          {COMPONENT_STYLES.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              className={normalizeComponentStyle(settings.componentStyle) === option.value ? 'active' : ''}
+              onClick={() => onChange({ ...settings, componentStyle: option.value })}
             >
               {option.label}
             </button>

@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Check, ChevronDown, Search } from 'lucide-react'
 import { createPortal } from 'react-dom'
+import '../styles/select-control.css'
 
 const normalizeOptions = (options = []) => options.map((option) =>
   typeof option === 'string' ? { value: option, label: option } : option)
@@ -20,11 +21,20 @@ export default function SelectControl({ value, options, onChange, ariaLabel, cla
     if (!open || !buttonRef.current) return undefined
     const updatePosition = () => {
       const rect = buttonRef.current.getBoundingClientRect()
-      const width = Math.max(rect.width, 220)
+      const viewportPadding = 12
+      const width = Math.min(Math.max(rect.width, 220), window.innerWidth - viewportPadding * 2)
       const left = Math.min(rect.left, window.innerWidth - width - 12)
       const spaceBelow = window.innerHeight - rect.bottom
-      const opensUp = spaceBelow < 280 && rect.top > spaceBelow
-      setPosition({ left: Math.max(12, left), top: opensUp ? undefined : rect.bottom + 6, bottom: opensUp ? window.innerHeight - rect.top + 6 : undefined, width })
+      const spaceAbove = rect.top
+      const opensUp = spaceBelow < 280 && spaceAbove > spaceBelow
+      const availableHeight = Math.max(120, (opensUp ? spaceAbove : spaceBelow) - 18)
+      setPosition({
+        left: Math.max(viewportPadding, left),
+        top: opensUp ? undefined : rect.bottom + 6,
+        bottom: opensUp ? window.innerHeight - rect.top + 6 : undefined,
+        width,
+        maxHeight: Math.min(360, availableHeight),
+      })
     }
     updatePosition()
     window.addEventListener('resize', updatePosition)
@@ -40,8 +50,19 @@ export default function SelectControl({ value, options, onChange, ariaLabel, cla
     const closeOutside = (event) => {
       if (!buttonRef.current?.contains(event.target) && !menuRef.current?.contains(event.target)) setOpen(false)
     }
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') {
+        setOpen(false)
+        setQuery('')
+        buttonRef.current?.focus()
+      }
+    }
     document.addEventListener('pointerdown', closeOutside)
-    return () => document.removeEventListener('pointerdown', closeOutside)
+    document.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.removeEventListener('pointerdown', closeOutside)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
   }, [open])
 
   const choose = (option) => {

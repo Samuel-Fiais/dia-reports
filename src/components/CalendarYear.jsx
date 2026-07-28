@@ -1,30 +1,24 @@
 import { buildMonthGrid, MONTHS_PT_SHORT } from '../lib/calendar.js'
 import { useModal } from './Modal.jsx'
+import { blockLabel } from '../lib/labels.js'
 
-/* Calendário anual. Variantes:
-   - "dots" (padrão): 12 mini-meses com dias numerados e marcados em tinta
-   - "heatmap": intensidade por dia via `values: { "YYYY-MM-DD": n }`
-   `marks` pode ser ["YYYY-MM-DD"] ou [{ date, label }] — com label, o dia
-   marcado abre modal (agregado por mês). */
 export default function CalendarYear({ block }) {
   const { openModal } = useModal()
   const year = Number(block.year) || new Date().getFullYear()
   const heatmap = block.variant === 'heatmap'
-  const values = block.values ?? {}
+  const values = Object.fromEntries((block.items ?? []).map((item) => [item.date, item.value ?? 0]))
   const maxValue = block.max ?? Math.max(...Object.values(values).map(Number), 1)
 
-  const marks = new Map(
-    (block.marks ?? []).map((m) => (typeof m === 'string' ? [m, null] : [m.date, m.label ?? null])),
-  )
+  const marks = new Map((block.items ?? []).map((item) => [item.date, item.label ?? null]))
 
   const openMonth = (monthIndex, monthMarks) => {
     if (monthMarks.length === 0 || block.clickable === false) return
     openModal({
       eyebrow: String(year),
-      title: `${MONTHS_PT_SHORT[monthIndex]} — ${monthMarks.length} marcação${monthMarks.length > 1 ? 'ões' : ''}`,
+      title: `${MONTHS_PT_SHORT[monthIndex]} — ${monthMarks.length} ${blockLabel(block, 'entries', 'itens')}`,
       fields: monthMarks.map(([date, label]) => ({
         label: date.slice(8, 10) + '/' + date.slice(5, 7),
-        value: label ?? 'Dia marcado',
+        value: label ?? blockLabel(block, 'marked', 'Marcado'),
       })),
     })
   }
@@ -41,6 +35,14 @@ export default function CalendarYear({ block }) {
             key={label}
             className={`calendar-year-month${hasLabeledMarks && block.clickable !== false ? ' clickable' : ''}`}
             onClick={hasLabeledMarks ? () => openMonth(i, monthMarks) : undefined}
+            onKeyDown={hasLabeledMarks ? (event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                openMonth(i, monthMarks)
+              }
+            } : undefined}
+            role={hasLabeledMarks && block.clickable !== false ? 'button' : undefined}
+            tabIndex={hasLabeledMarks && block.clickable !== false ? 0 : undefined}
           >
             <div className="calendar-year-month-label">
               {label}

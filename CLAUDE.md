@@ -20,27 +20,23 @@ Vite) won't serve `/api/*`. Use `vercel dev` if you need to exercise the API loc
 
 ## Architecture
 
-**Data flow: DB-backed, not the JSON files you'd expect.** `src/reports/*.json` (e.g.
-`exemplo-completo.json`) are schema references/examples only — the running app does **not**
-import them. `src/lib/registry.js` fetches report data over HTTP from `/api/reports` (list)
+**Data flow: DB-backed.** `src/lib/registry.js` fetches publication data over HTTP from `/api/reports` (list)
 and `/api/reports/:slug` (single), and `api/reports.js` queries a Postgres `reports` table
 (via `@neondatabase/serverless`) with columns `slug`, `title`, `date`, `content` (jsonb).
 This repository is only the renderer/admin shell; report content is published by an external
-authorized process writing to Postgres. Editing or adding a file under `src/reports/` alone has
-no effect on the deployed/dev app. Routing to the API is done via `vercel.json` rewrites
+authorized process writing to Postgres. Routing to the API is done via `vercel.json` rewrites
 (`/api/reports/:path*` → `/api/reports`, catch-all `[[...slug]].js`-style single function).
 
-**Report rendering pipeline**: `pages/ReportPage.jsx` fetches one report by `:id` and renders
-it through `components/ReportView.jsx`. Each `body` block's `type` is dispatched by the giant
-switch in `components/blocks/index.jsx` (`ItemBlock`) to one of the block implementations
-grouped by concern in `components/blocks/{content,structure,compare,plan,analytics,advanced}.jsx`
-plus a handful of standalone top-level components (`ChartBlock`, `TodoBlock`, `Kanban`,
-`TabsBlock`, `Agenda`, `Calendar{Month,Week,Year}`, `Badges`). Unknown block `type`s are
-silently ignored (return `null`) — this is intentional, not a bug, per `AGENTS.md`.
+**Publication rendering pipeline**: `pages/ReportPage.jsx` fetches one publication by `:id`,
+normalizes it through `lib/publication.js`, and sends it to
+`components/PublicationRenderer.jsx`. Layout selection is driven by `renderMode`. Each body
+block is dispatched by `components/blocks/index.jsx` to generic implementations grouped by
+concern. `src/lib/blockContract.js` is the canonical vocabulary and
+`src/lib/blockRegistry.js` is the editor metadata for that vocabulary. Unknown block types
+are rejected; there are no compatibility aliases.
 
-The full block-type vocabulary and JSON report schema are documented in `REPORT-SCHEMA.md`;
-`src/reports/exemplo-completo.json` is a living reference containing at least one example of
-every block type. `AGENTS.md` has authoring guidance (tone, block selection, checklist) for
+The full block-type vocabulary and JSON publication schema are documented in
+`REPORT-SCHEMA.md`. `AGENTS.md` has authoring guidance (tone, block selection, checklist) for
 anyone/anything generating report JSON content — read it before writing report content.
 
 **Appearance/theming**: `src/lib/theme.js` defines the color palette (light + dark variants),

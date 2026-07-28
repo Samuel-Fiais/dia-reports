@@ -1,3 +1,5 @@
+import { normalizePublication } from './publication.js'
+
 const API_BASE = '/api'
 
 export let reports = []
@@ -20,5 +22,11 @@ export async function getReport(slug) {
   }
   if (!res.ok) throw new Error('Failed to fetch report')
   const data = await res.json()
-  return data.content ? { ...data.content, id: data.slug, updatedAt: data.updatedAt, visibility: data.visibility } : null
+  return data.content
+    ? normalizePublication(data.content, {
+        id: data.slug,
+        updatedAt: data.updatedAt,
+        visibility: data.visibility,
+      })
+    : null
 }

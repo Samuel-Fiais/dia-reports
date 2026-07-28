@@ -93,7 +93,7 @@ function buildConfig(block, chartStyleIndex, ink) {
               label: (ctx) => {
                 const item = items[ctx.dataIndex]
                 const bar = bars[ctx.dataIndex]
-                if (bar.total) return `Total: ${bar.value}`
+                if (bar.total) return `${block.totalLabel ?? 'Total'}: ${bar.value}`
                 return `${bar.value >= 0 ? '+' : ''}${bar.value}`
               },
             },
