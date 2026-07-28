@@ -266,26 +266,45 @@ function buildRequestUrl(baseUrl, path, parameters) {
   return `${String(baseUrl ?? '').replace(/\/$/, '')}${resolvedPath}${query ? `?${query}` : ''}`
 }
 
-export function buildCodeSamples(method, url, requestExample) {
+function shellQuote(value) {
+  return `'${String(value).replaceAll("'", "'\\''")}'`
+}
+
+export function buildCodeSamples(method, url, requestExample, options = {}) {
   const upperMethod = method.toUpperCase()
-  const body = requestExample == null ? '' : JSON.stringify(requestExample, null, 2)
-  const httpieParts = [`http ${upperMethod} '${url}'`]
-  const curlParts = [`curl -X ${upperMethod} '${url}'`]
+  const body = options.rawBody ?? (
+    requestExample == null ? '' : JSON.stringify(requestExample, null, 2)
+  )
+  const headers = { ...(options.headers ?? {}) }
+  if (body && !Object.keys(headers).some((name) => name.toLowerCase() === 'content-type')) {
+    headers['Content-Type'] = 'application/json'
+  }
+  const headerEntries = Object.entries(headers)
+  const httpieParts = [`http ${upperMethod} ${shellQuote(url)}`]
+  const curlParts = [`curl -X ${upperMethod} ${shellQuote(url)}`]
+  for (const [name, value] of headerEntries) {
+    httpieParts.push(shellQuote(`${name}:${value}`))
+    curlParts.push(`  -H ${shellQuote(`${name}: ${value}`)}`)
+  }
   if (body) {
-    httpieParts.push("'Content-Type:application/json'")
-    httpieParts.push(`<<< '${body}'`)
-    curlParts.push("  -H 'Content-Type: application/json'")
-    curlParts.push(`  -d '${body}'`)
+    httpieParts.push(`<<< ${shellQuote(body)}`)
+    curlParts.push(`  -d ${shellQuote(body)}`)
   }
 
+  let bodyExpression = ''
+  if (body) {
+    try {
+      bodyExpression = JSON.stringify(JSON.parse(body), null, 2)
+    } catch {
+      bodyExpression = JSON.stringify(body)
+    }
+  }
   const fetchOptions = [
     `  method: '${upperMethod}',`,
-    ...(body
-      ? [
-          "  headers: { 'Content-Type': 'application/json' },",
-          `  body: JSON.stringify(${body.replaceAll('\n', '\n  ')}),`,
-        ]
+    ...(headerEntries.length
+      ? [`  headers: ${JSON.stringify(headers, null, 2).replaceAll('\n', '\n  ')},`]
       : []),
+    ...(body ? [`  body: JSON.stringify(${bodyExpression.replaceAll('\n', '\n  ')}),`] : []),
   ]
 
   return [
@@ -310,6 +329,11 @@ export function buildCodeSamples(method, url, requestExample) {
         ...(body ? ['using System.Text;', ''] : []),
         'using var client = new HttpClient();',
         `using var request = new HttpRequestMessage(HttpMethod.${upperMethod[0]}${upperMethod.slice(1).toLowerCase()}, "${url}");`,
+        ...headerEntries
+          .filter(([name]) => name.toLowerCase() !== 'content-type')
+          .map(([name, value]) => (
+            `request.Headers.TryAddWithoutValidation(${JSON.stringify(name)}, ${JSON.stringify(String(value))});`
+          )),
         ...(body
           ? [`request.Content = new StringContent(${JSON.stringify(body)}, Encoding.UTF8, "application/json");`]
           : []),

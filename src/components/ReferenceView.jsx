@@ -13,6 +13,7 @@ import {
 import { createPortal } from 'react-dom'
 import { renderInline } from '../lib/inline.jsx'
 import {
+  buildCodeSamples,
   fetchRemoteOpenApiDocument,
   formatOpenApiResponseBody,
   normalizeOpenApiDocument,
@@ -218,6 +219,49 @@ function credentialHeaders(schemes, credentials) {
   return { headers, query }
 }
 
+function appendQueryParameters(urlValue, query) {
+  const entries = Object.entries(query)
+  if (!entries.length) return urlValue
+  try {
+    const url = new URL(urlValue)
+    entries.forEach(([name, value]) => url.searchParams.set(name, value))
+    return url.toString()
+  } catch {
+    const params = new URLSearchParams(query)
+    return `${urlValue}${String(urlValue).includes('?') ? '&' : '?'}${params}`
+  }
+}
+
+function prepareRequest({
+  operation,
+  serverUrl,
+  parameterValues,
+  securitySchemes,
+  credentials,
+  customHeaders,
+  body,
+}) {
+  const path = operation.path.replaceAll(/\{([^}]+)\}/g, (_, name) => (
+    encodeURIComponent(parameterValues[`path:${name}`] || name)
+  ))
+  const url = new URL(path, `${String(serverUrl).replace(/\/$/, '')}/`)
+  const headers = {}
+  for (const parameter of operation.parameters) {
+    const value = parameterValues[`${parameter.in}:${parameter.name}`]
+    if (!value) continue
+    if (parameter.in === 'query') url.searchParams.set(parameter.name, value)
+    if (parameter.in === 'header') headers[parameter.name] = value
+  }
+  const auth = credentialHeaders(securitySchemes, credentials)
+  Object.assign(headers, auth.headers)
+  Object.entries(auth.query).forEach(([name, value]) => url.searchParams.set(name, value))
+  for (const header of customHeaders) {
+    if (header.name.trim()) headers[header.name.trim()] = header.value
+  }
+  if (body) headers['Content-Type'] = operation.requestBody?.mediaType || 'application/json'
+  return { url, headers, body }
+}
+
 function RequestRunner({
   operation,
   serverUrl,
@@ -259,6 +303,38 @@ function RequestRunner({
     () => requestDetails ? JSON.stringify(requestDetails, null, 2) : '',
     [requestDetails],
   )
+  const requestPreview = useMemo(() => {
+    try {
+      return prepareRequest({
+        operation,
+        serverUrl,
+        parameterValues,
+        securitySchemes: activeSecuritySchemes,
+        credentials,
+        customHeaders,
+        body,
+      })
+    } catch {
+      return null
+    }
+  }, [
+    activeSecuritySchemes,
+    body,
+    credentials,
+    customHeaders,
+    operation,
+    parameterValues,
+    serverUrl,
+  ])
+  const modalCodeSamples = useMemo(() => {
+    if (!requestPreview) return []
+    return buildCodeSamples(
+      operation.method,
+      requestPreview.url.toString(),
+      null,
+      { headers: requestPreview.headers, rawBody: body },
+    ).filter((sample) => ['httpie', 'curl'].includes(sample.id))
+  }, [body, operation.method, requestPreview])
 
   useEffect(() => {
     if (!open) return undefined
@@ -282,33 +358,21 @@ function RequestRunner({
         const message = validateOpenApiParameter(parameter, value)
         if (message) throw new Error(message)
       }
-      const path = operation.path.replaceAll(/\{([^}]+)\}/g, (_, name) => (
-        encodeURIComponent(parameterValues[`path:${name}`] || name)
-      ))
-      const url = new URL(path, `${String(serverUrl).replace(/\/$/, '')}/`)
-      const headers = {}
-      for (const parameter of operation.parameters) {
-        const value = parameterValues[`${parameter.in}:${parameter.name}`]
-        if (!value) continue
-        if (parameter.in === 'query') url.searchParams.set(parameter.name, value)
-        if (parameter.in === 'header') headers[parameter.name] = value
-      }
-      const auth = credentialHeaders(
-        activeSecuritySchemes,
+      const prepared = prepareRequest({
+        operation,
+        serverUrl,
+        parameterValues,
+        securitySchemes: activeSecuritySchemes,
         credentials,
-      )
-      Object.assign(headers, auth.headers)
-      Object.entries(auth.query).forEach(([name, value]) => url.searchParams.set(name, value))
-      for (const header of customHeaders) {
-        if (header.name.trim()) headers[header.name.trim()] = header.value
-      }
-      if (body) headers['Content-Type'] = operation.requestBody?.mediaType || 'application/json'
+        customHeaders,
+        body,
+      })
 
       setRequestDetails({
         method: operation.method,
-        url: url.toString(),
+        url: prepared.url.toString(),
         headers: Object.fromEntries(
-          Object.entries(headers).map(([name, value]) => [
+          Object.entries(prepared.headers).map(([name, value]) => [
             name,
             /authorization|api[-_]?key/i.test(name) ? '••••••••' : value,
           ]),
@@ -317,9 +381,9 @@ function RequestRunner({
       })
       setActiveResultTab('response')
       const startedAt = performance.now()
-      const response = await fetch(url, {
+      const response = await fetch(prepared.url, {
         method: operation.method,
-        headers,
+        headers: prepared.headers,
         body: body && !['GET', 'HEAD'].includes(operation.method) ? body : undefined,
       })
       const responseBody = await response.text()
@@ -518,6 +582,14 @@ function RequestRunner({
                         onChange={(event) => setBody(event.target.value)}
                       />
                     </label>
+                  </div>
+                )}
+
+                {modalCodeSamples.length > 0 && (
+                  <div className="reference-request-section reference-request-snippets">
+                    <h3>Copiar requisição</h3>
+                    <p>Os exemplos incluem os parâmetros, headers e a autenticação preenchidos acima.</p>
+                    <CodeSamples samples={modalCodeSamples} />
                   </div>
                 )}
               </section>
@@ -852,6 +924,20 @@ function Operation({
   onCredentialChange,
 }) {
   const title = operationTitle(operation)
+  const activeSchemeNames = new Set(
+    operation.security.flatMap((requirement) => Object.keys(requirement)),
+  )
+  const operationSecuritySchemes = securitySchemes.filter(
+    (scheme) => activeSchemeNames.has(scheme.name),
+  )
+  const auth = credentialHeaders(operationSecuritySchemes, credentials)
+  const requestUrl = appendQueryParameters(operation.requestUrl, auth.query)
+  const codeSamples = buildCodeSamples(
+    operation.method,
+    requestUrl,
+    operation.requestBody?.example,
+    { headers: auth.headers },
+  )
 
   return (
     <section id={operation.anchor} className="reference-operation">
@@ -877,7 +963,7 @@ function Operation({
             <code>{operation.path}</code>
             {operation.deprecated && <span className="reference-deprecated">Descontinuado</span>}
           </div>
-          <CodeSamples samples={operation.codeSamples}>
+          <CodeSamples samples={codeSamples}>
             <RequestRunner
               operation={operation}
               serverUrl={serverUrl}

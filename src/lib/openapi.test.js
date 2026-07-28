@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  buildCodeSamples,
   formatOpenApiResponseBody,
   normalizeOpenApiDocument,
   normalizeOpenApiSchema,
@@ -10,6 +11,28 @@ import {
   resolveOpenApiRef,
   validateOpenApiParameter,
 } from './openapi.js'
+
+test('adds authentication headers and raw bodies to generated code samples', () => {
+  const samples = buildCodeSamples(
+    'post',
+    'https://api.exemplo.com/items',
+    null,
+    {
+      headers: {
+        Authorization: 'Bearer secret-token',
+        'X-Tenant': 'dia',
+      },
+      rawBody: '{"name":"Item"}',
+    },
+  )
+
+  const byId = Object.fromEntries(samples.map((sample) => [sample.id, sample.code]))
+  assert.match(byId.httpie, /Authorization:Bearer secret-token/)
+  assert.match(byId.curl, /Authorization: Bearer secret-token/)
+  assert.match(byId.javascript, /Bearer secret-token/)
+  assert.match(byId.csharp, /TryAddWithoutValidation\("Authorization"/)
+  assert.match(byId.curl, /"name":"Item"/)
+})
 
 const document = {
   openapi: '3.1.0',

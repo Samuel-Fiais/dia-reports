@@ -3442,6 +3442,21 @@ blockquote footer a:hover {
   font-size: 0.68rem;
 }
 
+.reference-request-snippets > p {
+  margin: -0.2rem 0 0.75rem;
+  color: var(--ink-muted);
+  font-size: 0.66rem;
+  line-height: 1.5;
+}
+
+.reference-request-snippets .reference-code {
+  margin-top: 0;
+}
+
+.reference-request-snippets .reference-code pre {
+  max-height: 14rem;
+}
+
 .reference-custom-headers {
   display: grid;
   gap: 0.4rem;
