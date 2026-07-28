@@ -66,7 +66,27 @@ test('unsupported modes and schema versions fail instead of falling back', () =>
     /Versão de schema não suportada/,
   )
   assert.throws(
-    () => normalizePublication({ schemaVersion: 2, renderMode: 'dashboard', body: [] }),
+    () => normalizePublication({ schemaVersion: 2, renderMode: 'unsupported', body: [] }),
     /Modo de renderização não suportado/,
   )
+})
+
+test('reference mode preserves its OpenAPI source', () => {
+  const source = {
+    type: 'openapi',
+    document: {
+      openapi: '3.1.0',
+      info: { title: 'API', version: '1.0.0' },
+      paths: {},
+    },
+  }
+  const publication = normalizePublication({
+    id: 'api-reference',
+    renderMode: 'reference',
+    source,
+    body: [],
+  })
+
+  assert.equal(publication.renderMode, 'reference')
+  assert.equal(publication.source, source)
 })

@@ -1,202 +1,143 @@
 import { useEffect, useMemo, useState } from 'react'
+import {
+  ArrowRight,
+  BarChart3,
+  BookOpen,
+  Braces,
+  FileText,
+  LayoutGrid,
+  Library,
+} from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Search, X } from 'lucide-react'
+import {
+  PUBLICATION_KINDS,
+  publicationMode,
+  withSystemPublications,
+} from '../lib/publicationKinds.js'
 import { fetchReports } from '../lib/registry.js'
-import { formatReportDate, formatShortDate, formatUpdatedAgo } from '../lib/theme.js'
+import { formatReportDate } from '../lib/theme.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
-import SelectControl from '../components/SelectControl.jsx'
 
-function countSections(report) {
-  if (typeof report.sections_length === 'number') return report.sections_length
-  return (report.body ?? []).filter((b) => b.type === 'section').length
-}
-
-function reportTitle(report) {
-  return Array.isArray(report.headline) ? report.headline.join(' ') : report.headline ?? report.title
-}
-
-const SORT_OPTIONS = [
-  { value: 'recent', label: 'Mais recentes' },
-  { value: 'oldest', label: 'Mais antigos' },
-  { value: 'az', label: 'Título (A–Z)' },
-]
+const KIND_ICONS = Object.freeze({
+  report: FileText,
+  document: BookOpen,
+  dashboard: BarChart3,
+  reference: Braces,
+})
 
 export default function Home() {
-  useAppChromeTheme('Relatórios')
-  const [reports, setReports] = useState([])
+  useAppChromeTheme('Central')
+  const [publications, setPublications] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [query, setQuery] = useState('')
-  const [category, setCategory] = useState('all')
-  const [sort, setSort] = useState('recent')
 
   useEffect(() => {
     let cancelled = false
 
-    async function loadReports() {
+    async function loadPublications() {
       try {
         setLoading(true)
         setError(null)
-        const data = await fetchReports()
-        if (!cancelled) setReports(data)
-      } catch (err) {
-        if (!cancelled) setError(err)
+        const data = withSystemPublications(await fetchReports())
+        if (!cancelled) setPublications(data)
+      } catch (nextError) {
+        if (!cancelled) {
+          setPublications(withSystemPublications([]))
+          setError(nextError)
+        }
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
 
-    loadReports()
-
+    loadPublications()
     return () => {
       cancelled = true
     }
   }, [])
 
-  const categories = useMemo(() => {
-    const set = new Set(reports.map((r) => r.from).filter(Boolean))
-    return ['all', ...Array.from(set)]
-  }, [reports])
-
-  const visibleReports = useMemo(() => {
-    const q = query.trim().toLowerCase()
-    let list = reports.filter((report) => {
-      if (category !== 'all' && report.from !== category) return false
-      if (!q) return true
-      const haystack = [reportTitle(report), report.intro?.[0], report.from]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase()
-      return haystack.includes(q)
-    })
-    list = [...list].sort((a, b) => {
-      if (sort === 'az') return reportTitle(a).localeCompare(reportTitle(b), 'pt-BR')
-      const diff = new Date(a.updatedAt ?? a.date) - new Date(b.updatedAt ?? b.date)
-      return sort === 'oldest' ? diff : -diff
-    })
-    return list
-  }, [reports, query, category, sort])
+  const counts = useMemo(() => publications.reduce((result, publication) => {
+    const mode = publicationMode(publication)
+    result[mode] = (result[mode] ?? 0) + 1
+    return result
+  }, {}), [publications])
 
   return (
-    <div className="report ready">
+    <div className="report ready publication-hub">
       <div className="report-wrap">
         <header className="report-header">
           <div className="report-header-left">
-            <span className="report-from">Dashboard · Relatórios</span>
+            <Library size={15} aria-hidden="true" />
+            <span className="report-from">Dia · Central de publicações</span>
           </div>
           <span className="report-date">{formatReportDate(new Date().toISOString())}</span>
         </header>
 
-        <h1 className="report-headline">Relatórios</h1>
+        <h1 className="report-headline">Início</h1>
 
         <div className="report-intro">
           <p>
-            <strong>
-              {loading
-                ? 'Carregando seus relatórios.'
-                : `${visibleReports.length} de ${reports.length} ${reports.length === 1 ? 'relatório' : 'relatórios'}.`}
-            </strong>{' '}
-            Tudo em um só lugar, sempre atualizado. Busque por assunto ou filtre por categoria
-            para achar o que precisa rapidinho.
+            <strong>Todo o conhecimento publicado, organizado pelo modo como será usado.</strong>{' '}
+            Entre em uma área para consultar análises, documentação, indicadores ou referências
+            técnicas.
           </p>
         </div>
-
-        {!loading && reports.length > 0 && (
-          <div className="dashboard-controls">
-            <div className="dashboard-search">
-              <Search size={15} aria-hidden="true" />
-              <input
-                type="search"
-                placeholder="Buscar por título ou assunto..."
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                aria-label="Buscar relatórios"
-              />
-              {query && (
-                <button type="button" onClick={() => setQuery('')} aria-label="Limpar busca">
-                  <X size={13} />
-                </button>
-              )}
-            </div>
-
-            {categories.length > 2 && (
-              <div className="dashboard-sort-wrap">
-                <SelectControl
-                  className="dashboard-sort"
-                  value={category}
-                  onChange={setCategory}
-                  ariaLabel="Filtrar por categoria"
-                  options={categories.map((cat) => ({ value: cat, label: cat === 'all' ? 'Todas' : cat }))}
-                />
-              </div>
-            )}
-
-            <div className="dashboard-sort-wrap">
-              <SelectControl
-                className="dashboard-sort"
-                value={sort}
-                onChange={setSort}
-                ariaLabel="Ordenar relatórios"
-                options={SORT_OPTIONS}
-              />
-            </div>
-          </div>
-        )}
 
         <hr className="report-rule" />
 
         <main className="report-body">
           <section className="report-section">
             <div className="section-header">
-              <h2 className="section-heading">Todos os relatórios</h2>
+              <h2 className="section-heading">Publicações</h2>
             </div>
-            <div className="section-items report-card-grid">
-              {loading && (
-                <p className="report-card-empty">
-                  Carregando relatórios...
-                </p>
-              )}
-              {!loading && error && (
-                <p className="report-card-empty">
-                  Não conseguimos carregar seus relatórios agora. Tente de novo em instantes.
-                </p>
-              )}
-              {!loading && !error && visibleReports.map((report) => (
-                <Link key={report.id} to={`/report/${report.id}`} className="report-card">
-                  <div className="report-card-meta">
-                    <span className="report-card-from">{formatUpdatedAgo(report.updatedAt ?? report.date)}</span>
-                    <span className="report-card-date">{formatShortDate(report.updatedAt ?? report.date)}</span>
-                  </div>
-                  <h3 className="report-card-title">{reportTitle(report)}</h3>
-                  {report.intro?.[0] && (
-                    <p className="report-card-desc">
-                      {String(report.intro[0]).replace(/\*\*|\*|`/g, '').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')}
-                    </p>
-                  )}
-                  <div className="report-card-foot">
-                    <span className="item-badge">
-                      {countSections(report)} seç{countSections(report) === 1 ? 'ão' : 'ões'}
+            <div className="publication-kind-grid">
+              {PUBLICATION_KINDS.map((kind, index) => {
+                const Icon = KIND_ICONS[kind.key]
+                const count = counts[kind.key] ?? 0
+                return (
+                  <Link
+                    key={kind.key}
+                    to={kind.path}
+                    className="publication-kind-card"
+                    style={{ '--kind-index': index }}
+                  >
+                    <div className="publication-kind-top">
+                      <span className="publication-kind-icon">
+                        <Icon size={20} aria-hidden="true" />
+                      </span>
+                      <span className="publication-kind-count">
+                        {loading ? '—' : count}
+                      </span>
+                    </div>
+                    <span className="publication-kind-eyebrow">{kind.eyebrow}</span>
+                    <h2>{kind.title}</h2>
+                    <p>{kind.description}</p>
+                    <span className="publication-kind-open">
+                      Ver listagem <ArrowRight size={14} aria-hidden="true" />
                     </span>
-                    {(report.metrics?.length > 0 || report.metrics_length > 0) && (
-                      <span className="item-badge">{report.metrics?.length ?? report.metrics_length} métricas</span>
-                    )}
-                    <span className="report-card-open">
-                      Abrir <ArrowRight size={13} aria-hidden="true" />
-                    </span>
-                  </div>
-                </Link>
-              ))}
-              {!loading && !error && reports.length > 0 && visibleReports.length === 0 && (
-                <p className="report-card-empty">
-                  Nenhum relatório encontrado com esses filtros. Tente outro termo de busca.
-                </p>
-              )}
-              {!loading && !error && reports.length === 0 && (
-                <p className="report-card-empty">
-                  Nenhum relatório disponível ainda.
-                </p>
-              )}
+                  </Link>
+                )
+              })}
             </div>
+            {!loading && error ? (
+              <p className="publication-hub-error">
+                As contagens não puderam ser atualizadas, mas as áreas continuam disponíveis.
+              </p>
+            ) : null}
+          </section>
+
+          <section className="report-section publication-system-section">
+            <div className="section-header">
+              <h2 className="section-heading">Sistema</h2>
+            </div>
+            <Link to="/componentes" className="publication-system-card">
+              <LayoutGrid size={18} aria-hidden="true" />
+              <span>
+                <strong>Catálogo de componentes</strong>
+                <small>Referência viva gerada diretamente pelo schema.</small>
+              </span>
+              <ArrowRight size={14} aria-hidden="true" />
+            </Link>
           </section>
         </main>
       </div>

@@ -33,7 +33,11 @@ export default function SharedReport() {
         const data = await res.json();
         if (cancelled) return;
         setReport(data.content
-          ? normalizePublication(data.content, { id: data.slug, updatedAt: data.updatedAt })
+          ? normalizePublication(data.content, {
+              id: data.slug,
+              updatedAt: data.updatedAt,
+              _sourceAccessToken: token,
+            })
           : null);
         setSettings(resolveViewerSettings(null, data.content?.settings));
       } catch (err) {

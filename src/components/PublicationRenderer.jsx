@@ -1,17 +1,30 @@
+import { lazy, Suspense } from 'react'
 import { normalizePublication, normalizeViewerSettings } from '../lib/publication.js'
 import ReportView from './ReportView.jsx'
 
-const LAYOUTS = {
-  report: ReportView,
-}
+const ReferenceView = lazy(() => import('./ReferenceView.jsx'))
 
 export default function PublicationRenderer({
   publication,
   settings,
 }) {
   const normalized = normalizePublication(publication)
-  const Layout = LAYOUTS[normalized.renderMode] ?? LAYOUTS.report
   const resolvedSettings = normalizeViewerSettings(normalized.settings, settings)
 
-  return <Layout report={normalized} settings={resolvedSettings} />
+  if (normalized.renderMode === 'report') {
+    return <ReportView report={normalized} settings={resolvedSettings} />
+  }
+
+  return (
+    <Suspense
+      fallback={(
+        <div className="reference reference-load-state">
+          <span>Preparando publicação</span>
+          <h1>Carregando referência...</h1>
+        </div>
+      )}
+    >
+      <ReferenceView publication={normalized} settings={resolvedSettings} />
+    </Suspense>
+  )
 }

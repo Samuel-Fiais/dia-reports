@@ -45,13 +45,61 @@ documento.
 }
 ```
 
-`renderMode` aceita atualmente apenas `report`. O campo é o ponto de extensão para layouts
-futuros, sem fazer o modo atual fingir suporte a dashboard ou documento técnico.
+`renderMode` aceita `report` e `reference`. Relatórios usam a narrativa editorial existente.
+Referências transformam um contrato OpenAPI em navegação lateral, operações, parâmetros,
+schemas, respostas e exemplos de requisição. Dashboard e documento ainda são categorias
+preparadas na central, mas não possuem renderizador próprio.
 `schemaVersion` deve ser `2`.
 
 Todo bloco e todo item repetível pode receber `id`. IDs devem ser estáveis e únicos dentro do
 seu contêiner, pois também identificam estado interativo local. Um bloco desconhecido invalida
 a publicação.
+
+## Referência OpenAPI
+
+Uma referência pode incorporar o contrato no próprio JSON:
+
+```json
+{
+  "schemaVersion": 2,
+  "renderMode": "reference",
+  "title": "Minha API",
+  "source": {
+    "type": "openapi",
+    "document": {
+      "openapi": "3.1.0",
+      "info": { "title": "Minha API", "version": "1.0.0" },
+      "servers": [{ "url": "https://api.exemplo.com" }],
+      "paths": {}
+    }
+  },
+  "body": []
+}
+```
+
+Ou apontar para um JSON OpenAPI público:
+
+```json
+{
+  "schemaVersion": 2,
+  "renderMode": "reference",
+  "title": "Minha API",
+  "source": {
+    "type": "openapi",
+    "url": "https://api.exemplo.com/openapi.json"
+  },
+  "body": []
+}
+```
+
+Com `source.url`, o app busca o contrato mais recente sempre que a publicação é aberta ou
+recarregada. A origem precisa usar HTTPS, retornar JSON OpenAPI 3.x, ser pública, não exigir
+credenciais e ter no máximo 2 MB. A busca acontece no backend para não depender de CORS e
+bloqueia destinos locais ou de rede privada.
+
+`body` continua aceitando o catálogo genérico completo para guias, avisos e conteúdo
+complementar. Operações e schemas não são novos componentes: são derivados do contrato
+OpenAPI pelo layout `reference`.
 
 ## Catálogo canônico
 

@@ -2,15 +2,20 @@
 
 Renderizador de publicações estruturadas em React.
 
-- **Home/dashboard** lista relatórios lidos da API (`GET /api/reports`), com conteúdo vindo da tabela Postgres `reports`.
+- **Central de publicações** em `/`, com acesso separado a relatórios, documentos,
+  dashboards e referências.
+- **Listagens por tipo** em `/relatorios`, `/documentos`, `/dashboards` e `/referencias`.
 - **Clicar em um relatório** abre `/report/<slug>` renderizado a partir do JSON salvo no banco.
+- **Referências OpenAPI** usam `renderMode: "reference"` e podem receber o contrato embutido
+  ou buscá-lo de uma URL HTTPS pública sempre que a publicação é aberta.
+- **Exemplo OpenAPI** em `/referencias/openapi-exemplo`, baseado na API ViaCEP.
 - **Catálogo vivo de componentes** em `/componentes`: documento virtual gerado diretamente
   por `blockManifest.js`, com um exemplo preenchido de cada componente. Não depende do banco.
 - **Seletor ⚙ "Customize Report"** no canto inferior direito: paleta de fundos, estilos de gráfico, 4 temas tipográficos e 3 tratamentos de componentes (Editorial, Estruturado e Minimalista). A escolha é salva por relatório no `localStorage`.
 - **Tema escuro**: ícone de sol/lua ao lado do ⚙, afeta o app inteiro (dashboard + relatórios); preferência salva no navegador.
 - **Share**: botão no topo de cada relatório cria/copia um link `/shared/<token>` quando permitido; o acesso ao conteúdo continua passando pela API.
-- Um contrato genérico sustenta o relatório atual e prepara layouts futuros sem fingir que
-  dashboards ou documentos técnicos já existem. O catálogo contém somente componentes
+- Um contrato genérico sustenta relatórios e referências, enquanto a central prepara as
+  categorias futuras de dashboards e documentos. O catálogo contém somente componentes
   genéricos e variantes visuais genéricas, documentados em
   [REPORT-SCHEMA.md](REPORT-SCHEMA.md).
 - Gerando relatórios com um agente de IA? Leia [AGENTS.md](AGENTS.md) primeiro.

@@ -1,4 +1,4 @@
-export const PUBLICATION_MODES = ['report']
+export const PUBLICATION_MODES = ['report', 'reference']
 
 const DEFAULT_PLACEMENTS = ['body', 'item', 'detail']
 const CATEGORY_FAMILIES = Object.freeze({

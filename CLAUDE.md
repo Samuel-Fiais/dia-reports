@@ -39,6 +39,17 @@ are rejected; there are no compatibility aliases.
 `src/lib/componentCatalog.js`. It derives one populated example per manifest entry and is
 covered by tests that require the generated type set to exactly match the canonical catalog.
 
+`renderMode: "reference"` is rendered by `components/ReferenceView.jsx`. Its API operations
+come from an OpenAPI 3.x contract in `source.document` or from a public HTTPS JSON URL in
+`source.url`. Remote contracts are fetched by the access-controlled `api/openapi.js` proxy,
+which verifies the publication or share token and enforces HTTPS, public DNS resolution, a
+response-size limit, manual redirect validation, and JSON parsing. Generic `body` blocks still
+use the shared renderer path.
+
+`/` is the publication hub. `pages/PublicationListPage.jsx` powers the separate report,
+document, dashboard, and reference listings; API summaries include `renderMode`, defaulting to
+`report` for existing rows. `/referencias/openapi-exemplo` is a protected system example.
+
 The full block-type vocabulary and JSON publication schema are documented in
 `REPORT-SCHEMA.md`. `AGENTS.md` has authoring guidance (tone, block selection, checklist) for
 anyone/anything generating report JSON content — read it before writing report content.

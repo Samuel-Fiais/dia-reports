@@ -4,6 +4,8 @@ import ReportPage from './pages/ReportPage.jsx'
 import SharedReport from './pages/SharedReport.jsx'
 import Login from './pages/Login.jsx'
 import ComponentCatalogPage from './pages/ComponentCatalogPage.jsx'
+import PublicationListPage from './pages/PublicationListPage.jsx'
+import ReferenceExamplePage from './pages/ReferenceExamplePage.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
@@ -23,6 +25,26 @@ export default function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/shared/:token" element={<SharedReport />} />
             <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+            <Route
+              path="/relatorios"
+              element={<RequireAuth><PublicationListPage kindKey="report" /></RequireAuth>}
+            />
+            <Route
+              path="/documentos"
+              element={<RequireAuth><PublicationListPage kindKey="document" /></RequireAuth>}
+            />
+            <Route
+              path="/dashboards"
+              element={<RequireAuth><PublicationListPage kindKey="dashboard" /></RequireAuth>}
+            />
+            <Route
+              path="/referencias"
+              element={<RequireAuth><PublicationListPage kindKey="reference" /></RequireAuth>}
+            />
+            <Route
+              path="/referencias/openapi-exemplo"
+              element={<RequireAuth><ReferenceExamplePage /></RequireAuth>}
+            />
             <Route
               path="/componentes"
               element={<RequireAuth><ComponentCatalogPage /></RequireAuth>}

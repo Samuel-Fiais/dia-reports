@@ -13,6 +13,10 @@ import PublicationRenderer from "../components/PublicationRenderer.jsx";
 import PublicationState from "../components/PublicationState.jsx";
 import SettingsPanel from "../components/SettingsPanel.jsx";
 import ShareButton from "../components/ShareButton.jsx";
+import {
+  getPublicationKind,
+  publicationListPath,
+} from "../lib/publicationKinds.js";
 
 export default function ReportPage() {
   const { id } = useParams();
@@ -104,13 +108,14 @@ export default function ReportPage() {
   const handleChange = (next) => {
     setSettings(persistViewerSettings(id, next, !guestView));
   };
+  const listKind = getPublicationKind(report.renderMode);
 
   return (
     <>
       {!guestView && (
         <nav className="report-backnav">
-          <Link to="/">
-            <ArrowLeft size={12} aria-hidden="true" /> Relatórios
+          <Link to={publicationListPath(report.renderMode)}>
+            <ArrowLeft size={12} aria-hidden="true" /> {listKind.title}
           </Link>
         </nav>
       )}

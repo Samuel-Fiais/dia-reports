@@ -219,6 +219,26 @@ function MetricCard({ metric, span }) {
   )
 }
 
+export function PublicationBody({
+  publication,
+  chartStyleIndex,
+  className = 'report-body',
+}) {
+  return (
+    <main className={className}>
+      {(publication.body ?? []).map((block, index) => (
+        <BodyBlock
+          key={block._key ?? block.id ?? index}
+          block={block}
+          chartStyleIndex={chartStyleIndex}
+          bodyKey={block._key ?? block.id ?? `${publication.id}:${index}`}
+          report={publication}
+        />
+      ))}
+    </main>
+  )
+}
+
 /* ── Capa integrada ao título (hero) ────────────────────────── */
 
 function ReportHero({ report }) {
@@ -311,17 +331,10 @@ export default function ReportView({
 
           <hr className="report-rule" />
 
-          <main className="report-body">
-            {(report.body ?? []).map((block, i) => (
-              <BodyBlock
-                key={block._key ?? block.id ?? i}
-                block={block}
-                chartStyleIndex={resolvedChartStyleIndex}
-                bodyKey={block._key ?? block.id ?? `${report.id}:${i}`}
-                report={report}
-              />
-            ))}
-          </main>
+          <PublicationBody
+            publication={report}
+            chartStyleIndex={resolvedChartStyleIndex}
+          />
         </div>
       </div>
     </ModalProvider>

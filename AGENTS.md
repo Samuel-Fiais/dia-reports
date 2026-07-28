@@ -1,7 +1,7 @@
-# Guia para agentes de IA: como criar um relatório
+# Guia para agentes de IA: como criar uma publicação
 
-Este arquivo é para você, agente de IA, gerando JSON de relatórios para este projeto.
-Leia isto antes de criar ou revisar qualquer conteúdo de relatório.
+Este arquivo é para você, agente de IA, gerando JSON de publicações para este projeto.
+Leia isto antes de criar ou revisar qualquer conteúdo.
 
 ## Onde o relatório realmente vive
 
@@ -9,9 +9,10 @@ Publicações são linhas na tabela `reports` do Postgres (`slug`, `title`, `dat
 jsonb), servidas por `api/reports.js`. Este repositório é apenas renderizador: não há
 fluxo interno nem endpoint para gravar conteúdo.
 
-A única exceção é `/componentes`: ele é um documento de sistema, gerado em tempo de execução
-por `src/lib/componentCatalog.js` a partir de `src/lib/blockManifest.js`. Não trate esse
-catálogo como conteúdo publicável nem tente persistir suas amostras no banco.
+As exceções são documentos de sistema: `/componentes`, gerado por
+`src/lib/componentCatalog.js`, e `/referencias/openapi-exemplo`, gerado por
+`src/lib/referenceExample.js`. Não trate esses exemplos como conteúdo publicável nem tente
+persistir suas amostras no banco.
 
 - Para publicar de verdade, um processo externo autorizado precisa gravar/atualizar a linha em
   `reports` no Postgres.
@@ -45,6 +46,17 @@ catálogo como conteúdo publicável nem tente persistir suas amostras no banco.
    arquivo — sem persistência no banco, o relatório não aparece em lugar nenhum.
 4. Valide o JSON e o catálogo de blocos antes de finalizar — conteúdo inválido
    quebra a renderização do relatório inteiro.
+
+### Quando a publicação for uma referência de API
+
+- Use `renderMode: "reference"` e `source.type: "openapi"`.
+- Prefira `source.url` quando existir um JSON OpenAPI 3.x público e estável; a publicação
+  buscará a versão atual ao abrir. A URL deve usar HTTPS, não pode exigir credenciais e não
+  pode apontar para redes locais.
+- Use `source.document` quando o contrato precisar ser congelado ou não estiver publicamente
+  acessível.
+- Não transforme endpoints, parâmetros ou respostas em tipos de bloco. Eles pertencem ao
+  contrato OpenAPI; `body` recebe apenas conteúdo complementar com componentes genéricos.
 
 ## Tom e voz
 
@@ -110,7 +122,9 @@ administrativo externo, não com um campo no JSON.
       exemplo).
 - [ ] Blocos usam apenas os `type` documentados em [REPORT-SCHEMA.md](REPORT-SCHEMA.md) /
       `src/lib/blockManifest.js`.
-- [ ] `schemaVersion` é `2` e `renderMode` é `report`.
+- [ ] `schemaVersion` é `2` e `renderMode` é `report` ou `reference`.
+- [ ] Para `reference`, `source` contém exatamente uma origem OpenAPI válida:
+      `document` embutido ou `url` HTTPS pública.
 - [ ] JSON válido (sem vírgula sobrando, aspas fechadas).
 - [ ] Deixou claro como o conteúdo será publicado externamente — nunca reporte como
       "publicado" sem confirmação de que a linha foi persistida no Postgres.

@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FolderKanban, Home, LayoutGrid, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
+import { FileStack, FolderKanban, Home, LayoutGrid, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import SettingsModal from './SettingsModal.jsx'
@@ -11,6 +11,7 @@ import SettingsModal from './SettingsModal.jsx'
 //   'label' — texto de seção não clicável (ignora icon, to, permission)
 const MENU_ITEMS = [
   { type: 'link', key: 'home', label: 'Início', icon: Home, to: '/' },
+  { type: 'link', key: 'reports', label: 'Relatórios', icon: FileStack, to: '/relatorios' },
   { type: 'link', key: 'components', label: 'Componentes', icon: LayoutGrid, to: '/componentes' },
   { type: 'separator' },
   { type: 'label', key: 'admin-label', label: 'Administração' },
