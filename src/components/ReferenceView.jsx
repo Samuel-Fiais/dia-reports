@@ -5,7 +5,9 @@ import {
   KeyRound,
   LoaderCircle,
   Play,
+  Plus,
   Search,
+  Trash2,
   X,
 } from 'lucide-react'
 import { createPortal } from 'react-dom'
@@ -16,6 +18,7 @@ import {
   normalizeOpenApiDocument,
   openApiDocumentFromPublication,
   openApiUrlFromPublication,
+  validateOpenApiParameter,
 } from '../lib/openapi.js'
 import { ModalProvider } from './Modal.jsx'
 import { renderBlocks } from './blocks/index.jsx'
@@ -183,6 +186,10 @@ function RequestRunner({
   const [open, setOpen] = useState(false)
   const [running, setRunning] = useState(false)
   const [result, setResult] = useState(null)
+  const [activeResultTab, setActiveResultTab] = useState('response')
+  const [requestDetails, setRequestDetails] = useState(null)
+  const [customHeaders, setCustomHeaders] = useState([])
+  const nextHeaderId = useRef(0)
   const titleId = useId()
   const [parameterValues, setParameterValues] = useState(() => Object.fromEntries(
     operation.parameters.map((parameter) => [
@@ -206,6 +213,10 @@ function RequestRunner({
     () => formatOpenApiResponseBody(result?.body),
     [result?.body],
   )
+  const formattedRequest = useMemo(
+    () => requestDetails ? JSON.stringify(requestDetails, null, 2) : '',
+    [requestDetails],
+  )
 
   useEffect(() => {
     if (!open) return undefined
@@ -224,6 +235,11 @@ function RequestRunner({
     setRunning(true)
     setResult(null)
     try {
+      for (const parameter of operation.parameters) {
+        const value = parameterValues[`${parameter.in}:${parameter.name}`] ?? ''
+        const message = validateOpenApiParameter(parameter, value)
+        if (message) throw new Error(message)
+      }
       const path = operation.path.replaceAll(/\{([^}]+)\}/g, (_, name) => (
         encodeURIComponent(parameterValues[`path:${name}`] || name)
       ))
@@ -241,8 +257,23 @@ function RequestRunner({
       )
       Object.assign(headers, auth.headers)
       Object.entries(auth.query).forEach(([name, value]) => url.searchParams.set(name, value))
+      for (const header of customHeaders) {
+        if (header.name.trim()) headers[header.name.trim()] = header.value
+      }
       if (body) headers['Content-Type'] = operation.requestBody?.mediaType || 'application/json'
 
+      setRequestDetails({
+        method: operation.method,
+        url: url.toString(),
+        headers: Object.fromEntries(
+          Object.entries(headers).map(([name, value]) => [
+            name,
+            /authorization|api[-_]?key/i.test(name) ? '••••••••' : value,
+          ]),
+        ),
+        body: body || undefined,
+      })
+      setActiveResultTab('response')
       const startedAt = performance.now()
       const response = await fetch(url, {
         method: operation.method,
@@ -257,6 +288,7 @@ function RequestRunner({
         duration: Math.round(performance.now() - startedAt),
         body: responseBody,
         contentType: response.headers.get('content-type') ?? '',
+        headers: Object.fromEntries(response.headers.entries()),
       })
     } catch (error) {
       setResult({
@@ -378,6 +410,57 @@ function RequestRunner({
                   </div>
                 )}
 
+                <div className="reference-request-section">
+                  <div className="reference-request-section-head">
+                    <h3>Headers</h3>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const id = `header-${nextHeaderId.current}`
+                        nextHeaderId.current += 1
+                        setCustomHeaders((current) => [...current, { id, name: '', value: '' }])
+                      }}
+                    >
+                      <Plus size={12} aria-hidden="true" /> Adicionar
+                    </button>
+                  </div>
+                  {customHeaders.length === 0 ? (
+                    <p className="reference-request-section-empty">Nenhum header personalizado.</p>
+                  ) : (
+                    <div className="reference-custom-headers">
+                      {customHeaders.map((header) => (
+                        <div key={header.id}>
+                          <input
+                            aria-label="Nome do header"
+                            placeholder="Header"
+                            value={header.name}
+                            onChange={(event) => setCustomHeaders((current) => current.map((entry) => (
+                              entry.id === header.id ? { ...entry, name: event.target.value } : entry
+                            )))}
+                          />
+                          <input
+                            aria-label={`Valor de ${header.name || 'header'}`}
+                            placeholder="Valor"
+                            value={header.value}
+                            onChange={(event) => setCustomHeaders((current) => current.map((entry) => (
+                              entry.id === header.id ? { ...entry, value: event.target.value } : entry
+                            )))}
+                          />
+                          <button
+                            type="button"
+                            aria-label="Remover header"
+                            onClick={() => setCustomHeaders((current) => (
+                              current.filter((entry) => entry.id !== header.id)
+                            ))}
+                          >
+                            <Trash2 size={13} aria-hidden="true" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
                 {operation.requestBody && (
                   <div className="reference-request-section">
                     <h3>Body</h3>
@@ -398,29 +481,73 @@ function RequestRunner({
               </section>
 
               <section className="reference-response-view" aria-live="polite">
-                <div className="reference-request-column-head">
-                  <h2>Resposta</h2>
-                  {formattedResponse ? <CopyButton value={formattedResponse} /> : <span>Aguardando</span>}
+                <div className="reference-result-tabs">
+                  <div role="tablist" aria-label="Dados da execução">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeResultTab === 'response'}
+                      className={activeResultTab === 'response' ? 'active' : ''}
+                      onClick={() => setActiveResultTab('response')}
+                    >
+                      Resposta
+                    </button>
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeResultTab === 'request'}
+                      className={activeResultTab === 'request' ? 'active' : ''}
+                      onClick={() => setActiveResultTab('request')}
+                    >
+                      Request
+                    </button>
+                  </div>
+                  {activeResultTab === 'response' && formattedResponse && (
+                    <CopyButton value={formattedResponse} />
+                  )}
+                  {activeResultTab === 'request' && formattedRequest && (
+                    <CopyButton value={formattedRequest} />
+                  )}
                 </div>
-                {!result && (
-                  <div className="reference-response-empty">
-                    Envie a requisição para visualizar status, duração e conteúdo da resposta.
-                  </div>
-                )}
-                {result?.error && (
-                  <div className="reference-response-error">{result.error}</div>
-                )}
-                {result && !result.error && (
-                  <div className={`reference-response-result${result.ok ? ' is-success' : ' is-error'}`}>
-                    <div className="reference-response-meta">
-                      <strong>{result.status} {result.statusText}</strong>
-                      <span>{result.duration} ms</span>
-                      {result.contentType && <small>{result.contentType}</small>}
+                {activeResultTab === 'request' ? (
+                  requestDetails ? (
+                    <div className="reference-request-details">
+                      <pre><code data-language="json">{formattedRequest}</code></pre>
                     </div>
-                    {formattedResponse
-                      ? <pre><code data-language="json">{formattedResponse}</code></pre>
-                      : <div className="reference-response-empty">Resposta sem conteúdo.</div>}
-                  </div>
+                  ) : (
+                    <div className="reference-response-empty">
+                      Envie a requisição para visualizar URL, headers e body enviados.
+                    </div>
+                  )
+                ) : (
+                  <>
+                    {!result && (
+                      <div className="reference-response-empty">
+                        Envie a requisição para visualizar status, duração e conteúdo da resposta.
+                      </div>
+                    )}
+                    {result?.error && (
+                      <div className="reference-response-error">{result.error}</div>
+                    )}
+                    {result && !result.error && (
+                      <div className={`reference-response-result${result.ok ? ' is-success' : ' is-error'}`}>
+                        <div className="reference-response-meta">
+                          <strong>{result.status} {result.statusText}</strong>
+                          <span>{result.duration} ms</span>
+                          {result.contentType && <small>{result.contentType}</small>}
+                        </div>
+                        {formattedResponse
+                          ? <pre><code data-language="json">{formattedResponse}</code></pre>
+                          : <div className="reference-response-empty">Resposta sem conteúdo.</div>}
+                        {Object.keys(result.headers ?? {}).length > 0 && (
+                          <details className="reference-response-headers">
+                            <summary>Headers da resposta</summary>
+                            <pre><code>{JSON.stringify(result.headers, null, 2)}</code></pre>
+                          </details>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </section>
             </div>
@@ -913,6 +1040,7 @@ export default function ReferenceView({ publication, settings = {} }) {
       signal: controller.signal,
       publicationId: publication.system ? undefined : publication.id,
       shareToken: publication._sourceAccessToken,
+      systemReference: publication.system ? publication.id : undefined,
     })
       .then((nextDocument) => {
         setDocument(nextDocument)

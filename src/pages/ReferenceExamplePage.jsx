@@ -45,9 +45,10 @@ function ReferenceExampleContent({ publication }) {
       <div className="report-topnav">
         <ShareButton
           reportId={publication.id}
-          directUrl={`/referencias/${publication.id}`}
+          directUrl={`/shared/reference/${publication.id}`}
           noun="referência"
           secure={false}
+          anonymous
         />
       </div>
       <PublicationRenderer publication={publication} settings={settings} />

@@ -7,6 +7,7 @@ import {
   openApiSchemaExample,
   openApiUrlFromPublication,
   resolveOpenApiRef,
+  validateOpenApiParameter,
 } from './openapi.js'
 
 const document = {
@@ -25,7 +26,7 @@ const document = {
           in: 'path',
           required: true,
           example: 'item-1',
-          schema: { type: 'string' },
+          schema: { type: 'string', pattern: '^item-\\d+$', minLength: 6 },
         }],
         responses: {
           200: {
@@ -72,6 +73,20 @@ test('formats JSON responses and preserves non-JSON bodies', () => {
   assert.equal(formatOpenApiResponseBody('plain text'), 'plain text')
 })
 
+test('validates parameter constraints before issuing a browser request', () => {
+  const cep = {
+    name: 'cep',
+    required: true,
+    pattern: '^\\d{8}$',
+    minLength: 8,
+    maxLength: 8,
+    enum: [],
+  }
+  assert.equal(validateOpenApiParameter(cep, '01001000'), '')
+  assert.match(validateOpenApiParameter(cep, '01001-000'), /máximo 8/)
+  assert.match(validateOpenApiParameter(cep, ''), /obrigatório/)
+})
+
 test('normalizes operations, navigation and code samples', () => {
   const normalized = normalizeOpenApiDocument(document)
   const operation = normalized.operations[0]
@@ -79,11 +94,13 @@ test('normalizes operations, navigation and code samples', () => {
   assert.equal(normalized.title, 'API de exemplo')
   assert.equal(operation.anchor, 'operation-get-getitem')
   assert.equal(operation.parameters[0].required, true)
+  assert.equal(operation.parameters[0].pattern, '^item-\\d+$')
+  assert.equal(operation.parameters[0].minLength, 6)
   assert.deepEqual(operation.responses[0].example, { id: 'item-1', active: true })
   assert.match(operation.codeSamples[0].code, /item-1/)
   assert.deepEqual(
     operation.codeSamples.map((sample) => sample.id),
-    ['httpie', 'curl', 'javascript', 'typescript', 'csharp'],
+    ['httpie', 'curl', 'javascript', 'csharp'],
   )
   assert.equal(operation.requestUrl, 'https://api.exemplo.com/items/item-1')
 })

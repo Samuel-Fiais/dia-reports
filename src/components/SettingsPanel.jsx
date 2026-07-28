@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import { Settings } from 'lucide-react'
 import {
   COLOR_SWATCHES,
-  COLORS_DARK,
+  COLOR_SWATCHES_DARK,
   COLOR_NAMES,
   COMPONENT_STYLES,
   FONTS,
@@ -16,8 +16,6 @@ import ThemeToggleButton from './ThemeToggleButton.jsx'
 
 export const REFERENCE_SETTINGS_FEATURES = Object.freeze([
   'background',
-  'width',
-  'fontScale',
 ])
 
 const DEFAULT_SETTINGS_FEATURES = Object.freeze([
@@ -39,7 +37,7 @@ export default function SettingsPanel({
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const { appTheme } = useAppTheme()
-  const colors = appTheme === 'dark' ? COLORS_DARK : COLOR_SWATCHES
+  const colors = appTheme === 'dark' ? COLOR_SWATCHES_DARK : COLOR_SWATCHES
   const hasFeature = (feature) => features.includes(feature)
 
   useClickOutside(wrapRef, open, () => setOpen(false))

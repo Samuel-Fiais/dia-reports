@@ -7,7 +7,24 @@ export const config = {
   runtime: 'nodejs',
 }
 
-async function resolveAuthorizedSource(req, requestedUrl, publicationId, shareToken) {
+const PUBLIC_SYSTEM_REFERENCES = Object.freeze({
+  'school360-api': 'https://api-dev.school360.festpay.com.br/swagger/v1/swagger.json',
+})
+
+async function resolveAuthorizedSource(
+  req,
+  requestedUrl,
+  publicationId,
+  shareToken,
+  systemReference,
+) {
+  if (
+    systemReference
+    && PUBLIC_SYSTEM_REFERENCES[systemReference] === requestedUrl
+  ) {
+    return requestedUrl
+  }
+
   const db = getPool()
   if (shareToken) {
     const { rows } = await db.query(
@@ -82,11 +99,13 @@ export default async function handler(req, res) {
     const requestedUrl = requestUrl.searchParams.get('url')
     const publicationId = requestUrl.searchParams.get('publication')
     const shareToken = requestUrl.searchParams.get('token')
+    const systemReference = requestUrl.searchParams.get('system')
     const authorizedUrl = await resolveAuthorizedSource(
       req,
       requestedUrl,
       publicationId,
       shareToken,
+      systemReference,
     )
     const document = await fetchOpenApiSource(authorizedUrl)
     res.setHeader('Cache-Control', 'private, no-store')

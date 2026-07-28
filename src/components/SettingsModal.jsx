@@ -1,11 +1,11 @@
-import { COLOR_SWATCHES, COLORS_DARK, COLOR_NAMES } from '../lib/theme.js'
+import { COLOR_SWATCHES, COLOR_SWATCHES_DARK, COLOR_NAMES } from '../lib/theme.js'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 import Dialog from './admin/Dialog.jsx'
 import ThemeToggleButton from './ThemeToggleButton.jsx'
 
 export default function SettingsModal({ onClose }) {
   const { appTheme, appColorIndex, setAppColorIndex } = useAppTheme()
-  const colors = appTheme === 'dark' ? COLORS_DARK : COLOR_SWATCHES
+  const colors = appTheme === 'dark' ? COLOR_SWATCHES_DARK : COLOR_SWATCHES
 
   return (
     <Dialog eyebrow="Dia Reports" title="Configurações" onClose={onClose}>

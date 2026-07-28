@@ -22,6 +22,31 @@ export function formatOpenApiResponseBody(value) {
   }
 }
 
+export function validateOpenApiParameter(parameter, value) {
+  const text = String(value ?? '')
+  if (parameter.required && !text) return `${parameter.name} é obrigatório.`
+  if (!text) return ''
+  if (parameter.minLength != null && text.length < parameter.minLength) {
+    return `${parameter.name} deve ter ao menos ${parameter.minLength} caracteres.`
+  }
+  if (parameter.maxLength != null && text.length > parameter.maxLength) {
+    return `${parameter.name} deve ter no máximo ${parameter.maxLength} caracteres.`
+  }
+  if (parameter.pattern) {
+    try {
+      if (!new RegExp(parameter.pattern).test(text)) {
+        return `${parameter.name} não está no formato esperado (${parameter.pattern}).`
+      }
+    } catch {
+      // Contratos com expressão inválida não devem impedir a requisição.
+    }
+  }
+  if (parameter.enum?.length > 0 && !parameter.enum.map(String).includes(text)) {
+    return `${parameter.name} deve ser um dos valores: ${parameter.enum.join(', ')}.`
+  }
+  return ''
+}
+
 function decodePointerSegment(segment) {
   return segment.replaceAll('~1', '/').replaceAll('~0', '~')
 }
@@ -132,6 +157,12 @@ function normalizeParameter(document, rawParameter) {
     type: schemaType(schema),
     format: schema.format ?? '',
     example: parameter.example ?? schema.example ?? schema.default,
+    pattern: schema.pattern ?? '',
+    minLength: schema.minLength,
+    maxLength: schema.maxLength,
+    minimum: schema.minimum,
+    maximum: schema.maximum,
+    enum: schema.enum ?? [],
   }
 }
 
@@ -197,12 +228,6 @@ export function buildCodeSamples(method, url, requestExample) {
       label: 'JavaScript',
       language: 'javascript',
       code: `const response = await fetch('${url}', {\n${fetchOptions.join('\n')}\n})\nconst data = await response.json()`,
-    },
-    {
-      id: 'typescript',
-      label: 'TypeScript',
-      language: 'typescript',
-      code: `const response: Response = await fetch('${url}', {\n${fetchOptions.join('\n')}\n})\nconst data: unknown = await response.json()`,
     },
     {
       id: 'csharp',
@@ -362,6 +387,7 @@ export async function fetchRemoteOpenApiDocument(url, options = {}) {
   const params = new URLSearchParams({ url })
   if (options.publicationId) params.set('publication', options.publicationId)
   if (options.shareToken) params.set('token', options.shareToken)
+  if (options.systemReference) params.set('system', options.systemReference)
   const response = await fetch(`/api/openapi?${params}`, { signal: options.signal })
   const body = await response.json().catch(() => ({}))
   if (!response.ok) {

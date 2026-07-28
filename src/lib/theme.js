@@ -41,25 +41,45 @@ export const COLOR_SWATCHES = [
   "#ffffff",
 ];
 
+export const COLOR_SWATCHES_DARK = [
+  "#514b35",
+  "#5a4a22",
+  "#57343d",
+  "#34475f",
+  "#36543a",
+  "#493657",
+  "#5a3d2d",
+  "#454548",
+  "#51432f",
+  "#35513d",
+  "#2e5050",
+  "#304963",
+  "#55364f",
+  "#59402f",
+  "#534d2d",
+  "#354d49",
+  "#1a1a1a",
+];
+
 // Equivalentes escuros da mesma paleta, usados quando o tema do app é "dark"
 export const COLORS_DARK = [
-  "#1c1b17", // 0 creme -> carvão neutro
-  "#201c11", // 1 amarelo -> âmbar escuro
-  "#211417", // 2 rosa -> vinho escuro
-  "#12161d", // 3 azul-acinzentado -> ardósia
-  "#121c14", // 4 verde -> verde-musgo escuro
-  "#1a1520", // 5 lavanda -> roxo escuro
-  "#211712", // 6 pêssego -> terracota escuro
-  "#18181a", // 7 cinza -> grafite
-  "#1d1a15", // 8 pedra -> bronze escuro
-  "#131d16", // 9 sálvia -> floresta
-  "#101d1c", // 10 água -> petróleo
-  "#111923", // 11 azul gelo -> marinho
-  "#20151d", // 12 malva -> ameixa
-  "#211812", // 13 argila -> barro
-  "#1e1c12", // 14 areia -> oliva escuro
-  "#141b1a", // 15 névoa -> ardósia verde
-  "#050505", // 16 preto e branco -> cinza quase preto
+  "#121210", // 0 creme -> preto quente
+  "#14130f", // 1 amarelo -> preto âmbar
+  "#141012", // 2 rosa -> preto rosado
+  "#0f1114", // 3 azul-acinzentado -> preto ardósia
+  "#0f130f", // 4 verde -> preto musgo
+  "#121014", // 5 lavanda -> preto violeta
+  "#14110f", // 6 pêssego -> preto terracota
+  "#111112", // 7 cinza -> preto grafite
+  "#13110f", // 8 pedra -> preto bronze
+  "#0f130f", // 9 sálvia -> preto sálvia
+  "#0e1313", // 10 água -> preto petróleo
+  "#0e1115", // 11 azul gelo -> preto marinho
+  "#141012", // 12 malva -> preto ameixa
+  "#14110f", // 13 argila -> preto argila
+  "#13120f", // 14 areia -> preto oliva
+  "#101312", // 15 névoa -> preto esverdeado
+  "#080808", // 16 preto e branco -> preto neutro
 ];
 
 // Nomes compartilhados pelos pares claro/escuro exibidos no seletor.

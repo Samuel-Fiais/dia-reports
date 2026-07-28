@@ -3295,6 +3295,12 @@ blockquote footer a:hover {
   border-right: 0.5px solid var(--hairline);
 }
 
+.reference-response-view {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  overflow: hidden;
+}
+
 .reference-request-column-head {
   position: sticky;
   z-index: 1;
@@ -3334,6 +3340,75 @@ blockquote footer a:hover {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-secondary);
+}
+
+.reference-request-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.65rem;
+}
+
+.reference-request-section-head h3 {
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-secondary);
+}
+
+.reference-request-section-head button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.45rem;
+  color: var(--ink-secondary);
+  background: transparent;
+  border: 0.5px solid var(--hairline);
+  border-radius: var(--control-radius);
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+}
+
+.reference-request-section-empty {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+}
+
+.reference-custom-headers {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.reference-custom-headers > div {
+  display: grid;
+  grid-template-columns: minmax(0, 0.75fr) minmax(0, 1fr) auto;
+  gap: 0.4rem;
+}
+
+.reference-custom-headers input {
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  color: var(--ink);
+  background: var(--bg);
+  border: 0.5px solid var(--hairline);
+  border-radius: var(--control-radius);
+  outline: 0;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.reference-custom-headers button {
+  width: 2rem;
+  display: grid;
+  place-items: center;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  cursor: pointer;
 }
 
 .reference-request-fields,
@@ -3423,7 +3498,10 @@ blockquote footer a:hover {
 }
 
 .reference-response-result {
-  min-height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  overflow: hidden;
 }
 
 .reference-response-meta {
@@ -3450,6 +3528,10 @@ blockquote footer a:hover {
 }
 
 .reference-response-result pre {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  min-height: 0;
   margin: 0;
   padding: 1rem;
   overflow: auto;
@@ -3457,6 +3539,74 @@ blockquote footer a:hover {
   font-size: 0.68rem;
   line-height: 1.65;
   white-space: pre;
+  tab-size: 2;
+}
+
+.reference-result-tabs {
+  min-height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0.55rem;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-result-tabs > div {
+  display: flex;
+  align-items: center;
+}
+
+.reference-result-tabs [role="tab"] {
+  padding: 0.45rem 0.55rem;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.reference-result-tabs [role="tab"].active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.reference-request-details {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.reference-request-details pre {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.65;
+  white-space: pre;
+  tab-size: 2;
+}
+
+.reference-response-headers {
+  border-top: 0.5px solid var(--hairline);
+}
+
+.reference-response-headers summary {
+  padding: 0.6rem 0.9rem;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-secondary);
+}
+
+.reference-response-headers pre {
+  max-height: 14rem;
+  border-top: 0.5px solid var(--hairline);
 }
 
 .reference-json-head > span {
@@ -3621,6 +3771,17 @@ blockquote footer a:hover {
   .reference-request-config,
   .reference-response-view {
     overflow: visible;
+  }
+
+  .reference-response-view,
+  .reference-response-result {
+    display: block;
+  }
+
+  .reference-response-result pre,
+  .reference-request-details pre {
+    height: auto;
+    max-height: 32rem;
   }
 
   .reference-request-config {

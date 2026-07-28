@@ -7,6 +7,7 @@ export default function ShareButton({
   directUrl,
   noun = 'relatório',
   secure = true,
+  anonymous = false,
 }) {
   const [open, setOpen] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -106,7 +107,9 @@ export default function ShareButton({
                   ? 'Gerando link...'
                   : secure
                     ? 'Criar link seguro e copiar'
-                    : 'Copiar link da publicação'}
+                    : anonymous
+                      ? 'Criar link anônimo e copiar'
+                      : 'Copiar link da publicação'}
               </small>
             </span>
           </button>
@@ -121,7 +124,9 @@ export default function ShareButton({
           <p className="report-share-hint">
             {secure
               ? 'O link compartilhado usa um token único e seguro.'
-              : `O link abre esta ${noun} para usuários autenticados.`}
+              : anonymous
+                ? `O link abre esta ${noun} sem exigir login.`
+                : `O link abre esta ${noun} para usuários autenticados.`}
           </p>
         </div>
       )}

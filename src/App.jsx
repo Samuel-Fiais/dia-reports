@@ -6,6 +6,7 @@ import Login from './pages/Login.jsx'
 import ComponentCatalogPage from './pages/ComponentCatalogPage.jsx'
 import PublicationListPage from './pages/PublicationListPage.jsx'
 import ReferenceExamplePage from './pages/ReferenceExamplePage.jsx'
+import SharedReferenceExamplePage from './pages/SharedReferenceExamplePage.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
@@ -24,6 +25,10 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/shared/:token" element={<SharedReport />} />
+            <Route
+              path="/shared/reference/:exampleId"
+              element={<SharedReferenceExamplePage />}
+            />
             <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
             <Route
               path="/relatorios"
