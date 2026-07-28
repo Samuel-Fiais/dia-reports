@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import { Settings } from 'lucide-react'
 import {
-  COLORS,
+  COLOR_SWATCHES,
   COLORS_DARK,
   COLOR_NAMES,
   COMPONENT_STYLES,
@@ -39,7 +39,7 @@ export default function SettingsPanel({
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const { appTheme } = useAppTheme()
-  const colors = appTheme === 'dark' ? COLORS_DARK : COLORS
+  const colors = appTheme === 'dark' ? COLORS_DARK : COLOR_SWATCHES
   const hasFeature = (feature) => features.includes(feature)
 
   useClickOutside(wrapRef, open, () => setOpen(false))

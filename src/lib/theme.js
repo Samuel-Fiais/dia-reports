@@ -19,6 +19,28 @@ export const COLORS = [
   "#ffffff", // 16 preto e branco
 ];
 
+// Amostras deliberadamente mais fortes que os fundos aplicados. Mantêm o
+// seletor legível sem devolver essa saturação ao documento.
+export const COLOR_SWATCHES = [
+  "#e9e2bd",
+  "#eadb87",
+  "#e9aeb9",
+  "#b9c7dc",
+  "#b9dbaa",
+  "#cbb4e7",
+  "#e3b58f",
+  "#c7c7c7",
+  "#d8c49c",
+  "#aed3b4",
+  "#9fd7d2",
+  "#a7c9e9",
+  "#ddb0d5",
+  "#e1b397",
+  "#d8ce8f",
+  "#b4cbc6",
+  "#ffffff",
+];
+
 // Equivalentes escuros da mesma paleta, usados quando o tema do app é "dark"
 export const COLORS_DARK = [
   "#1c1b17", // 0 creme -> carvão neutro
