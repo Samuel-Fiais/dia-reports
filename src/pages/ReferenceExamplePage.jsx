@@ -3,7 +3,9 @@ import { ArrowLeft } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import PublicationRenderer from '../components/PublicationRenderer.jsx'
 import PublicationState from '../components/PublicationState.jsx'
-import SettingsPanel from '../components/SettingsPanel.jsx'
+import SettingsPanel, {
+  REFERENCE_SETTINGS_FEATURES,
+} from '../components/SettingsPanel.jsx'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 import {
   persistViewerSettings,
@@ -34,7 +36,7 @@ function ReferenceExampleContent({ publication }) {
 
   return (
     <>
-      <nav className="report-backnav">
+      <nav className="report-backnav report-backnav--reference">
         <Link to="/referencias">
           <ArrowLeft size={12} aria-hidden="true" /> Referências
         </Link>
@@ -44,6 +46,8 @@ function ReferenceExampleContent({ publication }) {
         settings={settings}
         onChange={handleChange}
         title="Personalizar referência"
+        features={REFERENCE_SETTINGS_FEATURES}
+        variant="reference"
       />
     </>
   )

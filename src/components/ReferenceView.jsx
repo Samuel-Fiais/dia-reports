@@ -7,7 +7,6 @@ import {
   openApiDocumentFromPublication,
   openApiUrlFromPublication,
 } from '../lib/openapi.js'
-import { normalizeComponentStyle } from '../lib/theme.js'
 import { ModalProvider } from './Modal.jsx'
 import { renderBlocks } from './blocks/index.jsx'
 import { PublicationBody } from './ReportView.jsx'
@@ -22,6 +21,12 @@ const METHOD_ORDER = Object.freeze({
   HEAD: 6,
   TRACE: 7,
 })
+
+function navigationLabel(operation) {
+  const summary = operation.summary?.trim()
+  if (!summary) return operation.path
+  return summary.replace(new RegExp(`^${operation.method}\\s+`, 'i'), '').trim() || operation.path
+}
 
 function CopyButton({ value, label = 'Copiar' }) {
   const [copied, setCopied] = useState(false)
@@ -258,12 +263,10 @@ function SecurityOverview({ schemes }) {
 
 function ReferenceDocumentView({ publication, settings = {}, reference }) {
   const [query, setQuery] = useState('')
+  const [activeAnchor, setActiveAnchor] = useState('reference-overview')
   const deferredQuery = useDeferredValue(query.trim().toLocaleLowerCase('pt-BR'))
   const chartStyleIndex = settings.chartStyleIndex ?? publication.settings?.chartStyleIndex ?? 2
   const widthMode = settings.widthMode ?? publication.settings?.widthMode ?? 'standard'
-  const componentStyle = normalizeComponentStyle(
-    settings.componentStyle ?? publication.settings?.componentStyle,
-  )
 
   const visibleOperations = useMemo(() => {
     if (!deferredQuery) return reference.operations
@@ -298,7 +301,7 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
   return (
     <ModalProvider renderBlocks={(blocks) => renderBlocks(blocks, chartStyleIndex)}>
       <div
-        className={`publication publication--reference reference ready reference--${widthMode} report--components-${componentStyle}`}
+        className={`publication publication--reference reference ready reference--${widthMode}`}
         data-publication-mode="reference"
       >
         <div className="reference-shell">
@@ -324,22 +327,48 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
 
             <nav aria-label="Navegação da referência">
               <span className="reference-nav-label">Começando</span>
-              <a href="#reference-overview">Visão geral</a>
+              <a
+                href="#reference-overview"
+                className={activeAnchor === 'reference-overview' ? 'active' : ''}
+                aria-current={activeAnchor === 'reference-overview' ? 'location' : undefined}
+                onClick={() => setActiveAnchor('reference-overview')}
+              >
+                Visão geral
+              </a>
               {reference.securitySchemes.length > 0 && (
-                <a href="#reference-authentication">Autenticação</a>
+                <a
+                  href="#reference-authentication"
+                  className={activeAnchor === 'reference-authentication' ? 'active' : ''}
+                  aria-current={activeAnchor === 'reference-authentication' ? 'location' : undefined}
+                  onClick={() => setActiveAnchor('reference-authentication')}
+                >
+                  Autenticação
+                </a>
               )}
               {groupedOperations.map((tag) => (
-                <div key={tag.name} className="reference-nav-group">
-                  <span className="reference-nav-label">{tag.name}</span>
-                  {tag.operations.map((operation) => (
-                    <a key={operation.id} href={`#${operation.anchor}`}>
-                      <span className={`reference-nav-method reference-nav-method--${operation.method.toLowerCase()}`}>
-                        {operation.method}
-                      </span>
-                      <span>{operation.summary}</span>
-                    </a>
-                  ))}
-                </div>
+                <details
+                  key={`${tag.name}-${deferredQuery ? 'search' : 'browse'}`}
+                  className="reference-nav-group"
+                  defaultOpen={Boolean(deferredQuery) || groupedOperations.length <= 8}
+                >
+                  <summary>
+                    <span>{tag.name}</span>
+                    <small>{tag.operations.length}</small>
+                  </summary>
+                  <div>
+                    {tag.operations.map((operation) => (
+                      <a
+                        key={operation.id}
+                        href={`#${operation.anchor}`}
+                        className={activeAnchor === operation.anchor ? 'active' : ''}
+                        aria-current={activeAnchor === operation.anchor ? 'location' : undefined}
+                        onClick={() => setActiveAnchor(operation.anchor)}
+                      >
+                        {navigationLabel(operation)}
+                      </a>
+                    ))}
+                  </div>
+                </details>
               ))}
             </nav>
           </aside>

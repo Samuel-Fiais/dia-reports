@@ -14,111 +14,157 @@ import { useAppTheme } from '../context/ThemeContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import ThemeToggleButton from './ThemeToggleButton.jsx'
 
-export default function SettingsPanel({ settings, onChange, title = 'Personalizar publicação' }) {
+export const REFERENCE_SETTINGS_FEATURES = Object.freeze([
+  'background',
+  'width',
+  'fontScale',
+])
+
+const DEFAULT_SETTINGS_FEATURES = Object.freeze([
+  'background',
+  'charts',
+  'fonts',
+  'width',
+  'components',
+  'fontScale',
+])
+
+export default function SettingsPanel({
+  settings,
+  onChange,
+  title = 'Personalizar publicação',
+  features = DEFAULT_SETTINGS_FEATURES,
+  variant,
+}) {
   const [open, setOpen] = useState(false)
   const wrapRef = useRef(null)
   const { appTheme } = useAppTheme()
   const colors = appTheme === 'dark' ? COLORS_DARK : COLORS
+  const hasFeature = (feature) => features.includes(feature)
 
   useClickOutside(wrapRef, open, () => setOpen(false))
 
   return (
-    <div className="settings-wrap" ref={wrapRef}>
+    <div className={`settings-wrap${variant ? ` settings-wrap--${variant}` : ''}`} ref={wrapRef}>
       <div className={`settings-panel${open ? ' open' : ''}`}>
         <div className="settings-header">{title}</div>
-        <div className="settings-section-label">Fundo</div>
-        <div className="settings-swatches">
-          {colors.map((color, i) => (
-            <button
-              key={color}
-              type="button"
-              className={`swatch${settings.colorIndex === i ? ' active' : ''}`}
-              style={{ background: color }}
-              title={COLOR_NAMES[i] ?? `Cor ${i + 1}`}
-              data-name={COLOR_NAMES[i] ?? `Cor ${i + 1}`}
-              aria-label={`Fundo ${COLOR_NAMES[i] ?? `cor ${i + 1}`}`}
-              onClick={() => onChange({ ...settings, colorIndex: i })}
-            />
-          ))}
-        </div>
+        {hasFeature('background') && (
+          <>
+            <div className="settings-section-label">Fundo</div>
+            <div className="settings-swatches">
+              {colors.map((color, i) => (
+                <button
+                  key={color}
+                  type="button"
+                  className={`swatch${settings.colorIndex === i ? ' active' : ''}`}
+                  style={{ background: color }}
+                  title={COLOR_NAMES[i] ?? `Cor ${i + 1}`}
+                  data-name={COLOR_NAMES[i] ?? `Cor ${i + 1}`}
+                  aria-label={`Fundo ${COLOR_NAMES[i] ?? `cor ${i + 1}`}`}
+                  onClick={() => onChange({ ...settings, colorIndex: i })}
+                />
+              ))}
+            </div>
+          </>
+        )}
 
-        <div className="settings-section-label">Gráficos</div>
-        <div className="settings-chart-styles">
-          {[0, 1, 2].map((i) => (
-            <button
-              key={i}
-              type="button"
-              className={`chart-style-btn${settings.chartStyleIndex === i ? ' active' : ''}`}
-              title={['Sólido', 'Hachurado', 'Pontilhado'][i]}
-              onClick={() => onChange({ ...settings, chartStyleIndex: i })}
-            >
-              <span className={`chart-style-icon chart-style-icon--${i}`} />
-            </button>
-          ))}
-        </div>
+        {hasFeature('charts') && (
+          <>
+            <div className="settings-section-label">Gráficos</div>
+            <div className="settings-chart-styles">
+              {[0, 1, 2].map((i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className={`chart-style-btn${settings.chartStyleIndex === i ? ' active' : ''}`}
+                  title={['Sólido', 'Hachurado', 'Pontilhado'][i]}
+                  onClick={() => onChange({ ...settings, chartStyleIndex: i })}
+                >
+                  <span className={`chart-style-icon chart-style-icon--${i}`} />
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-        <div className="settings-section-label">Fontes</div>
-        <div className="settings-fonts">
-          {FONTS.map((font, i) => (
-            <button
-              key={font.label}
-              type="button"
-              className={`font-option${normalizeFontIndex(settings.fontIndex) === i ? ' active' : ''}`}
-              onClick={() => onChange({ ...settings, fontIndex: i })}
-            >
-              <span className="font-option-preview">
-                <span className="font-option-sample" style={font.sampleStyle}>Aa</span>
-                <span className="font-option-body-sample" style={font.bodySampleStyle}>Ag</span>
-              </span>
-              <span className="font-option-label">{font.label}</span>
-            </button>
-          ))}
-        </div>
+        {hasFeature('fonts') && (
+          <>
+            <div className="settings-section-label">Fontes</div>
+            <div className="settings-fonts">
+              {FONTS.map((font, i) => (
+                <button
+                  key={font.label}
+                  type="button"
+                  className={`font-option${normalizeFontIndex(settings.fontIndex) === i ? ' active' : ''}`}
+                  onClick={() => onChange({ ...settings, fontIndex: i })}
+                >
+                  <span className="font-option-preview">
+                    <span className="font-option-sample" style={font.sampleStyle}>Aa</span>
+                    <span className="font-option-body-sample" style={font.bodySampleStyle}>Ag</span>
+                  </span>
+                  <span className="font-option-label">{font.label}</span>
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-        <div className="settings-section-label">Largura</div>
-        <div className="settings-segmented">
-          {[
-            { value: 'standard', label: 'Padrão' },
-            { value: 'full', label: 'Full width' },
-          ].map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={settings.widthMode === option.value ? 'active' : ''}
-              onClick={() => onChange({ ...settings, widthMode: option.value })}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+        {hasFeature('width') && (
+          <>
+            <div className="settings-section-label">Largura</div>
+            <div className="settings-segmented">
+              {[
+                { value: 'standard', label: 'Padrão' },
+                { value: 'full', label: 'Full width' },
+              ].map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={settings.widthMode === option.value ? 'active' : ''}
+                  onClick={() => onChange({ ...settings, widthMode: option.value })}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-        <div className="settings-section-label">Estilo de componentes</div>
-        <div className="settings-segmented settings-segmented--three">
-          {COMPONENT_STYLES.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={normalizeComponentStyle(settings.componentStyle) === option.value ? 'active' : ''}
-              onClick={() => onChange({ ...settings, componentStyle: option.value })}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+        {hasFeature('components') && (
+          <>
+            <div className="settings-section-label">Estilo de componentes</div>
+            <div className="settings-segmented settings-segmented--three">
+              {COMPONENT_STYLES.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={normalizeComponentStyle(settings.componentStyle) === option.value ? 'active' : ''}
+                  onClick={() => onChange({ ...settings, componentStyle: option.value })}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-        <div className="settings-section-label">Tamanho do texto</div>
-        <div className="settings-segmented settings-segmented--three">
-          {FONT_SCALES.map((option) => (
-            <button
-              key={option.value}
-              type="button"
-              className={settings.fontScale === option.value ? 'active' : ''}
-              onClick={() => onChange({ ...settings, fontScale: option.value })}
-            >
-              {option.label}
-            </button>
-          ))}
-        </div>
+        {hasFeature('fontScale') && (
+          <>
+            <div className="settings-section-label">Tamanho do texto</div>
+            <div className="settings-segmented settings-segmented--three">
+              {FONT_SCALES.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={settings.fontScale === option.value ? 'active' : ''}
+                  onClick={() => onChange({ ...settings, fontScale: option.value })}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
       </div>
 

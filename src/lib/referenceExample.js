@@ -171,7 +171,7 @@ function buildViaCepReferencePublication() {
       chartStyleIndex: 2,
       widthMode: 'full',
       fontScale: 'default',
-      componentStyle: 'editorial',
+      componentStyle: 'minimal',
     },
     body: [
       {
@@ -207,7 +207,7 @@ function buildSchool360ReferencePublication() {
       chartStyleIndex: 2,
       widthMode: 'full',
       fontScale: 'default',
-      componentStyle: 'structured',
+      componentStyle: 'minimal',
     },
     body: [
       {

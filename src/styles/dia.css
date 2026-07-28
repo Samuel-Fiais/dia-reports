@@ -2422,10 +2422,41 @@ blockquote footer a:hover {
 /* ── Referência técnica / OpenAPI ───────────────────────────── */
 
 .reference {
+  --reference-font-sans: Inter, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  --reference-panel: color-mix(in srgb, var(--bg) 96%, var(--ink) 4%);
+  --reference-panel-strong: color-mix(in srgb, var(--bg) 90%, #000 10%);
+  --reference-panel-hover: color-mix(in srgb, var(--bg) 91%, var(--ink) 9%);
   min-height: 100vh;
   color: var(--ink);
   background: var(--bg);
-  font-family: var(--font-body);
+  font-family: var(--reference-font-sans);
+}
+
+.reference,
+.reference * {
+  box-shadow: none !important;
+}
+
+.report-backnav--reference {
+  top: 18px;
+  left: 18px;
+}
+
+.report-backnav--reference a {
+  font-family: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  letter-spacing: 0.08em;
+  background: var(--bg);
+  box-shadow: none;
+}
+
+.settings-wrap--reference .settings-panel,
+.settings-wrap--reference .settings-btn,
+.settings-wrap--reference .theme-toggle-btn,
+.settings-wrap--reference .settings-segmented button.active,
+.settings-wrap--reference .swatch,
+.settings-wrap--reference .swatch::after {
+  box-shadow: none;
 }
 
 .reference-shell {
@@ -2446,7 +2477,7 @@ blockquote footer a:hover {
   top: 0;
   height: 100vh;
   overflow-y: auto;
-  padding: 2rem 1.4rem 5rem;
+  padding: 5.75rem 1.25rem 5rem;
   border-right: 0.5px solid var(--hairline);
   scrollbar-width: thin;
 }
@@ -2471,7 +2502,8 @@ blockquote footer a:hover {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
-  font-family: var(--font-title);
+  font-family: var(--font-mono);
+  font-weight: 700;
   font-size: 1.15rem;
   color: var(--bg);
   background: var(--ink);
@@ -2486,15 +2518,16 @@ blockquote footer a:hover {
 
 .reference-brand strong {
   overflow: hidden;
-  font-family: var(--font-title);
-  font-size: 1rem;
-  font-weight: var(--title-weight-sub);
+  font-family: var(--reference-font-sans);
+  font-size: 0.85rem;
+  font-weight: 650;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .reference-brand small {
   margin-top: 0.1rem;
+  font-family: var(--font-mono);
   font-size: 0.625rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -2506,7 +2539,8 @@ blockquote footer a:hover {
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1.5rem;
-  padding: 0.55rem 0.65rem;
+  min-height: 2.35rem;
+  padding: 0.5rem 0.65rem;
   color: var(--ink-muted);
   background: var(--surface);
   border: 0.5px solid var(--hairline);
@@ -2525,12 +2559,12 @@ blockquote footer a:hover {
   background: transparent;
   border: 0;
   outline: 0;
-  font-family: var(--font-body);
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.35;
 }
 
-.reference-sidebar nav,
-.reference-nav-group {
+.reference-sidebar nav {
   display: flex;
   flex-direction: column;
 }
@@ -2541,6 +2575,7 @@ blockquote footer a:hover {
 
 .reference-nav-label {
   margin: 0 0 0.35rem 0.6rem;
+  font-family: var(--font-mono);
   font-size: 0.6rem;
   font-weight: 600;
   letter-spacing: 0.12em;
@@ -2549,20 +2584,15 @@ blockquote footer a:hover {
 }
 
 .reference-sidebar nav a {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
   padding: 0.45rem 0.6rem;
   color: var(--ink-secondary);
+  border-left: 2px solid transparent;
   border-radius: 5px;
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
   line-height: 1.35;
   text-decoration: none;
-}
-
-.reference-sidebar nav > a {
-  grid-template-columns: 1fr;
 }
 
 .reference-sidebar nav a:hover {
@@ -2571,34 +2601,77 @@ blockquote footer a:hover {
   text-decoration: none;
 }
 
-.reference-nav-method {
-  min-width: 2.4rem;
-  font-family: var(--font-mono);
-  font-size: 0.55rem;
-  font-weight: 700;
+.reference-sidebar nav a.active {
+  color: var(--ink);
+  background: var(--reference-panel);
+  border-left-color: var(--ink);
 }
 
-.reference-nav-method--get,
+.reference-nav-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.3rem 0.5rem;
+  color: var(--ink-muted);
+  cursor: pointer;
+  list-style: none;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reference-nav-group > summary::-webkit-details-marker {
+  display: none;
+}
+
+.reference-nav-group > summary::before {
+  content: "›";
+  flex: 0 0 auto;
+  transform: rotate(0);
+  transition: transform 0.15s ease;
+}
+
+.reference-nav-group[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.reference-nav-group > summary span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-nav-group > summary small {
+  margin-left: auto;
+  font: inherit;
+  letter-spacing: 0;
+}
+
+.reference-nav-group > div {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.2rem;
+}
+
 .reference-method--get {
   color: #16794b;
 }
 
-.reference-nav-method--post,
 .reference-method--post {
   color: #1769aa;
 }
 
-.reference-nav-method--put,
 .reference-method--put {
   color: #a45a00;
 }
 
-.reference-nav-method--patch,
 .reference-method--patch {
   color: #7450a8;
 }
 
-.reference-nav-method--delete,
 .reference-method--delete {
   color: #b23a3a;
 }
@@ -2627,12 +2700,12 @@ blockquote footer a:hover {
 
 .reference-hero h1 {
   margin-top: 2rem;
-  font-family: var(--font-title);
-  font-size: clamp(3rem, 7vw, 5.5rem);
-  font-style: var(--title-style);
-  font-weight: var(--title-weight);
-  line-height: 0.98;
-  letter-spacing: -0.045em;
+  font-family: var(--reference-font-sans);
+  font-size: clamp(2.8rem, 6vw, 4.75rem);
+  font-style: normal;
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
@@ -2652,8 +2725,9 @@ blockquote footer a:hover {
   gap: 0.75rem;
   margin-top: 2rem;
   padding: 0.8rem 0.9rem;
-  color: #dce6f5;
-  background: #111b2b;
+  color: var(--ink);
+  background: var(--reference-panel-strong);
+  border: 0.5px solid var(--hairline);
   border-radius: 8px;
 }
 
@@ -2662,7 +2736,7 @@ blockquote footer a:hover {
   font-weight: 700;
   letter-spacing: 0.09em;
   text-transform: uppercase;
-  color: #8fa1ba;
+  color: var(--ink-muted);
 }
 
 .reference-server code {
@@ -2684,12 +2758,12 @@ blockquote footer a:hover {
   border: 0;
   border-radius: 4px;
   cursor: pointer;
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: 0.65rem;
 }
 
 .reference-copy:hover {
-  background: rgb(255 255 255 / 9%);
+  background: var(--reference-panel-hover);
 }
 
 .reference-overview-section {
@@ -2710,9 +2784,9 @@ blockquote footer a:hover {
 
 .reference-overview-section h2,
 .reference-tag-head h2 {
-  font-family: var(--font-title);
+  font-family: var(--reference-font-sans);
   font-size: 1.75rem;
-  font-weight: var(--title-weight-sub);
+  font-weight: 650;
 }
 
 .reference-overview-section p,
@@ -2785,6 +2859,12 @@ blockquote footer a:hover {
   grid-column: 1;
 }
 
+.reference-guides .body-block,
+.reference-guides .callout,
+.reference-guides .report-item {
+  box-shadow: none;
+}
+
 .reference-operations-header {
   max-width: 52rem;
   display: flex;
@@ -2796,6 +2876,7 @@ blockquote footer a:hover {
   border-top: 0.5px solid var(--hairline);
   border-bottom: 0.5px solid var(--hairline);
   font-size: 0.7rem;
+  font-family: var(--font-mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-muted);
@@ -2869,9 +2950,9 @@ blockquote footer a:hover {
 }
 
 .reference-operation-body > h3 {
-  font-family: var(--font-title);
+  font-family: var(--reference-font-sans);
   font-size: 1.35rem;
-  font-weight: var(--title-weight-sub);
+  font-weight: 650;
 }
 
 .reference-operation-body > p,
@@ -2885,8 +2966,9 @@ blockquote footer a:hover {
 .reference-json {
   margin-top: 1.2rem;
   overflow: hidden;
-  color: #dce6f5;
-  background: #111b2b;
+  color: var(--ink);
+  background: var(--reference-panel-strong);
+  border: 0.5px solid var(--hairline);
   border-radius: 7px;
 }
 
@@ -2897,12 +2979,12 @@ blockquote footer a:hover {
   align-items: center;
   gap: 0.2rem;
   padding: 0.25rem 0.4rem;
-  border-bottom: 1px solid rgb(255 255 255 / 8%);
+  border-bottom: 0.5px solid var(--hairline);
 }
 
 .reference-code-tabs > button:not(.reference-copy) {
   padding: 0.4rem 0.55rem;
-  color: #8fa1ba;
+  color: var(--ink-muted);
   background: transparent;
   border: 0;
   border-radius: 4px;
@@ -2912,14 +2994,14 @@ blockquote footer a:hover {
 }
 
 .reference-code-tabs > button.active {
-  color: #fff;
-  background: rgb(255 255 255 / 9%);
+  color: var(--ink);
+  background: var(--reference-panel-hover);
 }
 
 .reference-code-tabs .reference-copy,
 .reference-json-head .reference-copy {
   margin-left: auto;
-  color: #b9c6d8;
+  color: var(--ink-secondary);
 }
 
 .reference-code pre,
@@ -2938,7 +3020,7 @@ blockquote footer a:hover {
   padding-left: 0.45rem;
   font-family: var(--font-mono);
   font-size: 0.65rem;
-  color: #8fa1ba;
+  color: var(--ink-muted);
 }
 
 .reference-operation-part {
@@ -2947,7 +3029,7 @@ blockquote footer a:hover {
 
 .reference-operation-part > h4,
 .reference-part-title h4 {
-  font-family: var(--font-body);
+  font-family: var(--font-mono);
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -2975,6 +3057,12 @@ blockquote footer a:hover {
 .reference-table {
   min-width: 38rem;
   margin: 0;
+}
+
+.reference-table th,
+.reference-table td {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
 }
 
 .reference-table code {
@@ -3063,9 +3151,36 @@ blockquote footer a:hover {
 }
 
 .reference-load-state h1 {
-  font-family: var(--font-title);
+  font-family: var(--reference-font-sans);
   font-size: 2.5rem;
-  font-weight: var(--title-weight);
+  font-weight: 650;
+}
+
+@media screen and (max-width: 900px) {
+  .reference-shell {
+    display: block;
+  }
+
+  .reference-sidebar {
+    position: relative;
+    height: auto;
+    max-height: 32rem;
+    padding: 5.25rem 1.25rem 1.5rem;
+    border-right: 0;
+    border-bottom: 0.5px solid var(--hairline);
+  }
+
+  .reference-brand {
+    margin-bottom: 1.25rem;
+  }
+
+  .reference-main {
+    padding: 3rem 1.25rem 8rem;
+  }
+
+  .reference-hero h1 {
+    font-size: clamp(2.5rem, 12vw, 4rem);
+  }
 }
 
 .reference-load-state p {

@@ -11,7 +11,9 @@ import { useAppTheme } from "../context/ThemeContext.jsx";
 import { useAuth } from "../context/AuthContext.jsx";
 import PublicationRenderer from "../components/PublicationRenderer.jsx";
 import PublicationState from "../components/PublicationState.jsx";
-import SettingsPanel from "../components/SettingsPanel.jsx";
+import SettingsPanel, {
+  REFERENCE_SETTINGS_FEATURES,
+} from "../components/SettingsPanel.jsx";
 import ShareButton from "../components/ShareButton.jsx";
 import {
   getPublicationKind,
@@ -113,7 +115,7 @@ export default function ReportPage() {
   return (
     <>
       {!guestView && (
-        <nav className="report-backnav">
+        <nav className={`report-backnav${report.renderMode === "reference" ? " report-backnav--reference" : ""}`}>
           <Link to={publicationListPath(report.renderMode)}>
             <ArrowLeft size={12} aria-hidden="true" /> {listKind.title}
           </Link>
@@ -125,7 +127,15 @@ export default function ReportPage() {
         </div>
       )}
       <PublicationRenderer publication={report} settings={settings} />
-      {!guestView && <SettingsPanel settings={settings} onChange={handleChange} />}
+      {!guestView && (
+        <SettingsPanel
+          settings={settings}
+          onChange={handleChange}
+          title={report.renderMode === "reference" ? "Personalizar referência" : undefined}
+          features={report.renderMode === "reference" ? REFERENCE_SETTINGS_FEATURES : undefined}
+          variant={report.renderMode === "reference" ? "reference" : undefined}
+        />
+      )}
     </>
   );
 }
