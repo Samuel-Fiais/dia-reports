@@ -9,7 +9,7 @@ const itemKey = (item) => publicationNodeKey(item, 'checklist-item')
 
 function loadState(blockKey, items, persist) {
   if (!persist) {
-    return Object.fromEntries(items.map((item, index) => [
+    return Object.fromEntries(items.map((item) => [
       itemKey(item),
       Boolean(item.checked),
     ]))
@@ -22,7 +22,7 @@ function loadState(blockKey, items, persist) {
     // Local persistence is optional.
   }
 
-  return Object.fromEntries(items.map((item, index) => [
+  return Object.fromEntries(items.map((item) => [
     itemKey(item),
     Boolean(item.checked),
   ]))
@@ -33,7 +33,7 @@ export default function Checklist({ block, blockKey }) {
   const persist = block.persist !== false
   const [checked, setChecked] = useState(() => loadState(blockKey, items, persist))
 
-  const toggle = (item, index) => {
+  const toggle = (item) => {
     const key = itemKey(item)
     setChecked((current) => {
       const next = { ...current, [key]: !current[key] }
@@ -50,22 +50,22 @@ export default function Checklist({ block, blockKey }) {
 
   return (
     <ul className="checklist">
-      {items.map((item, index) => {
+      {items.map((item) => {
         const key = itemKey(item)
+        const checkedState = Boolean(checked[key])
+        const actionLabel = checkedState
+          ? blockLabel(block, 'uncheck', 'Desmarcar')
+          : blockLabel(block, 'check', 'Marcar')
         return (
-          <li key={key} className={`checklist-item${checked[key] ? ' checked' : ''}`}>
+          <li key={key} className={`checklist-item${checkedState ? ' checked' : ''}`}>
             <button
               type="button"
               className="checklist-control"
-              aria-pressed={Boolean(checked[key])}
-              onClick={() => toggle(item, index)}
+              aria-label={actionLabel}
+              aria-pressed={checkedState}
+              onClick={() => toggle(item)}
             >
               <Check strokeWidth={3} aria-hidden="true" />
-              <span className="sr-only">
-                {checked[key]
-                  ? blockLabel(block, 'uncheck', 'Desmarcar')
-                  : blockLabel(block, 'check', 'Marcar')}
-              </span>
             </button>
             <span>{renderInline(item.text)}</span>
           </li>
