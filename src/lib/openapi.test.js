@@ -72,6 +72,11 @@ test('normalizes operations, navigation and code samples', () => {
   assert.equal(operation.parameters[0].required, true)
   assert.deepEqual(operation.responses[0].example, { id: 'item-1', active: true })
   assert.match(operation.codeSamples[0].code, /item-1/)
+  assert.deepEqual(
+    operation.codeSamples.map((sample) => sample.id),
+    ['httpie', 'curl', 'javascript', 'typescript', 'csharp'],
+  )
+  assert.equal(operation.requestUrl, 'https://api.exemplo.com/items/item-1')
 })
 
 test('rejects missing and unsupported OpenAPI versions', () => {

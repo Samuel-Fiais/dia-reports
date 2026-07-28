@@ -153,11 +153,14 @@ function buildRequestUrl(baseUrl, path, parameters) {
   return `${String(baseUrl ?? '').replace(/\/$/, '')}${resolvedPath}${query ? `?${query}` : ''}`
 }
 
-function buildCodeSamples(method, url, requestExample) {
+export function buildCodeSamples(method, url, requestExample) {
   const upperMethod = method.toUpperCase()
   const body = requestExample == null ? '' : JSON.stringify(requestExample, null, 2)
+  const httpieParts = [`http ${upperMethod} '${url}'`]
   const curlParts = [`curl -X ${upperMethod} '${url}'`]
   if (body) {
+    httpieParts.push("'Content-Type:application/json'")
+    httpieParts.push(`<<< '${body}'`)
     curlParts.push("  -H 'Content-Type: application/json'")
     curlParts.push(`  -d '${body}'`)
   }
@@ -173,12 +176,40 @@ function buildCodeSamples(method, url, requestExample) {
   ]
 
   return [
+    {
+      id: 'httpie',
+      label: 'HTTPie',
+      language: 'bash',
+      code: httpieParts.join(' \\\n  '),
+    },
     { id: 'curl', label: 'curl', language: 'bash', code: curlParts.join(' \\\n') },
     {
       id: 'javascript',
       label: 'JavaScript',
       language: 'javascript',
       code: `const response = await fetch('${url}', {\n${fetchOptions.join('\n')}\n})\nconst data = await response.json()`,
+    },
+    {
+      id: 'typescript',
+      label: 'TypeScript',
+      language: 'typescript',
+      code: `const response: Response = await fetch('${url}', {\n${fetchOptions.join('\n')}\n})\nconst data: unknown = await response.json()`,
+    },
+    {
+      id: 'csharp',
+      label: 'C#',
+      language: 'csharp',
+      code: [
+        ...(body ? ['using System.Text;', ''] : []),
+        'using var client = new HttpClient();',
+        `using var request = new HttpRequestMessage(HttpMethod.${upperMethod[0]}${upperMethod.slice(1).toLowerCase()}, "${url}");`,
+        ...(body
+          ? [`request.Content = new StringContent(${JSON.stringify(body)}, Encoding.UTF8, "application/json");`]
+          : []),
+        'using var response = await client.SendAsync(request);',
+        'response.EnsureSuccessStatusCode();',
+        'var data = await response.Content.ReadAsStringAsync();',
+      ].join('\n'),
     },
   ]
 }
@@ -278,6 +309,7 @@ export function normalizeOpenApiDocument(document, options = {}) {
         anchor: operationAnchor(method, path, operation.operationId),
         method: method.toUpperCase(),
         path,
+        requestUrl: url,
         summary: operation.summary ?? `${method.toUpperCase()} ${path}`,
         description: operation.description ?? '',
         deprecated: operation.deprecated === true,
