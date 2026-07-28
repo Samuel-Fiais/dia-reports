@@ -3,6 +3,7 @@ import { ArrowLeft } from 'lucide-react'
 import { Link, useParams } from 'react-router-dom'
 import PublicationRenderer from '../components/PublicationRenderer.jsx'
 import PublicationState from '../components/PublicationState.jsx'
+import ShareButton from '../components/ShareButton.jsx'
 import SettingsPanel, {
   REFERENCE_SETTINGS_FEATURES,
 } from '../components/SettingsPanel.jsx'
@@ -41,6 +42,14 @@ function ReferenceExampleContent({ publication }) {
           <ArrowLeft size={12} aria-hidden="true" /> Referências
         </Link>
       </nav>
+      <div className="report-topnav">
+        <ShareButton
+          reportId={publication.id}
+          directUrl={`/referencias/${publication.id}`}
+          noun="referência"
+          secure={false}
+        />
+      </div>
       <PublicationRenderer publication={publication} settings={settings} />
       <SettingsPanel
         settings={settings}

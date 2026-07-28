@@ -6,12 +6,13 @@ import {
   LoaderCircle,
   Play,
   Search,
-  Share2,
   X,
 } from 'lucide-react'
+import { createPortal } from 'react-dom'
 import { renderInline } from '../lib/inline.jsx'
 import {
   fetchRemoteOpenApiDocument,
+  formatOpenApiResponseBody,
   normalizeOpenApiDocument,
   openApiDocumentFromPublication,
   openApiUrlFromPublication,
@@ -95,39 +96,6 @@ function CopyButton({ value, label = 'Copiar' }) {
   )
 }
 
-function ShareReferenceButton({ title, publication }) {
-  const [shared, setShared] = useState(false)
-
-  const share = async () => {
-    let url = window.location.href
-    try {
-      if (!publication.system && !publication._sourceAccessToken) {
-        const response = await fetch(`/api/reports/${publication.id}/share`, { method: 'POST' })
-        if (response.ok) {
-          const data = await response.json()
-          url = `${window.location.origin}/shared/${data.token}`
-        }
-      }
-      if (navigator.share) {
-        await navigator.share({ title, url })
-      } else {
-        await navigator.clipboard.writeText(url)
-      }
-      setShared(true)
-      window.setTimeout(() => setShared(false), 1600)
-    } catch {
-      setShared(false)
-    }
-  }
-
-  return (
-    <button type="button" className="reference-share" onClick={share}>
-      {shared ? <Check size={14} aria-hidden="true" /> : <Share2 size={14} aria-hidden="true" />}
-      {shared ? 'Link copiado' : 'Compartilhar'}
-    </button>
-  )
-}
-
 function CodeSamples({ samples, children }) {
   const [active, setActive] = useState(0)
   const baseId = useId()
@@ -205,10 +173,17 @@ function credentialHeaders(schemes, credentials) {
   return { headers, query }
 }
 
-function RequestRunner({ operation, serverUrl, credentials, securitySchemes }) {
+function RequestRunner({
+  operation,
+  serverUrl,
+  credentials,
+  securitySchemes,
+  onCredentialChange,
+}) {
   const [open, setOpen] = useState(false)
   const [running, setRunning] = useState(false)
   const [result, setResult] = useState(null)
+  const titleId = useId()
   const [parameterValues, setParameterValues] = useState(() => Object.fromEntries(
     operation.parameters.map((parameter) => [
       `${parameter.in}:${parameter.name}`,
@@ -220,6 +195,30 @@ function RequestRunner({ operation, serverUrl, credentials, securitySchemes }) {
       ? ''
       : JSON.stringify(operation.requestBody.example, null, 2)
   ))
+  const activeSchemeNames = useMemo(() => new Set(
+    operation.security.flatMap((requirement) => Object.keys(requirement)),
+  ), [operation.security])
+  const activeSecuritySchemes = useMemo(
+    () => securitySchemes.filter((scheme) => activeSchemeNames.has(scheme.name)),
+    [activeSchemeNames, securitySchemes],
+  )
+  const formattedResponse = useMemo(
+    () => formatOpenApiResponseBody(result?.body),
+    [result?.body],
+  )
+
+  useEffect(() => {
+    if (!open) return undefined
+    document.body.classList.add('dia-modal-scroll-lock')
+    const closeOnEscape = (event) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => {
+      document.body.classList.remove('dia-modal-scroll-lock')
+      window.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [open])
 
   const send = async () => {
     setRunning(true)
@@ -236,11 +235,8 @@ function RequestRunner({ operation, serverUrl, credentials, securitySchemes }) {
         if (parameter.in === 'query') url.searchParams.set(parameter.name, value)
         if (parameter.in === 'header') headers[parameter.name] = value
       }
-      const activeSchemeNames = new Set(
-        operation.security.flatMap((requirement) => Object.keys(requirement)),
-      )
       const auth = credentialHeaders(
-        securitySchemes.filter((scheme) => activeSchemeNames.has(scheme.name)),
+        activeSecuritySchemes,
         credentials,
       )
       Object.assign(headers, auth.headers)
@@ -260,6 +256,7 @@ function RequestRunner({ operation, serverUrl, credentials, securitySchemes }) {
         statusText: response.statusText,
         duration: Math.round(performance.now() - startedAt),
         body: responseBody,
+        contentType: response.headers.get('content-type') ?? '',
       })
     } catch (error) {
       setResult({
@@ -273,78 +270,165 @@ function RequestRunner({ operation, serverUrl, credentials, securitySchemes }) {
     }
   }
 
-  if (!open) {
-    return (
+  return (
+    <>
       <div className="reference-test-launch">
         <button type="button" onClick={() => setOpen(true)}>
           <Play size={12} fill="currentColor" aria-hidden="true" />
           Test Request
         </button>
       </div>
-    )
-  }
-
-  return (
-    <div className="reference-request-runner">
-      <div className="reference-request-runner-head">
-        <strong>Test Request</strong>
-        <button type="button" aria-label="Fechar teste" onClick={() => setOpen(false)}>
-          <X size={13} aria-hidden="true" />
-        </button>
-      </div>
-      {operation.parameters.length > 0 && (
-        <div className="reference-request-fields">
-          {operation.parameters.map((parameter) => (
-            <label key={`${parameter.in}:${parameter.name}`}>
-              <span>{parameter.name}<small>{parameter.in}</small></span>
-              <input
-                value={parameterValues[`${parameter.in}:${parameter.name}`] ?? ''}
-                required={parameter.required}
-                onChange={(event) => setParameterValues((current) => ({
-                  ...current,
-                  [`${parameter.in}:${parameter.name}`]: event.target.value,
-                }))}
-              />
-            </label>
-          ))}
-        </div>
-      )}
-      {operation.requestBody && (
-        <label className="reference-request-body">
-          <span>Body <small>{operation.requestBody.mediaType}</small></span>
-          <textarea value={body} rows={7} onChange={(event) => setBody(event.target.value)} />
-        </label>
-      )}
-      <button
-        type="button"
-        className="reference-send-request"
-        disabled={running || !serverUrl}
-        onClick={send}
-      >
-        {running
-          ? <LoaderCircle className="reference-spinner" size={13} aria-hidden="true" />
-          : <Play size={12} fill="currentColor" aria-hidden="true" />}
-        {running ? 'Enviando...' : 'Enviar requisição'}
-      </button>
-      {result && (
+      {open && createPortal(
         <div
-          className={`reference-test-result${result.ok ? ' is-success' : ' is-error'}`}
-          aria-live="polite"
+          className="reference-request-modal-backdrop"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setOpen(false)
+          }}
         >
-          {result.error ? (
-            <p>{result.error}</p>
-          ) : (
-            <>
+          <section
+            className="reference-request-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+          >
+            <header className="reference-request-modal-head">
               <div>
-                <strong>{result.status} {result.statusText}</strong>
-                <span>{result.duration} ms</span>
+                <span className={`reference-nav-method reference-nav-method--${operation.method.toLowerCase()}`}>
+                  {operation.method}
+                </span>
+                <code>{serverUrl}{operation.path}</code>
               </div>
-              {result.body && <pre><code>{result.body}</code></pre>}
-            </>
-          )}
-        </div>
+              <div>
+                <button
+                  type="button"
+                  className="reference-send-request"
+                  autoFocus
+                  disabled={running || !serverUrl}
+                  onClick={send}
+                >
+                  {running
+                    ? <LoaderCircle className="reference-spinner" size={13} aria-hidden="true" />
+                    : <Play size={12} fill="currentColor" aria-hidden="true" />}
+                  {running ? 'Enviando...' : 'Enviar'}
+                </button>
+                <button
+                  type="button"
+                  className="reference-request-modal-close"
+                  aria-label="Fechar teste"
+                  onClick={() => setOpen(false)}
+                >
+                  <X size={15} aria-hidden="true" />
+                </button>
+              </div>
+            </header>
+
+            <div className="reference-request-modal-grid">
+              <section className="reference-request-config">
+                <div className="reference-request-column-head">
+                  <h2 id={titleId}>Test Request</h2>
+                  <span>Configuração</span>
+                </div>
+
+                {operation.parameters.length > 0 && (
+                  <div className="reference-request-section">
+                    <h3>Parâmetros</h3>
+                    <div className="reference-request-fields">
+                      {operation.parameters.map((parameter) => (
+                        <label key={`${parameter.in}:${parameter.name}`}>
+                          <span>
+                            {parameter.name}
+                            <small>
+                              {parameter.in}{parameter.required ? ' · obrigatório' : ''}
+                            </small>
+                          </span>
+                          <input
+                            value={parameterValues[`${parameter.in}:${parameter.name}`] ?? ''}
+                            required={parameter.required}
+                            onChange={(event) => setParameterValues((current) => ({
+                              ...current,
+                              [`${parameter.in}:${parameter.name}`]: event.target.value,
+                            }))}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {activeSecuritySchemes.length > 0 && (
+                  <div className="reference-request-section">
+                    <h3>Autenticação</h3>
+                    <div className="reference-request-fields">
+                      {activeSecuritySchemes.map((scheme) => (
+                        <label key={scheme.name}>
+                          <span>
+                            {scheme.name}
+                            <small>{[scheme.type, scheme.scheme].filter(Boolean).join(' · ')}</small>
+                          </span>
+                          <input
+                            type="password"
+                            value={credentials[scheme.name] ?? ''}
+                            autoComplete="off"
+                            placeholder={scheme.type === 'apiKey' ? 'Chave da API' : 'Token'}
+                            onChange={(event) => onCredentialChange(scheme.name, event.target.value)}
+                          />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {operation.requestBody && (
+                  <div className="reference-request-section">
+                    <h3>Body</h3>
+                    <label className="reference-request-body">
+                      <span>
+                        Conteúdo
+                        <small>{operation.requestBody.mediaType}</small>
+                      </span>
+                      <textarea
+                        value={body}
+                        rows={12}
+                        spellCheck="false"
+                        onChange={(event) => setBody(event.target.value)}
+                      />
+                    </label>
+                  </div>
+                )}
+              </section>
+
+              <section className="reference-response-view" aria-live="polite">
+                <div className="reference-request-column-head">
+                  <h2>Resposta</h2>
+                  {formattedResponse ? <CopyButton value={formattedResponse} /> : <span>Aguardando</span>}
+                </div>
+                {!result && (
+                  <div className="reference-response-empty">
+                    Envie a requisição para visualizar status, duração e conteúdo da resposta.
+                  </div>
+                )}
+                {result?.error && (
+                  <div className="reference-response-error">{result.error}</div>
+                )}
+                {result && !result.error && (
+                  <div className={`reference-response-result${result.ok ? ' is-success' : ' is-error'}`}>
+                    <div className="reference-response-meta">
+                      <strong>{result.status} {result.statusText}</strong>
+                      <span>{result.duration} ms</span>
+                      {result.contentType && <small>{result.contentType}</small>}
+                    </div>
+                    {formattedResponse
+                      ? <pre><code data-language="json">{formattedResponse}</code></pre>
+                      : <div className="reference-response-empty">Resposta sem conteúdo.</div>}
+                  </div>
+                )}
+              </section>
+            </div>
+          </section>
+        </div>,
+        document.body,
       )}
-    </div>
+    </>
   )
 }
 
@@ -466,7 +550,13 @@ function Responses({ responses }) {
   )
 }
 
-function Operation({ operation, serverUrl, credentials, securitySchemes }) {
+function Operation({
+  operation,
+  serverUrl,
+  credentials,
+  securitySchemes,
+  onCredentialChange,
+}) {
   const title = operationTitle(operation)
 
   return (
@@ -493,6 +583,7 @@ function Operation({ operation, serverUrl, credentials, securitySchemes }) {
               serverUrl={serverUrl}
               credentials={credentials}
               securitySchemes={securitySchemes}
+              onCredentialChange={onCredentialChange}
             />
           </CodeSamples>
         </aside>
@@ -501,7 +592,7 @@ function Operation({ operation, serverUrl, credentials, securitySchemes }) {
   )
 }
 
-function SecurityOverview({ schemes, credentials, onCredentialChange }) {
+function SecurityOverview({ schemes }) {
   if (!schemes.length) return null
   return (
     <section id="reference-authentication" className="reference-overview-section">
@@ -509,7 +600,8 @@ function SecurityOverview({ schemes, credentials, onCredentialChange }) {
       <div>
         <h2>Autenticação</h2>
         <p>
-          As credenciais abaixo são usadas apenas nos testes desta página e não são salvas.
+          Configure as credenciais dentro de “Test Request”. Elas permanecem apenas nesta
+          página e não são salvas.
         </p>
         <div className="reference-security-grid">
           {schemes.map((scheme) => (
@@ -522,22 +614,6 @@ function SecurityOverview({ schemes, credentials, onCredentialChange }) {
                 </div>
               </div>
               {scheme.description && <p>{renderInline(scheme.description)}</p>}
-              <label>
-                <span>
-                  {scheme.type === 'apiKey'
-                    ? scheme.parameterName || 'Chave da API'
-                    : scheme.scheme === 'basic'
-                      ? 'Usuário:senha'
-                      : 'Token'}
-                </span>
-                <input
-                  type="password"
-                  value={credentials[scheme.name] ?? ''}
-                  autoComplete="off"
-                  placeholder="Inserir somente para testar"
-                  onChange={(event) => onCredentialChange(scheme.name, event.target.value)}
-                />
-              </label>
             </article>
           ))}
         </div>
@@ -704,11 +780,8 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
           <main id="reference-top" className="reference-main">
             <header className="reference-hero">
               <div className="reference-eyebrow">
-                <div>
-                  <span>OPENAPI {reference.openapi}</span>
-                  {version && <span>{version}</span>}
-                </div>
-                <ShareReferenceButton title={reference.title} publication={publication} />
+                <span>OPENAPI {reference.openapi}</span>
+                {version && <span>{version}</span>}
               </div>
               <h1>{reference.title}</h1>
               {(publication.intro?.[0] || reference.description) && (
@@ -742,11 +815,7 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
               </div>
             </section>
 
-            <SecurityOverview
-              schemes={reference.securitySchemes}
-              credentials={credentials}
-              onCredentialChange={handleCredentialChange}
-            />
+            <SecurityOverview schemes={reference.securitySchemes} />
 
             {publication.body?.length > 0 && (
               <PublicationBody
@@ -776,6 +845,7 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                     serverUrl={server?.url}
                     credentials={credentials}
                     securitySchemes={reference.securitySchemes}
+                    onCredentialChange={handleCredentialChange}
                   />
                 ))}
               </section>

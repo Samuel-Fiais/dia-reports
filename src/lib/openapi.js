@@ -13,6 +13,15 @@ const STATUS_LABELS = Object.freeze({
   default: 'Padrão',
 })
 
+export function formatOpenApiResponseBody(value) {
+  if (!value) return ''
+  try {
+    return JSON.stringify(JSON.parse(value), null, 2)
+  } catch {
+    return value
+  }
+}
+
 function decodePointerSegment(segment) {
   return segment.replaceAll('~1', '/').replaceAll('~0', '~')
 }

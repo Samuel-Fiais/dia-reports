@@ -1,6 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  formatOpenApiResponseBody,
   normalizeOpenApiDocument,
   openApiDocumentFromPublication,
   openApiSchemaExample,
@@ -61,6 +62,14 @@ test('generates examples from schemas and references', () => {
     openApiSchemaExample(document, { $ref: '#/components/schemas/Item' }),
     { id: 'item-1', active: true },
   )
+})
+
+test('formats JSON responses and preserves non-JSON bodies', () => {
+  assert.equal(
+    formatOpenApiResponseBody('{"ok":true,"items":[1,2]}'),
+    '{\n  "ok": true,\n  "items": [\n    1,\n    2\n  ]\n}',
+  )
+  assert.equal(formatOpenApiResponseBody('plain text'), 'plain text')
 })
 
 test('normalizes operations, navigation and code samples', () => {
