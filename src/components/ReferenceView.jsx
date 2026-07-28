@@ -711,12 +711,60 @@ function Responses({ responses }) {
               {response.mediaType && <small>{response.mediaType}</small>}
             </summary>
             <div className="reference-response-body">
-              <SchemaTable schema={response.schema} />
+              {response.schema
+                ? <SchemaTable schema={response.schema} />
+                : (
+                  <p className="reference-contract-empty">
+                    Nenhum schema de resposta foi declarado neste contrato.
+                  </p>
+                )}
             </div>
           </details>
         ))}
       </div>
     </div>
+  )
+}
+
+function OperationFacts({ operation }) {
+  const authentication = [...new Set(
+    operation.security.flatMap((requirement) => Object.keys(requirement)),
+  )]
+  const mediaTypes = [...new Set(
+    operation.responses.map((response) => response.mediaType).filter(Boolean),
+  )]
+  const facts = [
+    {
+      label: 'Parâmetros',
+      value: operation.parameters.length ? String(operation.parameters.length) : 'Nenhum',
+    },
+    {
+      label: 'Corpo',
+      value: operation.requestBody?.mediaType ?? 'Nenhum',
+    },
+    {
+      label: 'Autenticação',
+      value: authentication.length ? authentication.join(', ') : 'Não exigida',
+    },
+    {
+      label: 'Retornos',
+      value: operation.responses.map((response) => response.status).join(', ') || 'Não declarados',
+    },
+    {
+      label: 'Formato',
+      value: mediaTypes.join(', ') || 'Não declarado',
+    },
+  ]
+
+  return (
+    <dl className="reference-operation-facts">
+      {facts.map((fact) => (
+        <div key={fact.label}>
+          <dt>{fact.label}</dt>
+          <dd title={fact.value}>{fact.value}</dd>
+        </div>
+      ))}
+    </dl>
   )
 }
 
@@ -769,6 +817,12 @@ function Operation({
         <div className="reference-operation-docs">
           {title && <h3>{title}</h3>}
           {operation.description && <p>{renderInline(operation.description)}</p>}
+          {!title && !operation.description && (
+            <p className="reference-contract-notice">
+              Esta operação não possui resumo ou descrição no contrato OpenAPI publicado.
+            </p>
+          )}
+          <OperationFacts operation={operation} />
           <ParametersTable parameters={operation.parameters} />
           <RequestBody requestBody={operation.requestBody} />
           <Responses responses={operation.responses} />
