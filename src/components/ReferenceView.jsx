@@ -1,5 +1,5 @@
-import { useDeferredValue, useEffect, useId, useMemo, useState } from 'react'
-import { Check, Copy, Search } from 'lucide-react'
+import { useDeferredValue, useEffect, useId, useMemo, useRef, useState } from 'react'
+import { Check, Copy, Search, X } from 'lucide-react'
 import { renderInline } from '../lib/inline.jsx'
 import {
   fetchRemoteOpenApiDocument,
@@ -25,7 +25,44 @@ const METHOD_ORDER = Object.freeze({
 function navigationLabel(operation) {
   const summary = operation.summary?.trim()
   if (!summary) return operation.path
-  return summary.replace(new RegExp(`^${operation.method}\\s+`, 'i'), '').trim() || operation.path
+  const methodPrefix = `${operation.method} `
+  return summary.toUpperCase().startsWith(methodPrefix)
+    ? summary.slice(methodPrefix.length).trim() || operation.path
+    : summary
+}
+
+function operationTitle(operation) {
+  const label = navigationLabel(operation)
+  return label === operation.path ? '' : label
+}
+
+function displayVersion(version) {
+  const value = String(version ?? '').trim()
+  if (!value) return ''
+  return /^v/i.test(value) ? value : `v${value}`
+}
+
+function isEditableTarget(target) {
+  return target instanceof HTMLElement
+    && (target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName))
+}
+
+function ReferenceNavOperation({ operation, active, onSelect }) {
+  const label = navigationLabel(operation)
+
+  return (
+    <a
+      href={`#${operation.anchor}`}
+      className={active ? 'active' : ''}
+      aria-current={active ? 'location' : undefined}
+      onClick={() => onSelect(operation.anchor)}
+    >
+      <span className={`reference-nav-method reference-nav-method--${operation.method.toLowerCase()}`}>
+        {operation.method}
+      </span>
+      <span title={label}>{label}</span>
+    </a>
+  )
 }
 
 function CopyButton({ value, label = 'Copiar' }) {
@@ -219,6 +256,8 @@ function Responses({ responses }) {
 }
 
 function Operation({ operation }) {
+  const title = operationTitle(operation)
+
   return (
     <section id={operation.anchor} className="reference-operation">
       <div className="reference-operation-head">
@@ -229,7 +268,7 @@ function Operation({ operation }) {
         {operation.deprecated && <span className="reference-deprecated">Descontinuado</span>}
       </div>
       <div className="reference-operation-body">
-        <h3>{operation.summary}</h3>
+        {title && <h3>{title}</h3>}
         {operation.description && <p>{renderInline(operation.description)}</p>}
         <CodeSamples samples={operation.codeSamples} />
         <ParametersTable parameters={operation.parameters} />
@@ -264,6 +303,8 @@ function SecurityOverview({ schemes }) {
 function ReferenceDocumentView({ publication, settings = {}, reference }) {
   const [query, setQuery] = useState('')
   const [activeAnchor, setActiveAnchor] = useState('reference-overview')
+  const searchRef = useRef(null)
+  const searchId = useId()
   const deferredQuery = useDeferredValue(query.trim().toLocaleLowerCase('pt-BR'))
   const chartStyleIndex = settings.chartStyleIndex ?? publication.settings?.chartStyleIndex ?? 2
   const widthMode = settings.widthMode ?? publication.settings?.widthMode ?? 'standard'
@@ -297,6 +338,22 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
     .filter((tag) => tag.operations.length), [reference.tags, visibleOperations])
 
   const server = reference.servers[0]
+  const version = displayVersion(reference.version)
+
+  useEffect(() => {
+    const handleShortcut = (event) => {
+      if (event.key === '/' && !isEditableTarget(event.target)) {
+        event.preventDefault()
+        searchRef.current?.focus()
+      }
+      if (event.key === 'Escape' && document.activeElement === searchRef.current) {
+        setQuery('')
+        searchRef.current?.blur()
+      }
+    }
+    window.addEventListener('keydown', handleShortcut)
+    return () => window.removeEventListener('keydown', handleShortcut)
+  }, [])
 
   return (
     <ModalProvider renderBlocks={(blocks) => renderBlocks(blocks, chartStyleIndex)}>
@@ -314,16 +371,39 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
               </span>
             </a>
 
-            <label className="reference-search">
-              <Search size={14} aria-hidden="true" />
-              <span className="sr-only">Buscar operações</span>
-              <input
-                type="search"
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Buscar operação..."
-              />
-            </label>
+            <div className="reference-search-wrap">
+              <div className="reference-search">
+                <Search size={14} aria-hidden="true" />
+                <label className="sr-only" htmlFor={searchId}>Buscar operações</label>
+                <input
+                  id={searchId}
+                  ref={searchRef}
+                  type="search"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  placeholder="Buscar operações"
+                />
+                {query ? (
+                  <button
+                    type="button"
+                    aria-label="Limpar busca"
+                    onClick={() => {
+                      setQuery('')
+                      searchRef.current?.focus()
+                    }}
+                  >
+                    <X size={13} aria-hidden="true" />
+                  </button>
+                ) : (
+                  <kbd aria-hidden="true">/</kbd>
+                )}
+              </div>
+              {query && (
+                <span className="reference-search-result">
+                  {visibleOperations.length} resultado{visibleOperations.length === 1 ? '' : 's'}
+                </span>
+              )}
+            </div>
 
             <nav aria-label="Navegação da referência">
               <span className="reference-nav-label">Começando</span>
@@ -357,15 +437,12 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                   </summary>
                   <div>
                     {tag.operations.map((operation) => (
-                      <a
+                      <ReferenceNavOperation
                         key={operation.id}
-                        href={`#${operation.anchor}`}
-                        className={activeAnchor === operation.anchor ? 'active' : ''}
-                        aria-current={activeAnchor === operation.anchor ? 'location' : undefined}
-                        onClick={() => setActiveAnchor(operation.anchor)}
-                      >
-                        {navigationLabel(operation)}
-                      </a>
+                        operation={operation}
+                        active={activeAnchor === operation.anchor}
+                        onSelect={setActiveAnchor}
+                      />
                     ))}
                   </div>
                 </details>
@@ -377,7 +454,7 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
             <header className="reference-hero">
               <div className="reference-eyebrow">
                 <span>OPENAPI {reference.openapi}</span>
-                <span>v{reference.version}</span>
+                {version && <span>{version}</span>}
               </div>
               <h1>{reference.title}</h1>
               {(publication.intro?.[0] || reference.description) && (

@@ -57,13 +57,19 @@
 
   --content-max: 67.5rem;
   --content-pad: 5rem;
+  --component-radius: 6px;
+  --control-radius: 6px;
+  --radius-pill: 999px;
 
   /* Ink/superfície neutros que trocam de lado no dark mode */
   --hairline: rgba(0, 0, 0, 0.12);
   --hairline-strong: rgba(0, 0, 0, 0.3);
-  --surface: #fff;
-  --surface-hover: rgba(0, 0, 0, 0.045);
-  --shadow-color: rgba(0, 0, 0, 0.08);
+  --surface: color-mix(in srgb, var(--bg) 95%, var(--ink) 5%);
+  --surface-raised: color-mix(in srgb, var(--bg) 91%, var(--ink) 9%);
+  --surface-strong: color-mix(in srgb, var(--bg) 86%, var(--ink) 14%);
+  --surface-inset: var(--surface-strong);
+  --surface-hover: color-mix(in srgb, var(--bg) 89%, var(--ink) 11%);
+  --shadow-color: transparent;
 }
 
 /* ── Dark theme (toggle no seletor "Customize Report") ──────────
@@ -77,9 +83,12 @@
   --divider: rgba(243, 241, 234, 0.14);
   --hairline: rgba(243, 241, 234, 0.16);
   --hairline-strong: rgba(243, 241, 234, 0.36);
-  --surface: #232320;
-  --surface-hover: rgba(243, 241, 234, 0.06);
-  --shadow-color: rgba(0, 0, 0, 0.35);
+  --surface: color-mix(in srgb, var(--bg) 91%, var(--ink) 9%);
+  --surface-raised: color-mix(in srgb, var(--bg) 86%, var(--ink) 14%);
+  --surface-strong: color-mix(in srgb, var(--bg) 80%, var(--ink) 20%);
+  --surface-inset: color-mix(in srgb, var(--bg) 92%, #000 8%);
+  --surface-hover: color-mix(in srgb, var(--bg) 83%, var(--ink) 17%);
+  --shadow-color: transparent;
 }
 
 /*  Scaling Base  */
@@ -101,6 +110,18 @@ html {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 body {
@@ -282,6 +303,21 @@ pre code {
   transition:
     opacity 0.5s ease,
     background-color 0.6s ease;
+}
+
+.publication,
+.publication *,
+.publication *::before,
+.publication *::after,
+.report-backnav a,
+.report-share-btn,
+.report-share-menu,
+.settings-wrap .settings-panel,
+.settings-wrap .settings-btn,
+.settings-wrap .theme-toggle-btn,
+.app-menu-fab,
+.app-menu-list {
+  box-shadow: none !important;
 }
 
 .report-wrap {
@@ -2424,9 +2460,9 @@ blockquote footer a:hover {
 .reference {
   --reference-font-sans: Inter, "Helvetica Neue", Arial, sans-serif;
   --font-mono: "JetBrains Mono", "SFMono-Regular", Menlo, Consolas, monospace;
-  --reference-panel: color-mix(in srgb, var(--bg) 96%, var(--ink) 4%);
-  --reference-panel-strong: color-mix(in srgb, var(--bg) 90%, #000 10%);
-  --reference-panel-hover: color-mix(in srgb, var(--bg) 91%, var(--ink) 9%);
+  --reference-panel: var(--surface);
+  --reference-panel-strong: var(--surface-inset);
+  --reference-panel-hover: var(--surface-hover);
   min-height: 100vh;
   color: var(--ink);
   background: var(--bg);
@@ -2464,7 +2500,7 @@ blockquote footer a:hover {
   min-height: 100vh;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 18rem minmax(0, 1fr);
+  grid-template-columns: 17rem minmax(0, 1fr);
 }
 
 .reference--full .reference-shell {
@@ -2538,17 +2574,21 @@ blockquote footer a:hover {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  min-height: 2.35rem;
-  padding: 0.5rem 0.65rem;
+  min-height: 2.25rem;
+  padding: 0.42rem 0.55rem;
   color: var(--ink-muted);
-  background: var(--surface);
+  background: transparent;
   border: 0.5px solid var(--hairline);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
 }
 
 .reference-search:focus-within {
   border-color: var(--hairline-strong);
+  background: var(--surface);
+}
+
+.reference-search-wrap {
+  margin-bottom: 1.5rem;
 }
 
 .reference-search input {
@@ -2562,6 +2602,50 @@ blockquote footer a:hover {
   font-family: var(--font-mono);
   font-size: 0.68rem;
   line-height: 1.35;
+  appearance: none;
+}
+
+.reference-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.reference-search button {
+  width: 1.35rem;
+  height: 1.35rem;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--control-radius);
+  cursor: pointer;
+}
+
+.reference-search button:hover {
+  color: var(--ink);
+  background: var(--surface-hover);
+}
+
+.reference-search kbd {
+  min-width: 1.2rem;
+  padding: 0.05rem 0.25rem;
+  text-align: center;
+  color: var(--ink-muted);
+  background: var(--surface);
+  border: 0.5px solid var(--hairline);
+  border-radius: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  line-height: 1.2;
+}
+
+.reference-search-result {
+  display: block;
+  margin: 0.35rem 0.55rem 0;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
 }
 
 .reference-sidebar nav {
@@ -2584,11 +2668,14 @@ blockquote footer a:hover {
 }
 
 .reference-sidebar nav a {
-  display: block;
+  display: grid;
+  grid-template-columns: 2.45rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
   padding: 0.45rem 0.6rem;
   color: var(--ink-secondary);
-  border-left: 2px solid transparent;
-  border-radius: 5px;
+  border-radius: var(--control-radius);
   font-family: var(--font-mono);
   font-size: 0.68rem;
   line-height: 1.35;
@@ -2603,8 +2690,50 @@ blockquote footer a:hover {
 
 .reference-sidebar nav a.active {
   color: var(--ink);
-  background: var(--reference-panel);
-  border-left-color: var(--ink);
+  background: var(--surface-raised);
+}
+
+.reference-sidebar nav > a {
+  grid-template-columns: 1fr;
+}
+
+.reference-sidebar nav a > span:last-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reference-nav-method {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.reference-nav-method--get,
+.reference-method--get {
+  color: #16794b;
+}
+
+.reference-nav-method--post,
+.reference-method--post {
+  color: #1769aa;
+}
+
+.reference-nav-method--put,
+.reference-method--put {
+  color: #a45a00;
+}
+
+.reference-nav-method--patch,
+.reference-method--patch {
+  color: #7450a8;
+}
+
+.reference-nav-method--delete,
+.reference-method--delete {
+  color: #b23a3a;
 }
 
 .reference-nav-group > summary {
@@ -2617,7 +2746,7 @@ blockquote footer a:hover {
   list-style: none;
   font-family: var(--font-mono);
   font-size: 0.6rem;
-  font-weight: 650;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -2656,33 +2785,13 @@ blockquote footer a:hover {
   margin-top: 0.2rem;
 }
 
-.reference-method--get {
-  color: #16794b;
-}
-
-.reference-method--post {
-  color: #1769aa;
-}
-
-.reference-method--put {
-  color: #a45a00;
-}
-
-.reference-method--patch {
-  color: #7450a8;
-}
-
-.reference-method--delete {
-  color: #b23a3a;
-}
-
 .reference-main {
   min-width: 0;
-  padding: 4.5rem clamp(2rem, 6vw, 5.5rem) 10rem;
+  padding: 4.5rem clamp(2rem, 5vw, 4.5rem) 10rem;
 }
 
 .reference-hero {
-  max-width: 52rem;
+  max-width: 68rem;
   padding-bottom: 4rem;
 }
 
@@ -2718,7 +2827,7 @@ blockquote footer a:hover {
 }
 
 .reference-server {
-  max-width: 46rem;
+  max-width: 56rem;
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
@@ -2728,7 +2837,7 @@ blockquote footer a:hover {
   color: var(--ink);
   background: var(--reference-panel-strong);
   border: 0.5px solid var(--hairline);
-  border-radius: 8px;
+  border-radius: var(--component-radius);
 }
 
 .reference-server > span {
@@ -2745,6 +2854,11 @@ blockquote footer a:hover {
   font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 
 .reference-copy {
@@ -2770,7 +2884,7 @@ blockquote footer a:hover {
   display: grid;
   grid-template-columns: 2.75rem minmax(0, 1fr);
   gap: 1rem;
-  max-width: 52rem;
+  max-width: 68rem;
   padding: 2.25rem 0;
   border-top: 0.5px solid var(--hairline);
 }
@@ -2839,7 +2953,7 @@ blockquote footer a:hover {
 }
 
 .reference-guides {
-  max-width: 52rem;
+  max-width: 68rem;
   display: grid;
   gap: 2rem;
   margin: 2rem 0 4rem;
@@ -2866,7 +2980,7 @@ blockquote footer a:hover {
 }
 
 .reference-operations-header {
-  max-width: 52rem;
+  max-width: 68rem;
   display: flex;
   justify-content: space-between;
   align-items: baseline;
@@ -2887,7 +3001,7 @@ blockquote footer a:hover {
 }
 
 .reference-tag-group {
-  max-width: 52rem;
+  max-width: 68rem;
   padding-top: 4rem;
   scroll-margin-top: 1rem;
 }
@@ -2900,8 +3014,8 @@ blockquote footer a:hover {
   margin-top: 1rem;
   overflow: hidden;
   background: var(--surface);
-  border: 0.5px solid var(--hairline-strong);
-  border-radius: 8px;
+  border: 0.5px solid var(--hairline);
+  border-radius: var(--component-radius);
   scroll-margin-top: 1rem;
   content-visibility: auto;
   contain-intrinsic-size: auto 32rem;
@@ -2921,6 +3035,10 @@ blockquote footer a:hover {
   font-family: var(--font-mono);
   font-size: 0.8rem;
   color: var(--ink);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 
 .reference-method {
@@ -2928,9 +3046,9 @@ blockquote footer a:hover {
   min-width: 3.6rem;
   padding: 0.28rem 0.45rem;
   text-align: center;
-  background: var(--bg);
+  background: color-mix(in srgb, currentColor 9%, transparent);
   border: 0.5px solid currentColor;
-  border-radius: 4px;
+  border-radius: var(--control-radius);
   font-family: var(--font-mono);
   font-size: 0.65rem;
   font-weight: 700;
@@ -2969,7 +3087,7 @@ blockquote footer a:hover {
   color: var(--ink);
   background: var(--reference-panel-strong);
   border: 0.5px solid var(--hairline);
-  border-radius: 7px;
+  border-radius: var(--component-radius);
 }
 
 .reference-code-tabs,
@@ -2987,7 +3105,7 @@ blockquote footer a:hover {
   color: var(--ink-muted);
   background: transparent;
   border: 0;
-  border-radius: 4px;
+  border-radius: var(--control-radius);
   cursor: pointer;
   font-family: var(--font-mono);
   font-size: 0.65rem;
@@ -3126,7 +3244,7 @@ blockquote footer a:hover {
 }
 
 .reference-empty {
-  max-width: 52rem;
+  max-width: 68rem;
   margin-top: 2rem;
   padding: 2rem;
   text-align: center;
@@ -3374,7 +3492,8 @@ blockquote footer a:hover {
   .reference-sidebar {
     position: relative;
     height: auto;
-    padding: 1.25rem;
+    max-height: 32rem;
+    padding: 5.25rem 1.25rem 1.5rem;
     border-right: 0;
     border-bottom: 0.5px solid var(--hairline);
   }
@@ -4751,9 +4870,8 @@ blockquote footer a:hover {
 
 .health-dot--bad .health-dot-mark {
   background: transparent;
-  box-shadow:
-    0 0 0 2.5px var(--bg),
-    0 0 0 3.5px var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .confidence {
@@ -7035,4 +7153,39 @@ blockquote footer a:hover {
   .deck-json-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* Uma única geometria para superfícies de conteúdo em todas as publicações. */
+.publication :where(
+  .callout,
+  .quote-message,
+  .quote-correspondence,
+  .profile-card,
+  .record-card,
+  .file-attachment,
+  .embed-wrap,
+  .video-block video,
+  .gallery-item img,
+  .before-after-side img,
+  .code-block,
+  .board-column,
+  .kpi-grid,
+  .quadrant-grid-cells,
+  .report-metadata,
+  .reference-search,
+  .reference-server,
+  .reference-operation,
+  .reference-code,
+  .reference-json
+) {
+  border-radius: var(--component-radius);
+}
+
+.publication :where(.kpi-grid, .quadrant-grid-cells, .report-metadata) {
+  overflow: hidden;
+}
+
+:where(.dia-modal, .settings-panel, .report-share-menu, .app-menu-list) {
+  border-radius: var(--component-radius) !important;
+  box-shadow: none !important;
 }
