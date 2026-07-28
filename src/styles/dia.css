@@ -1221,6 +1221,7 @@ blockquote footer a:hover {
   flex-direction: column;
   align-items: flex-end;
   gap: 10px;
+  pointer-events: none;
 }
 
 .settings-btn {
@@ -1274,6 +1275,7 @@ blockquote footer a:hover {
 .settings-btn-row {
   display: flex;
   gap: 10px;
+  pointer-events: auto;
 }
 
 .settings-btn.ready {

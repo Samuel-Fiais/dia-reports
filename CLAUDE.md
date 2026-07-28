@@ -31,8 +31,8 @@ authorized process writing to Postgres. Routing to the API is done via `vercel.j
 normalizes it through `lib/publication.js`, and sends it to
 `components/PublicationRenderer.jsx`. Layout selection is driven by `renderMode`. Each body
 block is dispatched by `components/blocks/index.jsx` to generic implementations grouped by
-concern. `src/lib/blockContract.js` is the canonical vocabulary and
-`src/lib/blockRegistry.js` is the editor metadata for that vocabulary. Unknown block types
+concern. `src/lib/blockManifest.js` is the single source for the canonical vocabulary,
+editor schema, generic variants, placements, and renderer mapping. Unknown block types
 are rejected; there are no compatibility aliases.
 
 The full block-type vocabulary and JSON publication schema are documented in

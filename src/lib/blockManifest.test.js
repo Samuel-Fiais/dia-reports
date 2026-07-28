@@ -1,26 +1,26 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import {
+  assertRendererCoverage,
   blockPlacements,
   BLOCK_FAMILIES,
+  BLOCK_MANIFEST,
   CANONICAL_BLOCK_TYPES,
-  PUBLICATION_MODES,
-} from './blockContract.js'
-import {
-  BLOCK_TYPES,
   createBlock,
   describeBlockCatalog,
   getBlockDefinition,
-} from './blockRegistry.js'
+  getBlockRenderer,
+  PUBLICATION_MODES,
+} from './blockManifest.js'
 
-test('the editor registry exactly matches the canonical generic catalog', () => {
+test('the manifest is the canonical generic catalog', () => {
   assert.deepEqual(
-    Object.keys(BLOCK_TYPES).toSorted(),
+    Object.keys(BLOCK_MANIFEST).toSorted(),
     [...CANONICAL_BLOCK_TYPES].toSorted(),
   )
 })
 
-test('every registry entry creates only its own canonical type', () => {
+test('every manifest entry creates only its own canonical type', () => {
   for (const type of CANONICAL_BLOCK_TYPES) {
     assert.equal(createBlock(type).type, type)
   }
@@ -61,4 +61,19 @@ test('families do not repeat a block type', () => {
 test('structural body blocks declare their placement restriction', () => {
   assert.deepEqual(blockPlacements('section'), ['body'])
   assert.deepEqual(blockPlacements('paragraph'), ['body', 'item', 'detail'])
+})
+
+test('every definition declares its renderer in the same manifest', () => {
+  for (const type of CANONICAL_BLOCK_TYPES) {
+    assert.equal(typeof getBlockRenderer(type), 'string')
+    assert.ok(getBlockRenderer(type).length > 0)
+    assert.equal(typeof getBlockDefinition(type).variants, 'object')
+  }
+})
+
+test('renderer coverage fails fast when an implementation is missing', () => {
+  assert.throws(
+    () => assertRendererCoverage(['paragraph'], 'item'),
+    /Renderizadores ausentes para item/,
+  )
 })

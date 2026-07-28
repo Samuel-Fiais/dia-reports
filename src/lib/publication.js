@@ -2,7 +2,7 @@ import {
   blockPlacements,
   isCanonicalBlockType,
   PUBLICATION_MODES,
-} from './blockContract.js'
+} from './blockManifest.js'
 import {
   loadSettings,
   normalizeComponentStyle,

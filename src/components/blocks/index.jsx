@@ -13,6 +13,10 @@ import { Indicator } from '../Badges.jsx'
 import { useModal } from '../Modal.jsx'
 import { normalizeTableBlock } from '../../lib/table.js'
 import {
+  assertRendererCoverage,
+  getBlockRenderer,
+} from '../../lib/blockManifest.js'
+import {
   Sparkline, MetricGrid, Scorecard, Funnel, Gauge, Heatmap, Ranking, Breakdown,
 } from './analytics.jsx'
 import {
@@ -46,287 +50,229 @@ function Figure({ block, children }) {
   )
 }
 
-/* Switch central de blocos de conteúdo. Usado dentro de itens, em blocos de
-   nível de corpo (via moldura full-width) e dentro de modais de detalhe. */
-function ItemBlockContent({ block: rawBlock, chartStyleIndex, blockKey }) {
-  const block = rawBlock
-  switch (block.type) {
-    /* ── Texto e listas ── */
-    case 'paragraph':
-      return <p>{renderInline(block.text)}</p>
+function ParagraphRenderer({ block }) {
+  return <p>{renderInline(block.text)}</p>
+}
 
-    case 'list': {
-      const List = block.style === 'ordered' ? 'ol' : 'ul'
-      return (
-        <List className="item-bullets">
-          {block.items.map((item, i) => (
-            <li key={i}>{renderInline(item)}</li>
-          ))}
-        </List>
-      )
-    }
+function ListRenderer({ block }) {
+  const List = block.style === 'ordered' ? 'ol' : 'ul'
+  return (
+    <List className="item-bullets">
+      {(block.items ?? []).map((item, index) => <li key={index}>{renderInline(item)}</li>)}
+    </List>
+  )
+}
 
-    case 'table': {
-      const table = normalizeTableBlock(block)
-      return (
-        <table className="data-table">
-          <thead>
-            <tr>
-              {table.columns.map((col, i) => (
-                <th key={i}>{col}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {table.rows.map((row, i) => (
-              <tr key={i}>
-                {row.map((cell, j) => (
-                  <td key={j}>{renderInline(String(cell ?? ''))}</td>
-                ))}
-              </tr>
+function TableRenderer({ block }) {
+  const table = normalizeTableBlock(block)
+  return (
+    <table className="data-table">
+      <thead><tr>{table.columns.map((column, index) => <th key={index}>{column}</th>)}</tr></thead>
+      <tbody>
+        {table.rows.map((row, rowIndex) => (
+          <tr key={rowIndex}>
+            {row.map((cell, cellIndex) => (
+              <td key={cellIndex}>{renderInline(String(cell ?? ''))}</td>
             ))}
-          </tbody>
-        </table>
-      )
-    }
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  )
+}
 
-    case 'code':
-      return (
-        <div className="code-block">
-          {(block.title || block.language) && (
-            <div className="code-block-head">
-              <span>{block.title}</span>
-              <span>{block.language}</span>
-            </div>
-          )}
-          <pre>
-            <code data-language={block.language || undefined}>{block.code}</code>
-          </pre>
-        </div>
-      )
+function CodeRenderer({ block }) {
+  return (
+    <div className="code-block">
+      {(block.title || block.language) && (
+        <div className="code-block-head"><span>{block.title}</span><span>{block.language}</span></div>
+      )}
+      <pre><code data-language={block.language || undefined}>{block.code}</code></pre>
+    </div>
+  )
+}
 
-    case 'diagram':
-      return (
-        <Figure block={block}>
-          <Suspense fallback={<div className="mermaid-loading">Renderizando diagrama…</div>}>
-            <MermaidBlock block={block} />
-          </Suspense>
-        </Figure>
-      )
+function DiagramRenderer({ block }) {
+  return (
+    <Figure block={block}>
+      <Suspense fallback={<div className="mermaid-loading">Renderizando diagrama…</div>}>
+        <MermaidBlock block={block} />
+      </Suspense>
+    </Figure>
+  )
+}
 
-    /* ── Mídia ── */
-    case 'chart':
-      if (block.variant === 'sparkline') {
-        return <Sparkline data={block.data ?? block.datasets?.[0]?.data ?? []} width={block.width ?? 180} height={block.height ?? 40} />
-      }
-      return (
-        <Figure block={block}>
-          <ChartBlock block={block} chartStyleIndex={chartStyleIndex} />
-        </Figure>
-      )
-
-    case 'image':
-      return (
-        <Figure block={block}>
-          <div className="image-wrap">
-            <img src={block.src} alt={block.alt ?? ''} />
-          </div>
-        </Figure>
-      )
-
-    case 'gallery':
-      return (
-        <div className="gallery">
-          {(block.items ?? []).map((item, i) => (
-            <figure key={i} className="gallery-item">
-              <img src={item.src} alt={item.alt ?? ''} />
-              {item.caption && <figcaption className="gallery-caption">{renderInline(item.caption)}</figcaption>}
-            </figure>
-          ))}
-        </div>
-      )
-
-    case 'image-comparison':
-      return (
-        <Figure block={block}>
-          <div className="before-after">
-            {(block.items ?? []).map(
-              (side, i) => (
-                <figure key={i} className="before-after-side">
-                  <img src={side.src} alt={side.alt ?? side.label ?? ''} />
-                  <figcaption>{side.label}</figcaption>
-                </figure>
-              ),
-            )}
-          </div>
-        </Figure>
-      )
-
-    case 'embed':
-      return <Figure block={block}><Embed block={block} /></Figure>
-
-    case 'video':
-      return <Video block={block} />
-
-    case 'attachment':
-      return <Attachment block={block} />
-
-    /* ── Citações e conversa ── */
-    case 'quote':
-      return <Quote block={block} />
-    case 'message-thread':
-      return <MessageThread block={block} />
-
-    /* ── Interativos ── */
-    case 'checklist':
-      return <Checklist block={block} blockKey={blockKey} />
-    case 'accordion':
-      return <Accordion block={block} />
-    case 'tabs':
-      return <TabsBlock block={block} />
-
-    /* ── Avisos e destaques ── */
-    case 'callout':
-      return (
-        <div className={`callout callout--${block.tone ?? 'neutral'}`}>
-          {block.label && <span className="callout-label">{block.label}</span>}
-          <p>{renderInline(block.text)}</p>
-        </div>
-      )
-
-    case 'definition-list':
-      return <DefinitionList block={block} />
-
-    /* ── Progresso e tempo ── */
-    case 'progress': {
-      const value = Math.max(0, Math.min(100, Number(block.value) || 0))
-      return (
-        <div className="progress-block">
-          <div className="progress-head">
-            <span className="progress-label">{renderInline(block.label)}</span>
-            <span className="progress-value">{value}%</span>
-          </div>
-          <div className="progress-track">
-            <div className="progress-fill" style={{ width: `${value}%` }} />
-          </div>
-          {block.note && <span className="progress-note">{renderInline(block.note)}</span>}
-        </div>
-      )
-    }
-
-    case 'timeline':
-      return <Timeline block={block} />
-    case 'schedule-list':
-      return <ScheduleList block={block} />
-    case 'calendar':
-      if (block.view === 'week') return <CalendarWeek block={block} />
-      if (block.view === 'year') return <CalendarYear block={block} />
-      return <CalendarMonth block={{ ...block, month: block.date?.slice(0, 7) }} />
-
-    /* ── Analíticos ── */
-    case 'metric-grid':
-      return <MetricGrid block={block} />
-    case 'scorecard':
-      return <Scorecard block={block} />
-    case 'funnel':
-      return <Funnel block={block} />
-    case 'gauge':
-      return <Gauge block={block} />
-    case 'heatmap':
-      return <Heatmap block={block} />
-    case 'ranking':
-      return <Ranking block={block} />
-    case 'breakdown':
-      return <Breakdown block={block} />
-    case 'value-comparison':
-      if (block.variant === 'table') {
-        const columns = block.columns ?? []
-        return (
-          <table className="data-table value-comparison-table">
-            <thead>
-              <tr>{columns.map((column) => <th key={column.key}>{column.label}</th>)}</tr>
-            </thead>
-            <tbody>
-              {(block.rows ?? []).map((row, index) => (
-                <tr key={row.id ?? index}>
-                  {columns.map((column) => (
-                    <td key={column.key}>{renderInline(String(row[column.key] ?? ''))}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )
-      }
-      return (
-        <div>
-          <div className="stat-comparison">
-            <div className="stat-comparison-side stat-comparison-side--before">
-              <span className="stat-comparison-label">{block.before?.label}</span>
-              <span className="stat-comparison-value">{block.before?.value}</span>
-            </div>
-            <span className="stat-comparison-arrow"><ArrowRight size={18} /></span>
-            <div className="stat-comparison-side stat-comparison-side--after">
-              <span className="stat-comparison-label">{block.after?.label}</span>
-              <span className="stat-comparison-value">{block.after?.value}</span>
-            </div>
-          </div>
-          {block.note && <p className="stat-comparison-note">{renderInline(block.note)}</p>}
-        </div>
-      )
-
-    /* ── Estrutura e governança ── */
-    case 'grouped-summary':
-      return <GroupedSummary block={block} />
-    case 'record-card':
-      return <RecordCard block={block} />
-    case 'task-table':
-      return <WorkItems block={block} />
-    case 'references':
-      return <References block={block} />
-    case 'metadata':
-      return <Metadata block={block} />
-    case 'page-break':
-      return <PageBreak />
-
-    /* ── Comparação e decisão ── */
-    case 'quadrant-grid':
-      return <QuadrantGrid block={block} />
-    case 'relations':
-      return <Relations block={block} />
-
-    /* ── Planejamento ── */
-    case 'progress-summary':
-      return <ProgressSummary block={block} />
-    case 'grouped-change-list':
-      return <GroupedChangeList block={block} />
-
-    /* ── Pessoas e comunicação ── */
-    case 'people-list':
-      return <PeopleList block={block} />
-    case 'step-list':
-      return <StepList block={block} />
-
-    case 'board':
-      return <Board block={block} />
-
-    /* ── Indicadores de estado ── */
-    case 'indicator':
-      return <Indicator block={block} />
-
-    case 'trigger':
-      return <Trigger block={block} />
-
-    case 'divider':
-      return (
-        <div className="block-divider">
-          {block.label && <span className="block-divider-label">{block.label}</span>}
-        </div>
-      )
-
-    default:
-      return null
+function ChartRenderer({ block, chartStyleIndex }) {
+  if (block.variant === 'sparkline') {
+    return <Sparkline data={block.data ?? block.datasets?.[0]?.data ?? []} width={block.width ?? 180} height={block.height ?? 40} />
   }
+  return <Figure block={block}><ChartBlock block={block} chartStyleIndex={chartStyleIndex} /></Figure>
+}
+
+function ImageRenderer({ block }) {
+  return <Figure block={block}><div className="image-wrap"><img src={block.src} alt={block.alt ?? ''} /></div></Figure>
+}
+
+function GalleryRenderer({ block }) {
+  return (
+    <div className="gallery">
+      {(block.items ?? []).map((item, index) => (
+        <figure key={item.id ?? index} className="gallery-item">
+          <img src={item.src} alt={item.alt ?? ''} />
+          {item.caption && <figcaption className="gallery-caption">{renderInline(item.caption)}</figcaption>}
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+function ImageComparisonRenderer({ block }) {
+  return (
+    <Figure block={block}>
+      <div className="before-after">
+        {(block.items ?? []).map((side, index) => (
+          <figure key={side.id ?? index} className="before-after-side">
+            <img src={side.src} alt={side.alt ?? side.label ?? ''} />
+            <figcaption>{side.label}</figcaption>
+          </figure>
+        ))}
+      </div>
+    </Figure>
+  )
+}
+
+function CalloutRenderer({ block }) {
+  return (
+    <div className={`callout callout--${block.tone ?? 'neutral'}`}>
+      {block.label && <span className="callout-label">{block.label}</span>}
+      <p>{renderInline(block.text)}</p>
+    </div>
+  )
+}
+
+function ProgressRenderer({ block }) {
+  const value = Math.max(0, Math.min(100, Number(block.value) || 0))
+  return (
+    <div className="progress-block">
+      <div className="progress-head">
+        <span className="progress-label">{renderInline(block.label)}</span>
+        <span className="progress-value">{value}%</span>
+      </div>
+      <div className="progress-track"><div className="progress-fill" style={{ width: `${value}%` }} /></div>
+      {block.note && <span className="progress-note">{renderInline(block.note)}</span>}
+    </div>
+  )
+}
+
+function CalendarRenderer({ block }) {
+  if (block.view === 'week') return <CalendarWeek block={block} />
+  if (block.view === 'year') return <CalendarYear block={block} />
+  return <CalendarMonth block={{ ...block, month: block.date?.slice(0, 7) }} />
+}
+
+function ValueComparisonRenderer({ block }) {
+  if (block.variant === 'table') {
+    const columns = block.columns ?? []
+    return (
+      <table className="data-table value-comparison-table">
+        <thead><tr>{columns.map((column) => <th key={column.key}>{column.label}</th>)}</tr></thead>
+        <tbody>
+          {(block.rows ?? []).map((row, index) => (
+            <tr key={row.id ?? index}>
+              {columns.map((column) => <td key={column.key}>{renderInline(String(row[column.key] ?? ''))}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    )
+  }
+  return (
+    <div>
+      <div className="stat-comparison">
+        <div className="stat-comparison-side stat-comparison-side--before">
+          <span className="stat-comparison-label">{block.before?.label}</span>
+          <span className="stat-comparison-value">{block.before?.value}</span>
+        </div>
+        <span className="stat-comparison-arrow"><ArrowRight size={18} /></span>
+        <div className="stat-comparison-side stat-comparison-side--after">
+          <span className="stat-comparison-label">{block.after?.label}</span>
+          <span className="stat-comparison-value">{block.after?.value}</span>
+        </div>
+      </div>
+      {block.note && <p className="stat-comparison-note">{renderInline(block.note)}</p>}
+    </div>
+  )
+}
+
+function DividerRenderer({ block }) {
+  return <div className="block-divider">{block.label && <span className="block-divider-label">{block.label}</span>}</div>
+}
+
+const withBlock = (Component) => function BlockRenderer({ block }) {
+  return <Component block={block} />
+}
+
+const EmbedRenderer = ({ block }) => <Figure block={block}><Embed block={block} /></Figure>
+const ChecklistRenderer = ({ block, blockKey }) => <Checklist block={block} blockKey={blockKey} />
+const PageBreakRenderer = () => <PageBreak />
+
+export const BLOCK_RENDERERS = Object.freeze({
+  paragraph: ParagraphRenderer,
+  list: ListRenderer,
+  quote: withBlock(Quote),
+  'message-thread': withBlock(MessageThread),
+  callout: CalloutRenderer,
+  'definition-list': withBlock(DefinitionList),
+  accordion: withBlock(Accordion),
+  tabs: withBlock(TabsBlock),
+  code: CodeRenderer,
+  image: ImageRenderer,
+  gallery: GalleryRenderer,
+  'image-comparison': ImageComparisonRenderer,
+  video: withBlock(Video),
+  embed: EmbedRenderer,
+  attachment: withBlock(Attachment),
+  diagram: DiagramRenderer,
+  table: TableRenderer,
+  chart: ChartRenderer,
+  'metric-grid': withBlock(MetricGrid),
+  scorecard: withBlock(Scorecard),
+  progress: ProgressRenderer,
+  gauge: withBlock(Gauge),
+  funnel: withBlock(Funnel),
+  breakdown: withBlock(Breakdown),
+  heatmap: withBlock(Heatmap),
+  'quadrant-grid': withBlock(QuadrantGrid),
+  ranking: withBlock(Ranking),
+  'value-comparison': ValueComparisonRenderer,
+  divider: DividerRenderer,
+  'page-break': PageBreakRenderer,
+  metadata: withBlock(Metadata),
+  references: withBlock(References),
+  trigger: ({ block }) => <Trigger block={block} />,
+  timeline: withBlock(Timeline),
+  'schedule-list': withBlock(ScheduleList),
+  calendar: CalendarRenderer,
+  board: withBlock(Board),
+  checklist: ChecklistRenderer,
+  'task-table': withBlock(WorkItems),
+  relations: withBlock(Relations),
+  'progress-summary': withBlock(ProgressSummary),
+  'grouped-change-list': withBlock(GroupedChangeList),
+  'people-list': withBlock(PeopleList),
+  'grouped-summary': withBlock(GroupedSummary),
+  'record-card': withBlock(RecordCard),
+  'step-list': withBlock(StepList),
+  indicator: withBlock(Indicator),
+})
+
+assertRendererCoverage(Object.keys(BLOCK_RENDERERS), 'item')
+
+function ItemBlockContent({ block, chartStyleIndex, blockKey }) {
+  const renderer = getBlockRenderer(block.type)
+  const Renderer = BLOCK_RENDERERS[renderer]
+  if (!Renderer) throw new Error(`Renderizador não disponível para o bloco "${block.type}"`)
+  return <Renderer block={block} chartStyleIndex={chartStyleIndex} blockKey={blockKey} />
 }
 
 export function ItemBlock({ block, chartStyleIndex, blockKey }) {

@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import { renderInline } from '../lib/inline.jsx'
 import { formatReportDate, formatShortDate, formatUpdatedAgo, normalizeComponentStyle } from '../lib/theme.js'
 import { blockLabel } from '../lib/labels.js'
+import { assertRendererCoverage, getBlockRenderer } from '../lib/blockManifest.js'
 import { ModalProvider, useModal } from './Modal.jsx'
-import { ItemBlock, renderBlocks } from './blocks/index.jsx'
+import { BLOCK_RENDERERS, ItemBlock, renderBlocks } from './blocks/index.jsx'
 import { sectionAnchor, TableOfContents } from './blocks/structure.jsx'
 
 /* ── Item (label à esquerda, corpo à direita) ───────────────── */
@@ -77,86 +78,101 @@ function BodyBlockFrame({ block, children }) {
 
 /* ── Blocos do corpo ────────────────────────────────────────── */
 
-function BodyBlockContent({
-  block,
-  chartStyleIndex,
-  bodyKey,
-  report,
-}) {
-  switch (block.type) {
-    case 'section':
-      return (
-        <section className="report-section" id={sectionAnchor(block)}>
-          <div className="section-header">
-            <h2 className="section-heading">{renderInline(block.heading)}</h2>
-          </div>
-          <div className="section-items">
-            {(block.items ?? []).map((item, i) => (
-              <ReportItem
-                key={item._key ?? item.id ?? i}
-                item={item}
-                chartStyleIndex={chartStyleIndex}
-                itemKey={item._key ?? item.id ?? `${bodyKey}:${i}`}
-              />
-            ))}
-          </div>
-        </section>
-      )
+function SectionBodyRenderer({ block, chartStyleIndex, bodyKey }) {
+  return (
+    <section className="report-section" id={sectionAnchor(block)}>
+      <div className="section-header">
+        <h2 className="section-heading">{renderInline(block.heading)}</h2>
+      </div>
+      <div className="section-items">
+        {(block.items ?? []).map((item, index) => (
+          <ReportItem
+            key={item._key ?? item.id ?? index}
+            item={item}
+            chartStyleIndex={chartStyleIndex}
+            itemKey={item._key ?? item.id ?? `${bodyKey}:${index}`}
+          />
+        ))}
+      </div>
+    </section>
+  )
+}
 
-    case 'table-of-contents':
-      return (
-        <BodyBlockFrame block={{ ...block, heading: block.heading ?? 'Sumário' }}>
-          <TableOfContents publication={report} />
-        </BodyBlockFrame>
-      )
+function TableOfContentsBodyRenderer({ block, report }) {
+  return (
+    <BodyBlockFrame block={{ ...block, heading: block.heading ?? 'Sumário' }}>
+      <TableOfContents publication={report} />
+    </BodyBlockFrame>
+  )
+}
 
-    case 'related-content': {
-      const related = block.items ?? []
-      return (
-        <BodyBlockFrame
-          block={{
-            ...block,
-            heading: block.heading ?? blockLabel(block, 'heading', 'Conteúdo relacionado'),
-          }}
-        >
-          <div className="related-reports">
-            {related.map((item, index) => {
-              const content = (
-                <>
-                  <span className="related-report-title">{item.title}</span>
-                  {item.meta && <span className="related-report-date">{item.meta}</span>}
-                </>
-              )
-              return item.href?.startsWith('/') ? (
-                <Link key={item.id ?? item.href ?? index} to={item.href} className="related-report">
-                  {content}
-                </Link>
-              ) : (
-                <a
-                  key={item.id ?? item.href ?? index}
-                  href={item.href}
-                  className="related-report"
-                  target={item.newTab ? '_blank' : undefined}
-                  rel={item.newTab ? 'noreferrer' : undefined}
-                >
-                  {content}
-                </a>
-              )
-            })}
-          </div>
-        </BodyBlockFrame>
-      )
-    }
+function RelatedContentBodyRenderer({ block }) {
+  return (
+    <BodyBlockFrame
+      block={{
+        ...block,
+        heading: block.heading ?? blockLabel(block, 'heading', 'Conteúdo relacionado'),
+      }}
+    >
+      <div className="related-reports">
+        {(block.items ?? []).map((item, index) => {
+          const content = (
+            <>
+              <span className="related-report-title">{item.title}</span>
+              {item.meta && <span className="related-report-date">{item.meta}</span>}
+            </>
+          )
+          return item.href?.startsWith('/') ? (
+            <Link key={item.id ?? item.href ?? index} to={item.href} className="related-report">
+              {content}
+            </Link>
+          ) : (
+            <a
+              key={item.id ?? item.href ?? index}
+              href={item.href}
+              className="related-report"
+              target={item.newTab ? '_blank' : undefined}
+              rel={item.newTab ? 'noreferrer' : undefined}
+            >
+              {content}
+            </a>
+          )
+        })}
+      </div>
+    </BodyBlockFrame>
+  )
+}
 
-    /* Qualquer outro bloco pode viver no corpo: ganha moldura full-width
-       com heading/description opcionais. */
-    default:
-      return (
-        <BodyBlockFrame block={block}>
-          <ItemBlock block={block} chartStyleIndex={chartStyleIndex} blockKey={bodyKey} />
-        </BodyBlockFrame>
-      )
+const BODY_RENDERERS = Object.freeze({
+  'body-section': SectionBodyRenderer,
+  'body-table-of-contents': TableOfContentsBodyRenderer,
+  'body-related-content': RelatedContentBodyRenderer,
+})
+
+assertRendererCoverage(
+  [...Object.keys(BLOCK_RENDERERS), ...Object.keys(BODY_RENDERERS)],
+  'body',
+)
+
+function BodyBlockContent({ block, chartStyleIndex, bodyKey, report }) {
+  const renderer = getBlockRenderer(block.type)
+  const BodyRenderer = BODY_RENDERERS[renderer]
+  if (BodyRenderer) {
+    return (
+      <BodyRenderer
+        block={block}
+        chartStyleIndex={chartStyleIndex}
+        bodyKey={bodyKey}
+        report={report}
+      />
+    )
   }
+
+  return (
+    <BodyBlockFrame block={block}>
+      <ItemBlock block={block} chartStyleIndex={chartStyleIndex} blockKey={bodyKey} />
+    </BodyBlockFrame>
+  )
 }
 
 function BodyBlock(props) {

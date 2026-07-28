@@ -1,13 +1,28 @@
-import {
-  blockPlacements,
-  CANONICAL_BLOCK_TYPES,
-  PUBLICATION_MODES,
-  supportsPublicationMode,
-} from './blockContract.js'
+export const PUBLICATION_MODES = ['report']
+
+const DEFAULT_PLACEMENTS = ['body', 'item', 'detail']
+const CATEGORY_FAMILIES = Object.freeze({
+  Conteúdo: 'content',
+  Mídia: 'media',
+  Dados: 'data',
+  Organização: 'organization',
+  Planejamento: 'planning',
+  Registros: 'records',
+  Indicadores: 'indicators',
+})
 
 const field = (key, type, label, extra = {}) => ({ key, type, label, ...extra })
 const arrayObject = (key, label, itemFields) => field(key, 'array-object', label, { itemFields })
 const option = (value, label = value) => ({ value, label })
+const VARIANT_FIELD_KEYS = new Set([
+  'variant',
+  'presentation',
+  'style',
+  'kind',
+  'view',
+  'orientation',
+  'tone',
+])
 
 const commonFields = [
   field('id', 'text', 'ID estável'),
@@ -24,15 +39,32 @@ const commonFields = [
   }),
 ]
 
-const define = (label, category, fields, defaults, extra = {}) => ({
-  label,
-  category,
-  fields: [...fields, ...commonFields],
-  supportedModes: extra.supportedModes ?? PUBLICATION_MODES,
-  defaultValue: () => ({ ...defaults }),
-})
+const define = (label, category, fields, defaults, extra = {}) => {
+  const variants = Object.fromEntries(
+    fields
+      .filter((entry) => entry.type === 'select' && VARIANT_FIELD_KEYS.has(entry.key))
+      .map((entry) => [
+        entry.key,
+        (entry.options ?? []).map((entryOption) => (
+          typeof entryOption === 'string' ? entryOption : entryOption.value
+        )),
+      ]),
+  )
 
-export const BLOCK_TYPES = {
+  return Object.freeze({
+    label,
+    category,
+    family: CATEGORY_FAMILIES[category],
+    fields: [...fields, ...commonFields],
+    variants,
+    supportedModes: extra.supportedModes ?? PUBLICATION_MODES,
+    placements: extra.placements ?? DEFAULT_PLACEMENTS,
+    renderer: extra.renderer ?? defaults.type,
+    defaultValue: () => ({ ...defaults }),
+  })
+}
+
+export const BLOCK_MANIFEST = Object.freeze({
   paragraph: define('Parágrafo', 'Conteúdo', [
     field('text', 'textarea', 'Texto'),
   ], { type: 'paragraph', text: '' }),
@@ -324,18 +356,26 @@ export const BLOCK_TYPES = {
       field('columns', 'number', 'Colunas'),
       field('blocks', 'array-object', 'Blocos'),
     ]),
-  ], { type: 'section', heading: '', items: [] }),
+  ], { type: 'section', heading: '', items: [] }, {
+    placements: ['body'],
+    renderer: 'body-section',
+  }),
 
   divider: define('Divisor', 'Organização', [
     field('label', 'text', 'Rótulo'),
   ], { type: 'divider', label: '' }),
 
-  'page-break': define('Quebra de página', 'Organização', [], { type: 'page-break' }),
+  'page-break': define('Quebra de página', 'Organização', [], { type: 'page-break' }, {
+    placements: ['body'],
+  }),
 
   'table-of-contents': define('Sumário automático', 'Organização', [
     field('heading', 'text', 'Título'),
     field('description', 'textarea', 'Descrição'),
-  ], { type: 'table-of-contents', heading: 'Sumário' }),
+  ], { type: 'table-of-contents', heading: 'Sumário' }, {
+    placements: ['body'],
+    renderer: 'body-table-of-contents',
+  }),
 
   metadata: define('Metadados', 'Organização', [
     arrayObject('entries', 'Campos', [
@@ -365,7 +405,10 @@ export const BLOCK_TYPES = {
       field('meta', 'text', 'Informação adicional'),
       field('newTab', 'toggle', 'Abrir em nova aba'),
     ]),
-  ], { type: 'related-content', heading: 'Conteúdo relacionado', items: [] }),
+  ], { type: 'related-content', heading: 'Conteúdo relacionado', items: [] }, {
+    placements: ['body'],
+    renderer: 'body-related-content',
+  }),
 
   trigger: define('Ação de detalhamento', 'Organização', [
     field('label', 'text', 'Rótulo'),
@@ -541,12 +584,23 @@ export const BLOCK_TYPES = {
     field('value', 'text', 'Valor'),
     field('label', 'text', 'Rótulo'),
   ], { type: 'indicator', kind: 'status', value: '' }),
-}
+})
 
-export const BLOCK_CATEGORIES = [...new Set(Object.values(BLOCK_TYPES).map((entry) => entry.category))]
+export const BLOCK_CATEGORIES = [...new Set(Object.values(BLOCK_MANIFEST).map((entry) => entry.category))]
+
+export const BLOCK_FAMILIES = Object.freeze(
+  Object.entries(BLOCK_MANIFEST).reduce((families, [type, definition]) => {
+    const family = definition.family
+    if (!families[family]) families[family] = []
+    families[family].push(type)
+    return families
+  }, {}),
+)
+
+export const CANONICAL_BLOCK_TYPES = new Set(Object.keys(BLOCK_MANIFEST))
 
 export function getBlockDefinition(type) {
-  return BLOCK_TYPES[type] ?? null
+  return BLOCK_MANIFEST[type] ?? null
 }
 
 export function createBlock(type) {
@@ -556,7 +610,35 @@ export function createBlock(type) {
 }
 
 export function isKnownBlockType(type) {
-  return Boolean(type) && CANONICAL_BLOCK_TYPES.has(type) && Boolean(BLOCK_TYPES[type])
+  return Boolean(type) && CANONICAL_BLOCK_TYPES.has(type)
+}
+
+export function isCanonicalBlockType(type) {
+  return CANONICAL_BLOCK_TYPES.has(type)
+}
+
+export function supportsPublicationMode(definition, mode) {
+  return definition?.supportedModes?.includes(mode) ?? false
+}
+
+export function blockPlacements(type) {
+  return getBlockDefinition(type)?.placements ?? []
+}
+
+export function getBlockRenderer(type) {
+  return getBlockDefinition(type)?.renderer ?? null
+}
+
+export function assertRendererCoverage(rendererKeys, placement) {
+  const available = new Set(rendererKeys)
+  const missing = Object.entries(BLOCK_MANIFEST)
+    .filter(([, definition]) => definition.placements.includes(placement))
+    .filter(([, definition]) => !available.has(definition.renderer))
+    .map(([type, definition]) => `${type} → ${definition.renderer}`)
+
+  if (missing.length) {
+    throw new Error(`Renderizadores ausentes para ${placement}: ${missing.join(', ')}`)
+  }
 }
 
 export function describeBlockCatalog(mode = 'report') {
@@ -571,14 +653,17 @@ export function describeBlockCatalog(mode = 'report') {
     ...(hint ? { hint } : {}),
   })
 
-  return Object.entries(BLOCK_TYPES)
+  return Object.entries(BLOCK_MANIFEST)
     .filter(([, definition]) => supportsPublicationMode(definition, mode))
     .map(([type, definition]) => ({
       type,
       label: definition.label,
       category: definition.category,
+      family: definition.family,
       supportedModes: definition.supportedModes,
-      placements: blockPlacements(type),
+      placements: definition.placements,
+      renderer: definition.renderer,
+      variants: definition.variants,
       fields: definition.fields.map(describeField),
     }))
 }

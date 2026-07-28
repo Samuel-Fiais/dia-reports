@@ -26,7 +26,7 @@ fluxo interno nem endpoint para gravar conteúdo.
 - Se o pedido do usuário exigir um tipo de bloco que não existe, componha a solução com os
   blocos genéricos disponíveis ou explicite a limitação. Nunca invente um `type`: blocos
   desconhecidos tornam a publicação inválida. O catálogo completo e
-  autoritativo de tipos está em `src/lib/blockRegistry.js`; [REPORT-SCHEMA.md](REPORT-SCHEMA.md)
+  autoritativo de tipos está em `src/lib/blockManifest.js`; [REPORT-SCHEMA.md](REPORT-SCHEMA.md)
   é a versão legível dele.
 
 ## Fluxo de trabalho
@@ -105,7 +105,7 @@ administrativo externo, não com um campo no JSON.
 - [ ] Todo número em `metrics`, `chart` ou tabelas é real (ou explicitamente marcado como
       exemplo).
 - [ ] Blocos usam apenas os `type` documentados em [REPORT-SCHEMA.md](REPORT-SCHEMA.md) /
-      `src/lib/blockRegistry.js`.
+      `src/lib/blockManifest.js`.
 - [ ] `schemaVersion` é `2` e `renderMode` é `report`.
 - [ ] JSON válido (sem vírgula sobrando, aspas fechadas).
 - [ ] Deixou claro como o conteúdo será publicado externamente — nunca reporte como

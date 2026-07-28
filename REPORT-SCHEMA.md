@@ -4,8 +4,8 @@ O conteúdo vive em `reports.content` no Postgres. O renderizador aceita um úni
 independentemente da ocasião de uso. Não existem aliases, componentes ligados a uma ferramenta
 ou tipos que embutam linguagem de reunião, incidente, decisão ou qualquer outro caso particular.
 
-`src/lib/blockContract.js` define os nomes canônicos e `src/lib/blockRegistry.js` define os
-campos editáveis e valores iniciais.
+`src/lib/blockManifest.js` é a fonte única dos nomes canônicos, campos editáveis, variantes,
+posicionamentos, valores iniciais e renderizador de cada bloco.
 
 ## Estrutura raiz
 
