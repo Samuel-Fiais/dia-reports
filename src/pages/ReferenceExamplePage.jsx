@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ArrowLeft } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import PublicationRenderer from '../components/PublicationRenderer.jsx'
+import PublicationState from '../components/PublicationState.jsx'
 import SettingsPanel from '../components/SettingsPanel.jsx'
 import { useAppTheme } from '../context/ThemeContext.jsx'
 import {
@@ -10,15 +11,13 @@ import {
 } from '../lib/publication.js'
 import {
   buildReferenceExamplePublication,
-  OPENAPI_EXAMPLE_ID,
 } from '../lib/referenceExample.js'
 import { applyTheme } from '../lib/theme.js'
 
-export default function ReferenceExamplePage() {
-  const publication = useMemo(() => buildReferenceExamplePublication(), [])
+function ReferenceExampleContent({ publication }) {
   const { appTheme } = useAppTheme()
   const [settings, setSettings] = useState(
-    () => resolveViewerSettings(OPENAPI_EXAMPLE_ID, publication.settings, true),
+    () => resolveViewerSettings(publication.id, publication.settings, true),
   )
 
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function ReferenceExamplePage() {
   }, [publication.title])
 
   const handleChange = (next) => {
-    setSettings(persistViewerSettings(OPENAPI_EXAMPLE_ID, next, true))
+    setSettings(persistViewerSettings(publication.id, next, true))
   }
 
   return (
@@ -48,4 +47,26 @@ export default function ReferenceExamplePage() {
       />
     </>
   )
+}
+
+export default function ReferenceExamplePage() {
+  const { exampleId } = useParams()
+  const publication = useMemo(
+    () => buildReferenceExamplePublication(exampleId),
+    [exampleId],
+  )
+
+  if (!publication) {
+    return (
+      <PublicationState
+        eyebrow="Referência não encontrada"
+        title="404"
+        message="Este exemplo não existe."
+        backTo="/referencias"
+        backLabel="Voltar às referências"
+      />
+    )
+  }
+
+  return <ReferenceExampleContent key={publication.id} publication={publication} />
 }

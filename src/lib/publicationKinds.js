@@ -35,23 +35,7 @@ export const PUBLICATION_KINDS = Object.freeze([
 
 const KIND_BY_KEY = new Map(PUBLICATION_KINDS.map((kind) => [kind.key, kind]))
 
-export const SYSTEM_PUBLICATION_SUMMARIES = Object.freeze([
-  Object.freeze({
-    id: 'openapi-exemplo',
-    slug: 'openapi-exemplo',
-    title: 'ViaCEP — Referência da API',
-    date: '2026-07-28',
-    updatedAt: '2026-07-28',
-    from: 'Sistema · Exemplo OpenAPI',
-    headline: ['ViaCEP', 'Referência da API'],
-    intro: ['Exemplo vivo do modo de referência orientado por OpenAPI.'],
-    metrics_length: 0,
-    sections_length: 2,
-    renderMode: 'reference',
-    href: '/referencias/openapi-exemplo',
-    system: true,
-  }),
-])
+export const SYSTEM_PUBLICATION_SUMMARIES = REFERENCE_EXAMPLE_SUMMARIES
 
 export function getPublicationKind(key) {
   return KIND_BY_KEY.get(key) ?? KIND_BY_KEY.get('report')
@@ -76,4 +60,5 @@ export function withSystemPublications(publications) {
     ...SYSTEM_PUBLICATION_SUMMARIES.filter((publication) => !ids.has(publication.id)),
   ]
 }
+import { REFERENCE_EXAMPLE_SUMMARIES } from './referenceExample.js'
 

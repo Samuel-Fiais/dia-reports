@@ -100,3 +100,18 @@ test('reads embedded and remote publication sources without mixing them', () => 
     null,
   )
 })
+
+test('uses the remote contract origin when OpenAPI omits servers', () => {
+  const normalized = normalizeOpenApiDocument(
+    {
+      ...document,
+      servers: undefined,
+    },
+    {
+      sourceUrl: 'https://api-dev.exemplo.com/swagger/v1/swagger.json',
+    },
+  )
+
+  assert.equal(normalized.servers[0].url, 'https://api-dev.exemplo.com')
+  assert.match(normalized.operations[0].codeSamples[0].code, /https:\/\/api-dev\.exemplo\.com/)
+})

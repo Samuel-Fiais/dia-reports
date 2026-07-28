@@ -10,9 +10,9 @@ jsonb), servidas por `api/reports.js`. Este repositório é apenas renderizador:
 fluxo interno nem endpoint para gravar conteúdo.
 
 As exceções são documentos de sistema: `/componentes`, gerado por
-`src/lib/componentCatalog.js`, e `/referencias/openapi-exemplo`, gerado por
-`src/lib/referenceExample.js`. Não trate esses exemplos como conteúdo publicável nem tente
-persistir suas amostras no banco.
+`src/lib/componentCatalog.js`, e os exemplos em `/referencias/viacep-api` e
+`/referencias/school360-api`, gerados por `src/lib/referenceExample.js`. Não trate esses
+exemplos como conteúdo publicável nem tente persistir suas amostras no banco.
 
 - Para publicar de verdade, um processo externo autorizado precisa gravar/atualizar a linha em
   `reports` no Postgres.

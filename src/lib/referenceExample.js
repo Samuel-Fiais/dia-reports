@@ -1,4 +1,7 @@
-export const OPENAPI_EXAMPLE_ID = 'openapi-exemplo'
+export const VIACEP_REFERENCE_EXAMPLE_ID = 'viacep-api'
+export const SCHOOL360_REFERENCE_EXAMPLE_ID = 'school360-api'
+
+const SCHOOL360_OPENAPI_URL = 'https://api-dev.school360.festpay.com.br/swagger/v1/swagger.json'
 
 const viacepOpenApi = {
   openapi: '3.1.0',
@@ -146,14 +149,15 @@ const viacepOpenApi = {
   },
 }
 
-export function buildReferenceExamplePublication() {
+function buildViaCepReferencePublication() {
   return {
     schemaVersion: 2,
     renderMode: 'reference',
-    id: OPENAPI_EXAMPLE_ID,
+    id: VIACEP_REFERENCE_EXAMPLE_ID,
     title: 'ViaCEP — Referência da API',
     date: '2026-07-28',
     from: 'Sistema · Exemplo OpenAPI',
+    system: true,
     intro: [
       '**Uma referência técnica gerada a partir do contrato OpenAPI.** Navegue pelas operações, parâmetros e respostas sem manter uma página manual.',
     ],
@@ -181,3 +185,80 @@ export function buildReferenceExamplePublication() {
   }
 }
 
+function buildSchool360ReferencePublication() {
+  return {
+    schemaVersion: 2,
+    renderMode: 'reference',
+    id: SCHOOL360_REFERENCE_EXAMPLE_ID,
+    title: 'Festpay School 360 — Referência da API',
+    date: '2026-07-28',
+    from: 'Festpay · Swagger remoto',
+    system: true,
+    intro: [
+      '**Esta referência acompanha o Swagger publicado pelo ambiente de desenvolvimento.** Ao reabrir a página, operações, contratos e respostas são carregados novamente da API.',
+    ],
+    source: {
+      type: 'openapi',
+      url: SCHOOL360_OPENAPI_URL,
+    },
+    settings: {
+      colorIndex: 0,
+      fontIndex: 0,
+      chartStyleIndex: 2,
+      widthMode: 'full',
+      fontScale: 'default',
+      componentStyle: 'structured',
+    },
+    body: [
+      {
+        type: 'callout',
+        id: 'development-environment',
+        tone: 'warning',
+        label: 'Ambiente de desenvolvimento',
+        text: 'A origem aponta para api-dev.school360.festpay.com.br e pode mudar sem aviso.',
+      },
+    ],
+  }
+}
+
+const EXAMPLE_BUILDERS = Object.freeze({
+  [VIACEP_REFERENCE_EXAMPLE_ID]: buildViaCepReferencePublication,
+  [SCHOOL360_REFERENCE_EXAMPLE_ID]: buildSchool360ReferencePublication,
+})
+
+export const REFERENCE_EXAMPLE_SUMMARIES = Object.freeze([
+  Object.freeze({
+    id: VIACEP_REFERENCE_EXAMPLE_ID,
+    slug: VIACEP_REFERENCE_EXAMPLE_ID,
+    title: 'ViaCEP — Referência da API',
+    date: '2026-07-28',
+    updatedAt: '2026-07-28',
+    from: 'Sistema · Contrato embutido',
+    headline: ['ViaCEP', 'Referência da API'],
+    intro: ['Exemplo inspirado no documento ViaCEP, com contrato OpenAPI embutido.'],
+    metrics_length: 0,
+    sections_length: 2,
+    renderMode: 'reference',
+    href: `/referencias/${VIACEP_REFERENCE_EXAMPLE_ID}`,
+    system: true,
+  }),
+  Object.freeze({
+    id: SCHOOL360_REFERENCE_EXAMPLE_ID,
+    slug: SCHOOL360_REFERENCE_EXAMPLE_ID,
+    title: 'Festpay School 360 — Referência da API',
+    date: '2026-07-28',
+    updatedAt: '2026-07-28',
+    from: 'Festpay · Swagger remoto',
+    headline: ['School 360', 'Referência da API'],
+    intro: ['Exemplo atualizado a partir do Swagger remoto do ambiente de desenvolvimento.'],
+    metrics_length: 0,
+    sections_length: 0,
+    renderMode: 'reference',
+    href: `/referencias/${SCHOOL360_REFERENCE_EXAMPLE_ID}`,
+    system: true,
+  }),
+])
+
+export function buildReferenceExamplePublication(id = VIACEP_REFERENCE_EXAMPLE_ID) {
+  return EXAMPLE_BUILDERS[id]?.() ?? null
+}

@@ -2822,6 +2822,8 @@ blockquote footer a:hover {
   border: 0.5px solid var(--hairline-strong);
   border-radius: 8px;
   scroll-margin-top: 1rem;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32rem;
 }
 
 .reference-operation-head {

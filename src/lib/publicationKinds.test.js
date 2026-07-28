@@ -18,9 +18,11 @@ test('existing publications default to the report area', () => {
 test('system publications are merged once and keep their own route', () => {
   const system = SYSTEM_PUBLICATION_SUMMARIES[0]
   const merged = withSystemPublications([])
-  const deduplicated = withSystemPublications([{ ...system }])
+  const deduplicated = withSystemPublications(
+    SYSTEM_PUBLICATION_SUMMARIES.map((publication) => ({ ...publication })),
+  )
 
-  assert.equal(merged.length, 1)
-  assert.equal(deduplicated.length, 1)
-  assert.equal(publicationHref(system), '/referencias/openapi-exemplo')
+  assert.equal(merged.length, 2)
+  assert.equal(deduplicated.length, 2)
+  assert.equal(publicationHref(system), '/referencias/viacep-api')
 })

@@ -442,11 +442,14 @@ export default function ReferenceView({ publication, settings = {} }) {
   const normalizedResult = useMemo(() => {
     if (!document) return { reference: null, error: null }
     try {
-      return { reference: normalizeOpenApiDocument(document), error: null }
+      return {
+        reference: normalizeOpenApiDocument(document, { sourceUrl }),
+        error: null,
+      }
     } catch (normalizationError) {
       return { reference: null, error: normalizationError }
     }
-  }, [document])
+  }, [document, sourceUrl])
 
   useEffect(() => {
     if (embeddedDocument) {
@@ -468,7 +471,7 @@ export default function ReferenceView({ publication, settings = {} }) {
 
     fetchRemoteOpenApiDocument(sourceUrl, {
       signal: controller.signal,
-      publicationId: publication.id,
+      publicationId: publication.system ? undefined : publication.id,
       shareToken: publication._sourceAccessToken,
     })
       .then((nextDocument) => {
@@ -483,7 +486,13 @@ export default function ReferenceView({ publication, settings = {} }) {
       })
 
     return () => controller.abort()
-  }, [embeddedDocument, publication._sourceAccessToken, publication.id, sourceUrl])
+  }, [
+    embeddedDocument,
+    publication._sourceAccessToken,
+    publication.id,
+    publication.system,
+    sourceUrl,
+  ])
 
   if (loading) {
     return (

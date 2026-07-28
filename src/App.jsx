@@ -42,7 +42,7 @@ export default function App() {
               element={<RequireAuth><PublicationListPage kindKey="reference" /></RequireAuth>}
             />
             <Route
-              path="/referencias/openapi-exemplo"
+              path="/referencias/:exampleId"
               element={<RequireAuth><ReferenceExamplePage /></RequireAuth>}
             />
             <Route

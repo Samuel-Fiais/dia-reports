@@ -8,7 +8,8 @@ Renderizador de publicações estruturadas em React.
 - **Clicar em um relatório** abre `/report/<slug>` renderizado a partir do JSON salvo no banco.
 - **Referências OpenAPI** usam `renderMode: "reference"` e podem receber o contrato embutido
   ou buscá-lo de uma URL HTTPS pública sempre que a publicação é aberta.
-- **Exemplo OpenAPI** em `/referencias/openapi-exemplo`, baseado na API ViaCEP.
+- **Exemplos OpenAPI** em `/referencias/viacep-api` (contrato embutido, inspirado no
+  documento ViaCEP) e `/referencias/school360-api` (Swagger remoto do School360).
 - **Catálogo vivo de componentes** em `/componentes`: documento virtual gerado diretamente
   por `blockManifest.js`, com um exemplo preenchido de cada componente. Não depende do banco.
 - **Seletor ⚙ "Customize Report"** no canto inferior direito: paleta de fundos, estilos de gráfico, 4 temas tipográficos e 3 tratamentos de componentes (Editorial, Estruturado e Minimalista). A escolha é salva por relatório no `localStorage`.

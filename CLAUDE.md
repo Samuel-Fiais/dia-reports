@@ -48,7 +48,9 @@ use the shared renderer path.
 
 `/` is the publication hub. `pages/PublicationListPage.jsx` powers the separate report,
 document, dashboard, and reference listings; API summaries include `renderMode`, defaulting to
-`report` for existing rows. `/referencias/openapi-exemplo` is a protected system example.
+`report` for existing rows. `/referencias/viacep-api` demonstrates an embedded contract and
+`/referencias/school360-api` demonstrates a remote Swagger source; both are protected system
+examples.
 
 The full block-type vocabulary and JSON publication schema are documented in
 `REPORT-SCHEMA.md`. `AGENTS.md` has authoring guidance (tone, block selection, checklist) for

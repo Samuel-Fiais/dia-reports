@@ -228,7 +228,7 @@ function normalizeSecuritySchemes(document) {
   })
 }
 
-export function normalizeOpenApiDocument(document) {
+export function normalizeOpenApiDocument(document, options = {}) {
   if (!document || typeof document !== 'object') {
     throw new Error('Documento OpenAPI ausente')
   }
@@ -240,7 +240,23 @@ export function normalizeOpenApiDocument(document) {
     (document.tags ?? []).map((tag) => [tag.name, tag.description ?? '']),
   )
   const operations = []
-  const baseUrl = document.servers?.[0]?.url ?? ''
+  let fallbackServer = null
+  if (!document.servers?.length && options.sourceUrl) {
+    try {
+      fallbackServer = {
+        url: new URL(options.sourceUrl).origin,
+        description: 'Origem do contrato OpenAPI',
+      }
+    } catch {
+      fallbackServer = null
+    }
+  }
+  const servers = document.servers?.length
+    ? document.servers
+    : fallbackServer
+      ? [fallbackServer]
+      : []
+  const baseUrl = servers[0]?.url ?? ''
 
   for (const [path, pathItem] of Object.entries(document.paths ?? {})) {
     const sharedParameters = pathItem.parameters ?? []
@@ -282,7 +298,7 @@ export function normalizeOpenApiDocument(document) {
     version: document.info?.version ?? '',
     description: document.info?.description ?? '',
     termsOfService: document.info?.termsOfService ?? '',
-    servers: document.servers ?? [],
+    servers,
     tags: [...declaredTags].map(([name, description]) => ({ name, description })),
     securitySchemes: normalizeSecuritySchemes(document),
     operations,
