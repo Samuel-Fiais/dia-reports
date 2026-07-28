@@ -3753,6 +3753,552 @@ blockquote footer a:hover {
   font-weight: 650;
 }
 
+/* OpenAPI reader: information architecture inspired by dedicated API consoles. */
+.reference-shell {
+  width: min(100%, 112rem);
+  grid-template-columns: 18rem minmax(0, 1fr);
+}
+
+.reference-sidebar {
+  padding: 5.5rem 0.85rem 5rem;
+  background: color-mix(in srgb, var(--bg) 94%, var(--ink) 6%);
+}
+
+.reference-brand {
+  margin: 0 0.45rem 1.35rem;
+}
+
+.reference-brand-mark {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--control-radius);
+  font-size: 0.85rem;
+}
+
+.reference-search-wrap {
+  margin: 0 0.15rem 1rem;
+}
+
+.reference-search {
+  min-height: 2.05rem;
+  background: var(--bg);
+}
+
+.reference-nav-group {
+  margin-top: 0.45rem;
+}
+
+.reference-nav-group > summary {
+  padding-block: 0.42rem;
+  font-size: 0.66rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.reference-sidebar nav a {
+  min-height: 2rem;
+  padding-block: 0.35rem;
+}
+
+.reference-sidebar nav a.active {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.reference-nav-models a {
+  grid-template-columns: minmax(0, 1fr);
+  padding-left: 1.45rem;
+}
+
+.reference-main {
+  padding: 5rem clamp(2.25rem, 4vw, 4.5rem) 10rem;
+}
+
+.reference-hero {
+  max-width: 88rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.9fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+  padding: 2rem 0 7rem;
+}
+
+.reference-eyebrow {
+  justify-content: flex-start;
+  border: 0;
+  padding: 0;
+}
+
+.reference-eyebrow span {
+  padding: 0.18rem 0.42rem;
+  border: 0.5px solid var(--hairline);
+  border-radius: 999px;
+}
+
+.reference-hero h1 {
+  margin-top: 0.8rem;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.08;
+}
+
+.reference-hero-intro > p {
+  max-width: 40rem;
+  margin-top: 1rem;
+  color: var(--ink-secondary);
+  line-height: 1.65;
+}
+
+.reference-hero-panels {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.reference-overview-panel,
+.reference-operation-list {
+  overflow: hidden;
+  background: color-mix(in srgb, var(--surface) 72%, transparent);
+  border: 0.5px solid var(--hairline);
+  border-radius: var(--component-radius);
+}
+
+.reference-overview-panel > strong,
+.reference-operation-list > strong {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 0.5px solid var(--hairline);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.reference-overview-panel > span {
+  display: block;
+  padding: 0.8rem 0.75rem;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+}
+
+.reference-server {
+  max-width: none;
+  margin: 0;
+  padding: 0.7rem 0.75rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.reference-client-libraries {
+  display: flex;
+  gap: 0.2rem;
+  overflow-x: auto;
+  padding: 0.35rem 0.5rem;
+}
+
+.reference-client-libraries span {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.5rem;
+  color: var(--ink-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.reference-overview-section {
+  max-width: 88rem;
+  grid-template-columns: 1fr;
+  padding: 2.75rem 0;
+}
+
+.reference-overview-section > .reference-section-index {
+  display: none;
+}
+
+.reference-security-grid article {
+  background: color-mix(in srgb, var(--surface) 65%, transparent);
+}
+
+.reference-tag-overviews {
+  max-width: 88rem;
+}
+
+.reference-tag-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.9fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  padding: 5rem 0;
+  border-top: 0.5px solid var(--hairline);
+}
+
+.reference-tag-overview > div:first-child h2 {
+  font-size: 1.7rem;
+}
+
+.reference-tag-overview > div:first-child p {
+  max-width: 36rem;
+  margin-top: 0.65rem;
+  color: var(--ink-secondary);
+  line-height: 1.65;
+}
+
+.reference-operation-list > div {
+  padding: 0.45rem 0;
+}
+
+.reference-operation-list a {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  gap: 0.7rem;
+  padding: 0.38rem 0.75rem;
+  color: var(--ink-secondary);
+  text-decoration: none;
+}
+
+.reference-operation-list a:hover {
+  color: var(--ink);
+  background: var(--surface-hover);
+  text-decoration: none;
+}
+
+.reference-operation-list code {
+  min-width: 0;
+  overflow: hidden;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+}
+
+.reference-show-more {
+  grid-column: 1 / -1;
+  width: fit-content;
+  justify-self: center;
+  padding: 0.45rem 0.7rem;
+  color: var(--ink-secondary);
+  border: 0.5px solid var(--hairline);
+  border-radius: 999px;
+  text-decoration: none;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.reference-operations-header,
+.reference-tag-group {
+  max-width: 88rem;
+}
+
+.reference-tag-group {
+  padding-top: 7rem;
+}
+
+.reference-operation {
+  margin-top: 4rem;
+  padding-top: 4rem;
+}
+
+.reference-operation-body {
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.reference-operation-docs > h3 {
+  font-size: 1.55rem;
+}
+
+.reference-operation-console {
+  overflow: visible;
+  background: transparent;
+  border: 0;
+}
+
+.reference-operation-console > .reference-operation-head,
+.reference-operation-console > .reference-code,
+.reference-example-response {
+  overflow: hidden;
+  background: var(--reference-panel-strong);
+  border: 0.5px solid var(--hairline);
+}
+
+.reference-operation-console > .reference-operation-head {
+  border-radius: var(--component-radius) var(--component-radius) 0 0;
+}
+
+.reference-operation-console > .reference-code {
+  border-top: 0;
+  border-radius: 0 0 var(--component-radius) var(--component-radius);
+}
+
+.reference-parameter-list,
+.reference-schema {
+  margin-top: 0.75rem;
+  border-top: 0.5px solid var(--hairline);
+}
+
+.reference-parameter-row {
+  position: relative;
+  padding: 0.7rem 0;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-parameter-row > div,
+.reference-schema-property > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.reference-parameter-row code,
+.reference-schema-property code,
+.reference-schema-root code,
+.reference-model-list code {
+  color: var(--ink);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+
+.reference-parameter-row span,
+.reference-schema-property summary > span:not(.reference-schema-caret),
+.reference-schema-root span,
+.reference-model-list summary > span {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+}
+
+.reference-parameter-row em,
+.reference-schema-property em {
+  color: #c45d14;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  font-style: normal;
+}
+
+.reference-parameter-row > small {
+  position: absolute;
+  top: 0.75rem;
+  right: 0;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+}
+
+.reference-parameter-row > p,
+.reference-schema-property > p {
+  margin-top: 0.38rem;
+  color: var(--ink-secondary);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.reference-schema {
+  border-right: 0.5px solid var(--hairline);
+  border-left: 0.5px solid var(--hairline);
+  border-radius: var(--component-radius);
+}
+
+.reference-schema-property {
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-schema-property:last-child {
+  border-bottom: 0;
+}
+
+.reference-schema-property > summary {
+  min-height: 2.25rem;
+  padding: 0.5rem 0.65rem;
+  cursor: default;
+  list-style: none;
+}
+
+.reference-schema-property > summary::-webkit-details-marker {
+  display: none;
+}
+
+.reference-schema-property:has(.reference-schema-children) > summary {
+  cursor: pointer;
+}
+
+.reference-schema-caret {
+  width: 0.65rem;
+  color: var(--ink-muted);
+  transform: rotate(0);
+  transition: transform 0.15s ease;
+}
+
+.reference-schema-property[open] > summary .reference-schema-caret {
+  transform: rotate(90deg);
+}
+
+.reference-schema-property summary small {
+  margin-left: auto;
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+}
+
+.reference-schema-property > p,
+.reference-schema-enum {
+  margin: 0;
+  padding: 0 0.65rem 0.65rem 1.8rem;
+}
+
+.reference-schema-enum {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.reference-schema-enum code {
+  padding: 0.15rem 0.3rem;
+  background: var(--surface-hover);
+  border-radius: var(--control-radius);
+  font-size: 0.58rem;
+}
+
+.reference-schema-children {
+  margin: 0 0.5rem 0.5rem;
+  border: 0.5px solid var(--hairline);
+  border-bottom: 0;
+  border-radius: var(--component-radius);
+}
+
+.reference-schema-root,
+.reference-schema-empty {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.65rem;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-example-response {
+  margin-top: 0.75rem;
+  border-radius: var(--component-radius);
+}
+
+.reference-example-response-head {
+  min-height: 2.4rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-example-response-head > div {
+  display: flex;
+  height: 100%;
+}
+
+.reference-example-response-head [role="tab"] {
+  padding: 0.65rem 0.75rem;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  cursor: pointer;
+}
+
+.reference-example-response-head [role="tab"].active {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.reference-example-response pre {
+  max-height: 27rem;
+  margin: 0;
+  padding: 1rem;
+  overflow: auto;
+  white-space: pre;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.reference-example-response footer {
+  padding: 0.55rem 0.75rem;
+  color: var(--ink-muted);
+  border-top: 0.5px solid var(--hairline);
+  font-size: 0.62rem;
+}
+
+.reference-models {
+  max-width: 88rem;
+  padding-top: 8rem;
+  scroll-margin-top: 1rem;
+}
+
+.reference-models > header {
+  padding-bottom: 1.5rem;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-models > header > span {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reference-models h2 {
+  margin-top: 0.35rem;
+  font-size: 1.8rem;
+}
+
+.reference-models header p {
+  margin-top: 0.5rem;
+  color: var(--ink-secondary);
+}
+
+.reference-model-list > details {
+  scroll-margin-top: 1rem;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.reference-model-list > details > summary {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding: 0.8rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+
+.reference-model-list > details > summary::before {
+  content: "›";
+  color: var(--ink-muted);
+  transform: rotate(0);
+}
+
+.reference-model-list > details[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.reference-model-list > details > summary::-webkit-details-marker {
+  display: none;
+}
+
+.reference-model-list > details > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.8fr);
+  gap: 1rem;
+  padding: 0.25rem 0 1.25rem 1.35rem;
+}
+
+.reference-model-list .reference-schema,
+.reference-model-list .reference-json {
+  margin-top: 0;
+}
+
 @media screen and (max-width: 900px) {
   .reference-request-modal-backdrop {
     padding: 0.75rem;
@@ -3816,6 +4362,20 @@ blockquote footer a:hover {
 
   .reference-operation-body {
     grid-template-columns: 1fr;
+  }
+
+  .reference-hero,
+  .reference-tag-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .reference-hero {
+    padding-bottom: 4rem;
+  }
+
+  .reference-model-list > details > div {
+    grid-template-columns: 1fr;
+    padding-left: 0;
   }
 
   .reference-operation-console {

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict'
 import {
   formatOpenApiResponseBody,
   normalizeOpenApiDocument,
+  normalizeOpenApiSchema,
   openApiDocumentFromPublication,
   openApiSchemaExample,
   openApiUrlFromPublication,
@@ -65,6 +66,22 @@ test('generates examples from schemas and references', () => {
   )
 })
 
+test('normalizes reusable and nested schemas for interactive model rendering', () => {
+  const schema = normalizeOpenApiSchema(document, {
+    type: 'object',
+    required: ['item'],
+    properties: {
+      item: { $ref: '#/components/schemas/Item' },
+      labels: { type: 'array', items: { type: 'string' } },
+    },
+  })
+
+  assert.equal(schema.properties.item.refName, 'Item')
+  assert.equal(schema.properties.item.properties.id.type, 'string')
+  assert.equal(schema.properties.labels.items.type, 'string')
+  assert.deepEqual(schema.required, ['item'])
+})
+
 test('formats JSON responses and preserves non-JSON bodies', () => {
   assert.equal(
     formatOpenApiResponseBody('{"ok":true,"items":[1,2]}'),
@@ -92,6 +109,9 @@ test('normalizes operations, navigation and code samples', () => {
   const operation = normalized.operations[0]
 
   assert.equal(normalized.title, 'API de exemplo')
+  assert.equal(normalized.models[0].name, 'Item')
+  assert.equal(normalized.models[0].anchor, 'model-item')
+  assert.equal(normalized.models[0].schema.properties.active.type, 'boolean')
   assert.equal(operation.anchor, 'operation-get-getitem')
   assert.equal(operation.parameters[0].required, true)
   assert.equal(operation.parameters[0].pattern, '^item-\\d+$')

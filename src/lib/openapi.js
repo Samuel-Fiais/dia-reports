@@ -76,6 +76,79 @@ function schemaType(schema) {
   return 'any'
 }
 
+function refName(ref) {
+  if (typeof ref !== 'string') return ''
+  return decodePointerSegment(ref.split('/').at(-1) ?? '')
+}
+
+export function normalizeOpenApiSchema(document, rawSchema, depth = 0, seen = new Set()) {
+  if (!rawSchema || depth > 12) return null
+
+  if (rawSchema.$ref) {
+    const name = refName(rawSchema.$ref)
+    if (seen.has(rawSchema.$ref)) {
+      return { type: 'object', refName: name, recursive: true, properties: {}, required: [] }
+    }
+    const resolved = resolveOpenApiRef(document, rawSchema.$ref)
+    if (!resolved) return { type: 'object', refName: name, properties: {}, required: [] }
+    return {
+      ...normalizeOpenApiSchema(
+        document,
+        resolved,
+        depth + 1,
+        new Set([...seen, rawSchema.$ref]),
+      ),
+      refName: name,
+    }
+  }
+
+  if (rawSchema.allOf?.length) {
+    const parts = rawSchema.allOf
+      .map((part) => normalizeOpenApiSchema(document, part, depth + 1, seen))
+      .filter(Boolean)
+    return {
+      type: 'object',
+      description: rawSchema.description ?? parts.find((part) => part.description)?.description ?? '',
+      properties: Object.assign({}, ...parts.map((part) => part.properties ?? {})),
+      required: [...new Set(parts.flatMap((part) => part.required ?? []))],
+      example: rawSchema.example,
+    }
+  }
+
+  const alternatives = rawSchema.oneOf ?? rawSchema.anyOf ?? []
+  const normalizedAlternatives = alternatives
+    .map((part) => normalizeOpenApiSchema(document, part, depth + 1, seen))
+    .filter(Boolean)
+  const properties = Object.fromEntries(
+    Object.entries(rawSchema.properties ?? {}).map(([name, property]) => [
+      name,
+      normalizeOpenApiSchema(document, property, depth + 1, seen),
+    ]),
+  )
+
+  return {
+    type: schemaType(rawSchema),
+    format: rawSchema.format ?? '',
+    description: rawSchema.description ?? '',
+    nullable: rawSchema.nullable === true || rawSchema.type === null
+      || (Array.isArray(rawSchema.type) && rawSchema.type.includes('null')),
+    required: rawSchema.required ?? [],
+    properties,
+    items: normalizeOpenApiSchema(document, rawSchema.items, depth + 1, seen),
+    alternatives: normalizedAlternatives,
+    enum: rawSchema.enum ?? [],
+    default: rawSchema.default,
+    example: rawSchema.example,
+    minimum: rawSchema.minimum,
+    maximum: rawSchema.maximum,
+    minLength: rawSchema.minLength,
+    maxLength: rawSchema.maxLength,
+    pattern: rawSchema.pattern ?? '',
+    readOnly: rawSchema.readOnly === true,
+    writeOnly: rawSchema.writeOnly === true,
+  }
+}
+
 export function openApiSchemaExample(document, rawSchema, depth = 0, seen = new Set()) {
   if (depth > 8 || !rawSchema) return null
   if (rawSchema.example !== undefined) return rawSchema.example
@@ -253,7 +326,7 @@ function normalizeRequestBody(document, rawRequestBody) {
   const requestBody = resolveNode(document, rawRequestBody)
   const content = firstContentEntry(requestBody.content)
   if (!content) return null
-  const schema = resolveNode(document, content.value.schema)
+  const schema = normalizeOpenApiSchema(document, content.value.schema)
   return {
     description: requestBody.description ?? '',
     required: requestBody.required === true,
@@ -267,7 +340,7 @@ function normalizeResponses(document, responses) {
   return Object.entries(responses ?? {}).map(([status, rawResponse]) => {
     const response = resolveNode(document, rawResponse)
     const content = firstContentEntry(response.content)
-    const schema = resolveNode(document, content?.value?.schema)
+    const schema = normalizeOpenApiSchema(document, content?.value?.schema)
     return {
       status,
       label: STATUS_LABELS[status] ?? status,
@@ -291,6 +364,18 @@ function normalizeSecuritySchemes(document) {
       description: scheme.description ?? '',
     }
   })
+}
+
+function normalizeModels(document) {
+  return Object.entries(document.components?.schemas ?? {}).map(([name, schema]) => ({
+    name,
+    anchor: `model-${name}`
+      .toLowerCase()
+      .replaceAll(/[^a-z0-9]+/g, '-')
+      .replaceAll(/^-|-$/g, ''),
+    schema: normalizeOpenApiSchema(document, schema),
+    example: openApiSchemaExample(document, schema),
+  }))
 }
 
 export function normalizeOpenApiDocument(document, options = {}) {
@@ -367,6 +452,7 @@ export function normalizeOpenApiDocument(document, options = {}) {
     servers,
     tags: [...declaredTags].map(([name, description]) => ({ name, description })),
     securitySchemes: normalizeSecuritySchemes(document),
+    models: normalizeModels(document),
     operations,
   }
 }

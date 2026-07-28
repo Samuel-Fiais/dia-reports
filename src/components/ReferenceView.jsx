@@ -578,60 +578,104 @@ function ParametersTable({ parameters }) {
   return (
     <div className="reference-operation-part">
       <h4>Parâmetros</h4>
-      <div className="reference-table-wrap">
-        <table className="data-table reference-table">
-          <thead>
-            <tr>
-              <th>Nome</th>
-              <th>Local</th>
-              <th>Tipo</th>
-              <th>Obrigatório</th>
-              <th>Descrição</th>
-            </tr>
-          </thead>
-          <tbody>
-            {parameters.map((parameter) => (
-              <tr key={`${parameter.in}-${parameter.name}`}>
-                <td><code>{parameter.name}</code></td>
-                <td>{parameter.in}</td>
-                <td>{[parameter.type, parameter.format].filter(Boolean).join(' · ')}</td>
-                <td>{parameter.required ? 'Sim' : 'Não'}</td>
-                <td>{parameter.description || '—'}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="reference-parameter-list">
+        {parameters.map((parameter) => (
+          <div key={`${parameter.in}-${parameter.name}`} className="reference-parameter-row">
+            <div>
+              <code>{parameter.name}</code>
+              <span>{[parameter.type, parameter.format].filter(Boolean).join(' · ')}</span>
+              {parameter.required && <em>obrigatório</em>}
+            </div>
+            <small>{parameter.in}</small>
+            {parameter.description && <p>{renderInline(parameter.description)}</p>}
+          </div>
+        ))}
       </div>
     </div>
   )
 }
 
-function SchemaTable({ schema }) {
+function schemaLabel(schema) {
+  if (!schema) return 'any'
+  const base = schema.refName || schema.type || 'any'
+  const format = schema.format ? ` · ${schema.format}` : ''
+  const nullable = schema.nullable ? ' | null' : ''
+  return `${base}${format}${nullable}`
+}
+
+function SchemaProperty({ name, schema, required = false, depth = 0 }) {
   const properties = Object.entries(schema?.properties ?? {})
-  if (!properties.length) return null
-  const required = new Set(schema.required ?? [])
+  const itemProperties = Object.entries(schema?.items?.properties ?? {})
+  const children = properties.length ? properties : itemProperties
+  const requiredChildren = new Set(
+    properties.length ? schema?.required ?? [] : schema?.items?.required ?? [],
+  )
+  const expandable = children.length > 0
+
   return (
-    <div className="reference-table-wrap">
-      <table className="data-table reference-table">
-        <thead>
-          <tr>
-            <th>Campo</th>
-            <th>Tipo</th>
-            <th>Obrigatório</th>
-            <th>Descrição</th>
-          </tr>
-        </thead>
-        <tbody>
-          {properties.map(([name, property]) => (
-            <tr key={name}>
-              <td><code>{name}</code></td>
-              <td>{property.type ?? (property.$ref ? 'object' : 'any')}</td>
-              <td>{required.has(name) ? 'Sim' : 'Não'}</td>
-              <td>{property.description ?? '—'}</td>
-            </tr>
+    <details className="reference-schema-property" open={depth === 0 && expandable}>
+      <summary>
+        <span className="reference-schema-caret" aria-hidden="true">{expandable ? '›' : ''}</span>
+        <code>{name}</code>
+        <span>{schemaLabel(schema)}</span>
+        {required && <em>obrigatório</em>}
+        {schema?.default !== undefined && <small>padrão: {String(schema.default)}</small>}
+      </summary>
+      {schema?.description && <p>{renderInline(schema.description)}</p>}
+      {schema?.enum?.length > 0 && (
+        <div className="reference-schema-enum">
+          {schema.enum.map((value) => <code key={String(value)}>{String(value)}</code>)}
+        </div>
+      )}
+      {expandable && (
+        <div className="reference-schema-children">
+          {children.map(([childName, childSchema]) => (
+            <SchemaProperty
+              key={childName}
+              name={childName}
+              schema={childSchema}
+              required={requiredChildren.has(childName)}
+              depth={depth + 1}
+            />
           ))}
-        </tbody>
-      </table>
+        </div>
+      )}
+    </details>
+  )
+}
+
+function SchemaTable({ schema, rootLabel }) {
+  if (!schema) return null
+  const directProperties = Object.entries(schema.properties ?? {})
+  const itemProperties = Object.entries(schema.items?.properties ?? {})
+  const properties = directProperties.length ? directProperties : itemProperties
+  const required = new Set(
+    directProperties.length ? schema.required ?? [] : schema.items?.required ?? [],
+  )
+  if (!properties.length) {
+    return (
+      <div className="reference-schema-empty">
+        <code>{schemaLabel(schema)}</code>
+        {schema.description && <p>{renderInline(schema.description)}</p>}
+      </div>
+    )
+  }
+  return (
+    <div className="reference-schema">
+      {rootLabel && (
+        <div className="reference-schema-root">
+          <code>{rootLabel}</code>
+          <span>{schemaLabel(schema)}</span>
+        </div>
+      )}
+      {properties.map(([name, property]) => (
+        <SchemaProperty
+          key={name}
+          name={name}
+          schema={property}
+          required={required.has(name)}
+        />
+      ))}
     </div>
   )
 }
@@ -668,11 +712,44 @@ function Responses({ responses }) {
             </summary>
             <div className="reference-response-body">
               <SchemaTable schema={response.schema} />
-              <JsonExample value={response.example} label="Resposta de exemplo" />
             </div>
           </details>
         ))}
       </div>
+    </div>
+  )
+}
+
+function ResponseExamples({ responses }) {
+  const examples = responses.filter((response) => response.example != null)
+  const [active, setActive] = useState(0)
+  if (!examples.length) return null
+  const response = examples[Math.min(active, examples.length - 1)]
+  const code = typeof response.example === 'string'
+    ? response.example
+    : JSON.stringify(response.example, null, 2)
+
+  return (
+    <div className="reference-example-response">
+      <div className="reference-example-response-head">
+        <div role="tablist" aria-label="Respostas de exemplo">
+          {examples.map((entry, index) => (
+            <button
+              key={entry.status}
+              type="button"
+              role="tab"
+              aria-selected={active === index}
+              className={active === index ? 'active' : ''}
+              onClick={() => setActive(index)}
+            >
+              {entry.status}
+            </button>
+          ))}
+        </div>
+        <CopyButton value={code} />
+      </div>
+      <pre><code data-language="json">{code}</code></pre>
+      <footer>{response.description || 'Resposta de exemplo'}</footer>
     </div>
   )
 }
@@ -713,7 +790,53 @@ function Operation({
               onCredentialChange={onCredentialChange}
             />
           </CodeSamples>
+          <ResponseExamples responses={operation.responses} />
         </aside>
+      </div>
+    </section>
+  )
+}
+
+function OperationList({ operations, title = 'Operações' }) {
+  return (
+    <div className="reference-operation-list">
+      <strong>{title}</strong>
+      <div>
+        {operations.map((operation) => (
+          <a key={operation.id} href={`#${operation.anchor}`}>
+            <span className={`reference-nav-method reference-nav-method--${operation.method.toLowerCase()}`}>
+              {operation.method}
+            </span>
+            <code>{operation.path}</code>
+          </a>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Models({ models }) {
+  if (!models.length) return null
+  return (
+    <section id="reference-models" className="reference-models">
+      <header>
+        <span>Contratos</span>
+        <h2>Modelos</h2>
+        <p>Estruturas reutilizadas por parâmetros, corpos e respostas da API.</p>
+      </header>
+      <div className="reference-model-list">
+        {models.map((model) => (
+          <details key={model.name} id={model.anchor}>
+            <summary>
+              <code>{model.name}</code>
+              <span>{schemaLabel(model.schema)}</span>
+            </summary>
+            <div>
+              <SchemaTable schema={model.schema} />
+              <JsonExample value={model.example} label="Exemplo" />
+            </div>
+          </details>
+        ))}
       </div>
     </section>
   )
@@ -901,30 +1024,71 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                   </div>
                 </details>
               ))}
+              {reference.models.length > 0 && (
+                <details className="reference-nav-group reference-nav-models">
+                  <summary>
+                    <span>Modelos</span>
+                    <small>{reference.models.length}</small>
+                  </summary>
+                  <div>
+                    {reference.models.map((model) => (
+                      <a
+                        key={model.name}
+                        href={`#${model.anchor}`}
+                        className={activeAnchor === model.anchor ? 'active' : ''}
+                        onClick={() => setActiveAnchor(model.anchor)}
+                      >
+                        <span title={model.name}>{model.name}</span>
+                      </a>
+                    ))}
+                  </div>
+                </details>
+              )}
             </nav>
           </aside>
 
           <main id="reference-top" className="reference-main">
             <header className="reference-hero">
-              <div className="reference-eyebrow">
-                <span>OPENAPI {reference.openapi}</span>
-                {version && <span>{version}</span>}
-              </div>
-              <h1>{reference.title}</h1>
-              {(publication.intro?.[0] || reference.description) && (
-                <p>{renderInline(publication.intro?.[0] ?? reference.description)}</p>
-              )}
-              {server?.url && (
-                <div className="reference-server">
-                  <span>URL base</span>
-                  <code>{server.url}</code>
-                  <CopyButton value={server.url} />
+              <div className="reference-hero-intro">
+                <div className="reference-eyebrow">
+                  {version && <span>{version}</span>}
+                  <span>OAS {reference.openapi}</span>
                 </div>
-              )}
+                <h1>{reference.title}</h1>
+                {(publication.intro?.[0] || reference.description) && (
+                  <p>{renderInline(publication.intro?.[0] ?? reference.description)}</p>
+                )}
+              </div>
+              <div className="reference-hero-panels">
+                {server?.url && (
+                  <section className="reference-overview-panel">
+                    <strong>Servidor</strong>
+                    <div className="reference-server">
+                      <code>{server.url}</code>
+                      <CopyButton value={server.url} />
+                    </div>
+                  </section>
+                )}
+                <section className="reference-overview-panel">
+                  <strong>Autenticação</strong>
+                  <span>
+                    {reference.securitySchemes.length
+                      ? `${reference.securitySchemes.length} método${reference.securitySchemes.length === 1 ? '' : 's'} disponível${reference.securitySchemes.length === 1 ? '' : 'is'}`
+                      : 'Sem autenticação declarada'}
+                  </span>
+                </section>
+                <section className="reference-overview-panel">
+                  <strong>Bibliotecas cliente</strong>
+                  <div className="reference-client-libraries">
+                    {(reference.operations[0]?.codeSamples ?? []).map((sample) => (
+                      <span key={sample.id}>{sample.label}</span>
+                    ))}
+                  </div>
+                </section>
+              </div>
             </header>
 
             <section id="reference-overview" className="reference-overview-section">
-              <span className="reference-section-index">01</span>
               <div>
                 <h2>Visão geral</h2>
                 <p>
@@ -932,13 +1096,6 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                   {reference.operations.length === 1 ? 'ão' : 'ões'} em{' '}
                   {reference.tags.length} grupo{reference.tags.length === 1 ? '' : 's'}.
                 </p>
-                {reference.servers.length > 1 && (
-                  <div className="reference-server-list">
-                    {reference.servers.map((entry) => (
-                      <code key={entry.url}>{entry.url}</code>
-                    ))}
-                  </div>
-                )}
               </div>
             </section>
 
@@ -951,6 +1108,21 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                 className="reference-guides"
               />
             )}
+
+            <div className="reference-tag-overviews">
+              {groupedOperations.map((tag) => (
+                <section key={`overview-${tag.name}`} className="reference-tag-overview">
+                  <div>
+                    <h2>{tag.name}</h2>
+                    {tag.description && <p>{renderInline(tag.description)}</p>}
+                  </div>
+                  <OperationList operations={tag.operations} />
+                  <a className="reference-show-more" href={`#${tag.operations[0]?.anchor}`}>
+                    Ver detalhes <span aria-hidden="true">⌄</span>
+                  </a>
+                </section>
+              ))}
+            </div>
 
             <div className="reference-operations-header">
               <span>Referência</span>
@@ -983,6 +1155,8 @@ function ReferenceDocumentView({ publication, settings = {}, reference }) {
                 Nenhuma operação encontrada para “{query}”.
               </div>
             )}
+
+            <Models models={reference.models} />
           </main>
         </div>
       </div>
