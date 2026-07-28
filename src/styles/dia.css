@@ -2463,10 +2463,48 @@ blockquote footer a:hover {
   --reference-panel: var(--surface);
   --reference-panel-strong: var(--surface-inset);
   --reference-panel-hover: var(--surface-hover);
+  --json-key: #7757a8;
+  --json-string: #247451;
+  --json-number: #a45a12;
+  --json-boolean: #b44343;
+  --json-null: #687286;
   min-height: 100vh;
   color: var(--ink);
   background: var(--bg);
   font-family: var(--reference-font-sans);
+}
+
+:root[data-theme="dark"] .reference {
+  --json-key: #b8a1e5;
+  --json-string: #75c99c;
+  --json-number: #e2ad66;
+  --json-boolean: #ef8b8b;
+  --json-null: #98a4bc;
+}
+
+.reference-json-syntax {
+  color: var(--ink-secondary);
+}
+
+.json-token--key {
+  color: var(--json-key);
+}
+
+.json-token--string {
+  color: var(--json-string);
+}
+
+.json-token--number {
+  color: var(--json-number);
+}
+
+.json-token--boolean {
+  color: var(--json-boolean);
+}
+
+.json-token--null {
+  color: var(--json-null);
+  font-style: italic;
 }
 
 .reference,

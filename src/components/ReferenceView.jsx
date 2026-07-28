@@ -35,6 +35,8 @@ const METHOD_ORDER = Object.freeze({
   TRACE: 7,
 })
 
+const JSON_TOKEN_PATTERN = /"(?:\\.|[^"\\])*"|\b(?:true|false|null)\b|-?\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b/g
+
 function navigationLabel(operation) {
   const summary = operation.summary?.trim()
   if (!summary) return operation.path
@@ -96,6 +98,46 @@ function CopyButton({ value, label = 'Copiar' }) {
       {copied ? <Check size={13} aria-hidden="true" /> : <Copy size={13} aria-hidden="true" />}
       {copied ? 'Copiado' : label}
     </button>
+  )
+}
+
+function tokenizeJson(code) {
+  const tokens = []
+  let cursor = 0
+  for (const match of code.matchAll(JSON_TOKEN_PATTERN)) {
+    const index = match.index ?? 0
+    if (index > cursor) tokens.push({ type: 'plain', value: code.slice(cursor, index) })
+    const value = match[0]
+    const end = index + value.length
+    const type = value.startsWith('"')
+      ? (/^\s*:/.test(code.slice(end)) ? 'key' : 'string')
+      : value === 'null'
+        ? 'null'
+        : ['true', 'false'].includes(value)
+          ? 'boolean'
+          : 'number'
+    tokens.push({ type, value })
+    cursor = end
+  }
+  if (cursor < code.length) tokens.push({ type: 'plain', value: code.slice(cursor) })
+  return tokens
+}
+
+function JsonCode({ value }) {
+  const code = String(value ?? '')
+  const tokens = useMemo(() => tokenizeJson(code), [code])
+  return (
+    <code className="reference-json-syntax" data-language="json">
+      {tokens.map((token, index) => (
+        token.type === 'plain'
+          ? <span key={`${index}-plain`}>{token.value}</span>
+          : (
+            <span key={`${index}-${token.type}`} className={`json-token json-token--${token.type}`}>
+              {token.value}
+            </span>
+          )
+      ))}
+    </code>
   )
 }
 
@@ -512,7 +554,7 @@ function RequestRunner({
                 {activeResultTab === 'request' ? (
                   requestDetails ? (
                     <div className="reference-request-details">
-                      <pre><code data-language="json">{formattedRequest}</code></pre>
+                      <pre><JsonCode value={formattedRequest} /></pre>
                     </div>
                   ) : (
                     <div className="reference-response-empty">
@@ -537,12 +579,12 @@ function RequestRunner({
                           {result.contentType && <small>{result.contentType}</small>}
                         </div>
                         {formattedResponse
-                          ? <pre><code data-language="json">{formattedResponse}</code></pre>
+                          ? <pre><JsonCode value={formattedResponse} /></pre>
                           : <div className="reference-response-empty">Resposta sem conteúdo.</div>}
                         {Object.keys(result.headers ?? {}).length > 0 && (
                           <details className="reference-response-headers">
                             <summary>Headers da resposta</summary>
-                            <pre><code>{JSON.stringify(result.headers, null, 2)}</code></pre>
+                            <pre><JsonCode value={JSON.stringify(result.headers, null, 2)} /></pre>
                           </details>
                         )}
                       </div>
@@ -568,7 +610,7 @@ function JsonExample({ value, label }) {
         <span>{label}</span>
         <CopyButton value={code} />
       </div>
-      <pre><code data-language="json">{code}</code></pre>
+      <pre><JsonCode value={code} /></pre>
     </div>
   )
 }
@@ -796,7 +838,7 @@ function ResponseExamples({ responses }) {
         </div>
         <CopyButton value={code} />
       </div>
-      <pre><code data-language="json">{code}</code></pre>
+      <pre><JsonCode value={code} /></pre>
       <footer>{response.description || 'Resposta de exemplo'}</footer>
     </div>
   )
