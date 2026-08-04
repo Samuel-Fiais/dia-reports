@@ -59,8 +59,6 @@ export default function ForewordTimelinePage() {
 
   function setActiveFilter(value) {
     setFilter(value)
-    const next = timelines.find((timeline) => value === 'all' || timeline.status === value)
-    setOpenSlug(next?.slug ?? null)
   }
 
   return (
