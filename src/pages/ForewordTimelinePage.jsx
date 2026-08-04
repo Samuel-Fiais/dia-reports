@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { ChevronDown, ExternalLink, Newspaper, Sparkles } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { fetchForewordTimelines } from '../lib/forewordTimelines.js'
+import { fetchForewordTimelines, parseForewordCalendarDate } from '../lib/forewordTimelines.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
 
 const FILTERS = [
@@ -18,8 +18,9 @@ const EVENT_LABELS = {
 }
 
 function formatDate(value) {
-  if (!value) return '—'
-  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(`${value}T12:00:00`))
+  const date = parseForewordCalendarDate(value)
+  if (!date) return 'Data indisponível'
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(date)
 }
 
 function statusLabel(status) {
