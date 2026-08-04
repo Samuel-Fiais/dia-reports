@@ -38,9 +38,12 @@ externo autorizado.
 
 A rota autenticada `/the-foreword` acompanha histórias que atravessam várias edições, com início, viradas importantes, atualizações e desfecho quando houver um fato que encerre o assunto.
 
-1. Aplique `migrations/002_foreword_timelines.sql` no mesmo banco Neon do app.
-2. Execute o seed histórico: `python3 scripts/seed_foreword_timelines.py`.
-3. O cron do The Foreword grava diretamente nas tabelas `foreword_timelines` e `foreword_timeline_events`. Para cada edição, ele deve agrupar somente desdobramentos claros: cria `start` para um assunto novo, usa `dramatic` apenas para virada ou escalada, `resolution` apenas para encerramento factual e `update` para mudanças relevantes. A atualização da história e a inserção do marco precisam ser idempotentes. Não registre cada manchete.
+1. Aplique `migrations/002_foreword_timelines.sql` e `migrations/003_foreword_editorial_intelligence.sql` no mesmo banco Neon do app.
+2. Execute o seed histórico: `python3 scripts/seed_foreword_timelines.py`; depois, `python3 scripts/enrich_foreword_timeline.py` para métricas e fontes existentes.
+3. A API `GET /api/foreword-timelines` retorna histórias, marcos, fontes e métricas editoriais. As visualizações disponíveis são narrativa, calendário mensal/semanal e mapa temporal.
+4. Métricas por marco: `impact_score` (0–100), `momentum` (`rising`, `stable`, `falling`) e `scope` (`local`, `national`, `global`). Fontes são classificadas como `primary`, `corroboration` ou `context`; republicações não contam como confirmação independente.
+5. O cron do The Foreword grava diretamente em `foreword_timelines`, `foreword_timeline_events` e `foreword_event_sources`. Para cada edição, agrupe somente desdobramentos claros: cria `start` para assunto novo, usa `dramatic` apenas para virada ou escalada, `resolution` apenas para encerramento factual e `update` para mudança relevante. A atualização é idempotente. Não registre cada manchete.
+6. Tecnologia, Inteligência Artificial, Robótica e Inovação são categorias editoriais independentes. Nenhum assunto é expandido automaticamente; a abertura é sempre explícita pelo leitor.
 
 ## Fonte Exposure
 
