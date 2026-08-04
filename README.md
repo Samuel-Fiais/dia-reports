@@ -34,6 +34,14 @@ Este app não altera conteúdo de relatório. Para publicar ou atualizar conteú
 na tabela Postgres `reports` com `slug`, `title`, `date` e `content` (jsonb), por um processo
 externo autorizado.
 
+## Linha do tempo do The Foreword
+
+A rota autenticada `/the-foreword` acompanha histórias que atravessam várias edições, com início, viradas importantes, atualizações e desfecho quando houver um fato que encerre o assunto.
+
+1. Aplique `migrations/002_foreword_timelines.sql` no mesmo banco Neon do app.
+2. Execute o seed histórico: `python3 scripts/seed_foreword_timelines.py`.
+3. O cron do The Foreword grava diretamente nas tabelas `foreword_timelines` e `foreword_timeline_events`. Para cada edição, ele deve agrupar somente desdobramentos claros: cria `start` para um assunto novo, usa `dramatic` apenas para virada ou escalada, `resolution` apenas para encerramento factual e `update` para mudanças relevantes. A atualização da história e a inserção do marco precisam ser idempotentes. Não registre cada manchete.
+
 ## Fonte Exposure
 
 A fonte serifada original do Dia ("Exposure") não é distribuída fora do app e não vem

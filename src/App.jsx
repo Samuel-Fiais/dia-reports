@@ -7,6 +7,7 @@ import ComponentCatalogPage from './pages/ComponentCatalogPage.jsx'
 import PublicationListPage from './pages/PublicationListPage.jsx'
 import ReferenceExamplePage from './pages/ReferenceExamplePage.jsx'
 import SharedReferenceExamplePage from './pages/SharedReferenceExamplePage.jsx'
+import ForewordTimelinePage from './pages/ForewordTimelinePage.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
@@ -30,6 +31,7 @@ export default function App() {
               element={<SharedReferenceExamplePage />}
             />
             <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
+            <Route path="/the-foreword" element={<RequireAuth><ForewordTimelinePage /></RequireAuth>} />
             <Route
               path="/relatorios"
               element={<RequireAuth><PublicationListPage kindKey="report" /></RequireAuth>}
