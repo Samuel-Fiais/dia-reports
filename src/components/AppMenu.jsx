@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { FileStack, FolderKanban, Home, LayoutGrid, LogOut, Menu, Settings, ShieldCheck, User } from 'lucide-react'
+import { FileStack, FolderKanban, Home, LayoutGrid, LogOut, Menu, Newspaper, Settings, ShieldCheck, User } from 'lucide-react'
 import { useAuth } from '../context/AuthContext.jsx'
 import { useClickOutside } from '../lib/useClickOutside.js'
 import SettingsModal from './SettingsModal.jsx'
@@ -12,6 +12,7 @@ import SettingsModal from './SettingsModal.jsx'
 const MENU_ITEMS = [
   { type: 'link', key: 'home', label: 'Início', icon: Home, to: '/' },
   { type: 'link', key: 'reports', label: 'Relatórios', icon: FileStack, to: '/relatorios' },
+  { type: 'link', key: 'the-foreword', label: 'The Foreword', icon: Newspaper, to: '/the-foreword' },
   { type: 'link', key: 'components', label: 'Componentes', icon: LayoutGrid, to: '/componentes' },
   { type: 'separator' },
   { type: 'label', key: 'admin-label', label: 'Administração' },
