@@ -4,6 +4,13 @@ import { getSessionUser } from './_lib/auth.js'
 
 export const config = { runtime: 'nodejs' }
 
+function normalizeSource(source) {
+  return {
+    ...source,
+    createdAt: normalizeDate(source.createdAt),
+  }
+}
+
 export default async function handler(req, res) {
   if (handleOptions(req, res)) return
   if (req.method !== 'GET') {
@@ -31,7 +38,22 @@ export default async function handler(req, res) {
               'title', e.title,
               'summary', e.summary,
               'sourceReportSlug', e.source_report_slug,
-              'sourceUrl', e.source_url
+              'sourceUrl', e.source_url,
+              'impactScore', e.impact_score,
+              'momentum', e.momentum,
+              'scope', e.scope,
+              'sources', COALESCE((
+                SELECT json_agg(json_build_object(
+                  'id', s.id,
+                  'outlet', s.outlet,
+                  'title', s.title,
+                  'url', s.url,
+                  'sourceKind', s.source_kind,
+                  'createdAt', s.created_at
+                ) ORDER BY CASE s.source_kind WHEN 'primary' THEN 0 WHEN 'corroboration' THEN 1 ELSE 2 END, s.outlet)
+                FROM public.foreword_event_sources s
+                WHERE s.event_id = e.id
+              ), '[]'::json)
             ) ORDER BY e.occurred_on ASC, e.id ASC
           ) FILTER (WHERE e.id IS NOT NULL),
           '[]'::json
@@ -55,6 +77,7 @@ export default async function handler(req, res) {
       events: row.events.map((event) => ({
         ...event,
         occurredOn: normalizeDate(event.occurredOn),
+        sources: (event.sources ?? []).map(normalizeSource),
       })),
     })))
   } catch (error) {
