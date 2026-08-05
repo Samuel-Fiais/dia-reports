@@ -47,6 +47,34 @@ function eventMarker(eventType) {
   return <span className={`foreword-event-marker foreword-event-marker-${eventType}`} aria-hidden="true" />
 }
 
+/* Tooltip flutuante compartilhado: acompanha o cursor e mostra manchete,
+   assunto, resumo e métricas do marco. Usado no mapa temporal e no calendário. */
+function ForewordTooltip({ tooltip }) {
+  if (!tooltip) return null
+  const { event, x, y } = tooltip
+  const WIDTH = 320
+  const viewport = 12
+  const left = Math.min(x + 14, window.innerWidth - WIDTH - viewport)
+  const top = Math.min(y + 14, window.innerHeight - 160)
+  return (
+    <div className="foreword-tooltip" style={{ left, top }} role="tooltip">
+      <span className="foreword-tooltip-kicker">{event.timeline.title} · {formatDate(event.occurredOn)}</span>
+      <strong>{event.title}</strong>
+      {event.summary ? <p>{event.summary}</p> : null}
+      <div className="foreword-tooltip-metrics" aria-label="Métricas editoriais">
+        <span className={`impact impact-${impactLabel(event.impactScore).toLowerCase()}`}>Impacto {event.impactScore} · {impactLabel(event.impactScore)}</span>
+        <span>{MOMENTUM_LABELS[event.momentum]}</span>
+        <span>{SCOPE_LABELS[event.scope]}</span>
+      </div>
+    </div>
+  )
+}
+
+/* Trunca títulos longos para não invadir a área do traço. */
+function traceLabel(title) {
+  return title.length > 40 ? `${title.slice(0, 39)}…` : title
+}
+
 function SourceLinks({ event }) {
   const sources = event.sources ?? []
   if (!sources.length && !event.sourceReportSlug) return null
@@ -113,13 +141,14 @@ function NarrativeView({ timelines, openSlug, setOpenSlug }) {
   )
 }
 
-function CalendarView({ events, calendarMode, monthKey, setMonthKey, onOpen }) {
+function CalendarView({ events, calendarMode, monthKey, setMonthKey, onOpen, tooltip, setTooltip }) {
   const days = calendarMode === 'month' ? monthCalendar(monthKey) : weekCalendar(`${monthKey}-01`)
   const eventsByDay = useMemo(() => events.reduce((map, event) => {
     const key = dateKey(event.occurredOn)
     map[key] = [...(map[key] ?? []), event]
     return map
   }, {}), [events])
+  const showTooltip = (event, e) => setTooltip({ event, x: e.clientX, y: e.clientY })
   return (
     <section className="foreword-calendar" aria-label={`Calendário ${calendarMode === 'month' ? 'mensal' : 'semanal'}`}>
       <div className="foreword-calendar-toolbar">
@@ -140,20 +169,27 @@ function CalendarView({ events, calendarMode, monthKey, setMonthKey, onOpen }) {
             <div className="foreword-calendar-events">
               {(eventsByDay[day.key] ?? []).map((event) => (
                 <button key={event.id} type="button" className={`calendar-event impact-${impactLabel(event.impactScore).toLowerCase()}`}
-                  onClick={() => onOpen(event)} title={`${event.title} — impacto ${event.impactScore}`}>
-                  <span>{event.timeline.title}</span>
-                  <small>{event.title}</small>
+                  onClick={() => onOpen(event)}
+                  onMouseMove={(e) => showTooltip(event, e)}
+                  onMouseEnter={(e) => showTooltip(event, e)}
+                  onMouseLeave={() => setTooltip(null)}
+                  onFocus={(e) => showTooltip(event, e)}
+                  onBlur={() => setTooltip(null)}
+                >
+                  <span className="calendar-event-title">{event.title}</span>
+                  <small>{event.timeline.title}</small>
                 </button>
               ))}
             </div>
           </div>
         ))}
       </div>
+      <ForewordTooltip tooltip={tooltip} />
     </section>
   )
 }
 
-function TraceView({ events, timelines, focusedEvent, setFocusedEvent }) {
+function TraceView({ events, timelines, focusedEvent, setFocusedEvent, tooltip, setTooltip }) {
   const dates = events.map((event) => parseForewordCalendarDate(event.occurredOn).getTime())
   const min = Math.min(...dates)
   const max = Math.max(...dates)
@@ -161,6 +197,7 @@ function TraceView({ events, timelines, focusedEvent, setFocusedEvent }) {
   const height = Math.max(260, timelines.length * 88 + 70)
   const position = (event) => 84 + ((parseForewordCalendarDate(event.occurredOn).getTime() - min) / span) * 840
   const lane = (timeline) => 56 + timelines.findIndex((item) => item.slug === timeline.slug) * 88
+  const showTooltip = (event, e) => setTooltip({ event, x: e.clientX, y: e.clientY })
   const marker = (event, x, y) => {
     const props = { className: `trace-point trace-${event.eventType}`, key: event.id }
     const radius = 4 + Math.round((event.impactScore ?? 50) / 20)
@@ -173,7 +210,7 @@ function TraceView({ events, timelines, focusedEvent, setFocusedEvent }) {
     <section className="foreword-trace-wrap" aria-label="Mapa temporal dos assuntos">
       <p className="foreword-trace-legend">Tamanho = impacto · círculo = começo · losango = ponto dramático · quadrado = atualização · diamante = desfecho.</p>
       <svg className="foreword-trace" viewBox={`0 0 1000 ${height}`} role="img" aria-label="Eventos organizados por assunto e data">
-        {timelines.map((timeline) => <g key={timeline.slug}><line className="trace-lane" x1="84" x2="924" y1={lane(timeline)} y2={lane(timeline)} /><text x="4" y={lane(timeline) + 4} className="trace-label">{timeline.title}</text></g>)}
+        {timelines.map((timeline) => <g key={timeline.slug}><line className="trace-lane" x1="84" x2="924" y1={lane(timeline)} y2={lane(timeline)} /><text x="4" y={lane(timeline) - 12} className="trace-label">{traceLabel(timeline.title)}</text></g>)}
         {timelines.map((timeline) => {
           const storyEvents = events.filter((event) => event.timeline.slug === timeline.slug)
           const points = storyEvents.map((event) => `${position(event)},${lane(timeline)}`).join(' ')
@@ -182,9 +219,14 @@ function TraceView({ events, timelines, focusedEvent, setFocusedEvent }) {
         {events.map((event) => {
           const x = position(event); const y = lane(event.timeline)
           return <g key={`event-${event.id}`} tabIndex="0" role="button" className="trace-event" aria-label={`${event.title}, impacto ${event.impactScore}`}
-            onMouseEnter={() => setFocusedEvent(event)} onFocus={() => setFocusedEvent(event)} onClick={() => setFocusedEvent(event)}>{marker(event, x, y)}</g>
+            onMouseEnter={(e) => { setFocusedEvent(event); showTooltip(event, e) }}
+            onMouseMove={(e) => showTooltip(event, e)}
+            onMouseLeave={() => setTooltip(null)}
+            onFocus={() => setFocusedEvent(event)}
+            onClick={() => setFocusedEvent(event)}>{marker(event, x, y)}</g>
         })}
       </svg>
+      <ForewordTooltip tooltip={tooltip} />
       {focusedEvent ? <div className="foreword-trace-detail"><span>{focusedEvent.timeline.title} · {formatDate(focusedEvent.occurredOn)}</span><strong>{focusedEvent.title}</strong><p>{focusedEvent.summary}</p><div><span className="impact">Impacto {focusedEvent.impactScore} · {impactLabel(focusedEvent.impactScore)}</span><span>{MOMENTUM_LABELS[focusedEvent.momentum]}</span><span>{SCOPE_LABELS[focusedEvent.scope]}</span></div><SourceLinks event={focusedEvent} /></div> : <p className="foreword-state">Passe ou navegue pelos pontos para ler um marco.</p>}
     </section>
   )
@@ -199,6 +241,7 @@ export default function ForewordTimelinePage() {
   const [monthKey, setMonthKey] = useState(null)
   const [openSlug, setOpenSlug] = useState(null)
   const [focusedEvent, setFocusedEvent] = useState(null)
+  const [tooltip, setTooltip] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -231,7 +274,7 @@ export default function ForewordTimelinePage() {
       {loading ? <p className="foreword-state">Carregando assuntos acompanhados…</p> : null}
       {!loading && error ? <p className="foreword-state foreword-state-error">Não foi possível carregar a linha do tempo. {error.message}</p> : null}
       {!loading && !error && visibleTimelines.length === 0 ? <p className="foreword-state">Nenhum assunto nesta seleção.</p> : null}
-      {!loading && !error && visibleTimelines.length ? <>{view === 'narrative' ? <NarrativeView timelines={visibleTimelines} openSlug={openSlug} setOpenSlug={setOpenSlug} /> : null}{view === 'calendar' && monthKey ? <CalendarView events={events} calendarMode={calendarMode} monthKey={monthKey} setMonthKey={setMonthKey} onOpen={openEvent} /> : null}{view === 'trace' ? <TraceView events={events} timelines={visibleTimelines} focusedEvent={focusedEvent} setFocusedEvent={setFocusedEvent} /> : null}</> : null}
+      {!loading && !error && visibleTimelines.length ? <>{view === 'narrative' ? <NarrativeView timelines={visibleTimelines} openSlug={openSlug} setOpenSlug={setOpenSlug} /> : null}{view === 'calendar' && monthKey ? <CalendarView events={events} calendarMode={calendarMode} monthKey={monthKey} setMonthKey={setMonthKey} onOpen={openEvent} tooltip={tooltip} setTooltip={setTooltip} /> : null}{view === 'trace' ? <TraceView events={events} timelines={visibleTimelines} focusedEvent={focusedEvent} setFocusedEvent={setFocusedEvent} tooltip={tooltip} setTooltip={setTooltip} /> : null}</> : null}
     </main>
   </div></div>
 }
