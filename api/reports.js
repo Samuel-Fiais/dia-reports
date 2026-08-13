@@ -60,6 +60,7 @@ export default async function handler(req, res) {
             ARRAY[]::uuid[]
           ) AS group_ids
         FROM reports r
+        WHERE r.slug NOT LIKE 'the-foreword-%'
         ORDER BY r.updated_at DESC
       `)
 
