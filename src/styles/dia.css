@@ -8487,8 +8487,41 @@ blockquote footer a:hover {
   border-top: 0.5px solid var(--hairline-strong);
 }
 
+.foreword-category-group {
+  border-bottom: 0.5px solid var(--hairline-strong);
+}
+
+.foreword-category-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0 0.85rem;
+  border-bottom: 0.5px solid var(--hairline);
+}
+
+.foreword-category-heading h2 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: clamp(1.15rem, 1.8vw, 1.55rem);
+  font-style: var(--title-style);
+  font-weight: var(--title-weight-sub);
+  line-height: 1.15;
+}
+
+.foreword-category-heading span {
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
 .foreword-story {
   border-bottom: 0.5px solid var(--hairline-strong);
+}
+
+.foreword-category-group .foreword-story:last-child {
+  border-bottom: 0;
 }
 
 .foreword-story-toggle {
@@ -8738,7 +8771,7 @@ blockquote footer a:hover {
 .calendar-event small { font-size: 0.58rem; color: var(--ink-secondary); letter-spacing: 0.02em; }
 .foreword-calendar-grid.is-week .foreword-calendar-day { min-height: 20rem; }
 
-/* Mapa temporal: traços por assunto e formas por tipo de marco. */
+/* Legado do traço editorial, preservado para compatibilidade visual. */
 .foreword-trace-wrap { overflow: hidden; border-top: 0.5px solid var(--hairline-strong); padding-top: 0.75rem; }
 .foreword-trace-legend { margin: 0 0 0.75rem; font-family: var(--font-body); font-size: 0.68rem; color: var(--ink-muted); }
 .foreword-trace { width: 100%; min-width: 42rem; overflow: visible; }
@@ -8756,7 +8789,55 @@ blockquote footer a:hover {
 .foreword-trace-detail strong { font-family: var(--font-title); font-size: 1.25rem; font-style: var(--title-style); line-height: 1.2; }
 .foreword-trace-detail p { margin: 0.35rem 0 0; font-family: var(--font-body); font-size: 0.84rem; line-height: 1.55; color: var(--ink-secondary); }
 
-/* Tooltip flutuante do mapa temporal e do calendário editorial. */
+/* Mapa geográfico editorial. */
+.foreword-map-wrap {
+  border-top: 0.5px solid var(--hairline-strong);
+  padding-top: 0.75rem;
+  overflow-x: auto;
+}
+
+.foreword-map-legend {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-body);
+  font-size: 0.68rem;
+  color: var(--ink-muted);
+}
+
+.foreword-map {
+  width: 100%;
+  min-width: 46rem;
+  overflow: visible;
+}
+
+.foreword-map-land path {
+  fill: var(--surface-raised);
+  stroke: var(--hairline-strong);
+  stroke-width: 0.75;
+}
+
+.foreword-map-bubble {
+  cursor: pointer;
+  fill: var(--ink);
+  stroke: var(--bg);
+  stroke-width: 1.5;
+  transition: opacity 0.15s ease, fill-opacity 0.15s ease;
+}
+
+.foreword-map-bubble:hover,
+.foreword-map-bubble:focus-visible {
+  opacity: 1;
+  fill-opacity: 0.7;
+  outline: none;
+}
+
+.foreword-map-label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  fill: var(--ink-secondary);
+  pointer-events: none;
+}
+
+/* Tooltip flutuante do mapa e do calendário editorial. */
 .foreword-tooltip {
   position: fixed;
   z-index: 60;

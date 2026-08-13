@@ -39,6 +39,7 @@ export default async function handler(req, res) {
               'summary', e.summary,
               'sourceReportSlug', e.source_report_slug,
               'sourceUrl', e.source_url,
+              'location', e.location,
               'impactScore', e.impact_score,
               'momentum', e.momentum,
               'scope', e.scope,
@@ -77,6 +78,7 @@ export default async function handler(req, res) {
       events: row.events.map((event) => ({
         ...event,
         occurredOn: normalizeDate(event.occurredOn),
+        location: event.location,
         sources: (event.sources ?? []).map(normalizeSource),
       })),
     })))
