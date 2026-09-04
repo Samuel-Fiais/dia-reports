@@ -9,7 +9,7 @@ posicionamentos, valores iniciais e renderizador de cada bloco.
 
 ## Catálogo vivo
 
-`/componentes` renderiza um documento virtual gerado por `src/lib/componentCatalog.js`.
+`/components` renderiza um documento virtual gerado por `src/lib/componentCatalog.js`.
 O gerador percorre todas as entradas do manifesto, preenche os campos de acordo com seus
 tipos e organiza os exemplos por categoria. Ele não é salvo na tabela `reports`.
 

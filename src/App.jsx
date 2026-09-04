@@ -8,6 +8,7 @@ import PublicationListPage from './pages/PublicationListPage.jsx'
 import ReferenceExamplePage from './pages/ReferenceExamplePage.jsx'
 import SharedReferenceExamplePage from './pages/SharedReferenceExamplePage.jsx'
 import ForewordTimelinePage from './pages/ForewordTimelinePage.jsx'
+import ForewordEditionsPage from './pages/ForewordEditionsPage.jsx'
 import ReportGroups from './pages/admin/ReportGroups.jsx'
 import Profiles from './pages/admin/Profiles.jsx'
 import Users from './pages/admin/Users.jsx'
@@ -16,6 +17,8 @@ import { AuthProvider } from './context/AuthContext.jsx'
 import RequireAuth from './components/RequireAuth.jsx'
 import RequirePermission from './components/RequirePermission.jsx'
 import AppMenu from './components/AppMenu.jsx'
+import RouteRedirect from './components/RouteRedirect.jsx'
+import { LEGACY_ROUTE_REDIRECTS, ROUTES } from './lib/routes.js'
 
 export default function App() {
   return (
@@ -31,32 +34,39 @@ export default function App() {
               element={<SharedReferenceExamplePage />}
             />
             <Route path="/" element={<RequireAuth><Home /></RequireAuth>} />
-            <Route path="/the-foreword" element={<RequireAuth><ForewordTimelinePage /></RequireAuth>} />
+            <Route path={ROUTES.theForeword} element={<RequireAuth><ForewordTimelinePage /></RequireAuth>} />
             <Route
-              path="/relatorios"
+              path={ROUTES.forewordEditions}
+              element={<RequireAuth><ForewordEditionsPage /></RequireAuth>}
+            />
+            <Route
+              path={ROUTES.reports}
               element={<RequireAuth><PublicationListPage kindKey="report" /></RequireAuth>}
             />
             <Route
-              path="/documentos"
+              path={ROUTES.documents}
               element={<RequireAuth><PublicationListPage kindKey="document" /></RequireAuth>}
             />
             <Route
-              path="/dashboards"
+              path={ROUTES.dashboards}
               element={<RequireAuth><PublicationListPage kindKey="dashboard" /></RequireAuth>}
             />
             <Route
-              path="/referencias"
+              path={ROUTES.references}
               element={<RequireAuth><PublicationListPage kindKey="reference" /></RequireAuth>}
             />
             <Route
-              path="/referencias/:exampleId"
+              path="/references/:exampleId"
               element={<RequireAuth><ReferenceExamplePage /></RequireAuth>}
             />
             <Route
-              path="/componentes"
+              path={ROUTES.components}
               element={<RequireAuth><ComponentCatalogPage /></RequireAuth>}
             />
             <Route path="/report/:id" element={<ReportPage />} />
+            {LEGACY_ROUTE_REDIRECTS.map(({ from, to }) => (
+              <Route key={from} path={from} element={<RouteRedirect to={to} />} />
+            ))}
             <Route
               path="/admin/report-groups"
               element={

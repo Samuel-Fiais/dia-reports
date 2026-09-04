@@ -4,13 +4,14 @@ Renderizador de publicações estruturadas em React.
 
 - **Central de publicações** em `/`, com acesso separado a relatórios, documentos,
   dashboards e referências.
-- **Listagens por tipo** em `/relatorios`, `/documentos`, `/dashboards` e `/referencias`.
+- **Listagens por tipo** em `/reports`, `/documents`, `/dashboards` e `/references` (redirecionam de `/relatorios`, `/documentos` e `/referencias`).
+- **The Foreword** em `/the-foreword` (linha do tempo) e **edições diárias** em `/the-foreword/editions`.
 - **Clicar em um relatório** abre `/report/<slug>` renderizado a partir do JSON salvo no banco.
 - **Referências OpenAPI** usam `renderMode: "reference"` e podem receber o contrato embutido
   ou buscá-lo de uma URL HTTPS pública sempre que a publicação é aberta.
-- **Exemplos OpenAPI** em `/referencias/viacep-api` (contrato embutido, inspirado no
-  documento ViaCEP) e `/referencias/school360-api` (Swagger remoto do School360).
-- **Catálogo vivo de componentes** em `/componentes`: documento virtual gerado diretamente
+- **Exemplos OpenAPI** em `/references/viacep-api` (contrato embutido, inspirado no
+  documento ViaCEP) e `/references/school360-api` (Swagger remoto do School360).
+- **Catálogo vivo de componentes** em `/components`: documento virtual gerado diretamente
   por `blockManifest.js`, com um exemplo preenchido de cada componente. Não depende do banco.
 - **Seletor ⚙ "Customize Report"** no canto inferior direito: paleta de fundos, estilos de gráfico, 4 temas tipográficos e 3 tratamentos de componentes (Editorial, Estruturado e Minimalista). A escolha é salva por relatório no `localStorage`.
 - **Tema escuro**: ícone de sol/lua ao lado do ⚙, afeta o app inteiro (dashboard + relatórios); preferência salva no navegador.

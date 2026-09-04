@@ -1,7 +1,10 @@
+import { REFERENCE_EXAMPLE_SUMMARIES } from './referenceExample.js'
+import { ROUTES } from './routes.js'
+
 export const PUBLICATION_KINDS = Object.freeze([
   Object.freeze({
     key: 'report',
-    path: '/relatorios',
+    path: ROUTES.reports,
     title: 'Relatórios',
     eyebrow: 'Análises e decisões',
     description: 'Narrativas, resultados, comparações e recomendações.',
@@ -9,7 +12,7 @@ export const PUBLICATION_KINDS = Object.freeze([
   }),
   Object.freeze({
     key: 'document',
-    path: '/documentos',
+    path: ROUTES.documents,
     title: 'Documentos',
     eyebrow: 'Conhecimento estruturado',
     description: 'Guias, especificações e documentos técnicos de longa duração.',
@@ -17,7 +20,7 @@ export const PUBLICATION_KINDS = Object.freeze([
   }),
   Object.freeze({
     key: 'dashboard',
-    path: '/dashboards',
+    path: ROUTES.dashboards,
     title: 'Dashboards',
     eyebrow: 'Acompanhamento contínuo',
     description: 'Indicadores, operações e visões atualizadas de desempenho.',
@@ -25,7 +28,7 @@ export const PUBLICATION_KINDS = Object.freeze([
   }),
   Object.freeze({
     key: 'reference',
-    path: '/referencias',
+    path: ROUTES.references,
     title: 'Referências',
     eyebrow: 'Consulta técnica',
     description: 'APIs, contratos, schemas e exemplos de integração.',
@@ -60,5 +63,4 @@ export function withSystemPublications(publications) {
     ...SYSTEM_PUBLICATION_SUMMARIES.filter((publication) => !ids.has(publication.id)),
   ]
 }
-import { REFERENCE_EXAMPLE_SUMMARIES } from './referenceExample.js'
 

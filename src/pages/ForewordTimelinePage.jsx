@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import ForewordMapView from '../components/ForewordMapView.jsx'
 import { fetchForewordTimelines, parseForewordCalendarDate } from '../lib/forewordTimelines.js'
 import { dateKey, flattenForewordEvents, impactLabel, monthCalendar, weekCalendar } from '../lib/forewordAnalytics.js'
+import { ROUTES } from '../lib/routes.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
 
 const FILTERS = [
@@ -270,7 +271,7 @@ export default function ForewordTimelinePage() {
   function openEvent(event) { setOpenSlug(event.timeline.slug); setView('narrative') }
 
   return <div className="report ready foreword-timeline-page"><div className="report-wrap">
-    <header className="report-header"><div className="report-header-left"><Newspaper size={15} aria-hidden="true" /><span className="report-from">Dia · The Foreword</span></div><span className="report-date">Acompanhamento editorial</span></header>
+    <header className="report-header"><div className="report-header-left"><Newspaper size={15} aria-hidden="true" /><span className="report-from">Dia · The Foreword</span></div><span className="report-date">Acompanhamento editorial · <Link to={ROUTES.forewordEditions}>Edições</Link></span></header>
     <h1 className="report-headline">Assuntos em movimento</h1>
     <div className="report-intro"><p><strong>O que continua depois da manchete.</strong> Acompanhe começos, viradas, fontes e o desfecho — ou a permanência — de cada história.</p></div><hr className="report-rule" />
     <main className="report-body foreword-timeline-body">
