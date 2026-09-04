@@ -217,7 +217,7 @@ const EXAMPLE_REFINEMENTS = Object.freeze({
       {
         id: 'catalog-self-reference',
         title: 'Catálogo de componentes',
-        href: '/componentes',
+        href: '/components',
         meta: 'Documento virtual gerado pelo schema',
       },
     ],

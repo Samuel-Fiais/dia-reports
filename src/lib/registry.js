@@ -12,6 +12,12 @@ export async function fetchReports() {
   return data
 }
 
+export async function fetchForewordEditions() {
+  const res = await fetch(`${API_BASE}/foreword-editions`)
+  if (!res.ok) throw new Error('Failed to fetch foreword editions')
+  return res.json()
+}
+
 export async function getReport(slug) {
   const res = await fetch(`${API_BASE}/reports/${slug}`)
   if (res.status === 404) return null

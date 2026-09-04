@@ -11,7 +11,7 @@ import {
 
 test('existing publications default to the report area', () => {
   assert.equal(publicationMode({ id: 'legacy' }), 'report')
-  assert.equal(publicationListPath(), '/relatorios')
+  assert.equal(publicationListPath(), '/reports')
   assert.equal(getPublicationKind('report').title, 'Relatórios')
 })
 
@@ -24,5 +24,5 @@ test('system publications are merged once and keep their own route', () => {
 
   assert.equal(merged.length, 2)
   assert.equal(deduplicated.length, 2)
-  assert.equal(publicationHref(system), '/referencias/viacep-api')
+  assert.equal(publicationHref(system), '/references/viacep-api')
 })

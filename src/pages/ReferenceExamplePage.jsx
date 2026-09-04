@@ -15,6 +15,7 @@ import {
 import {
   buildReferenceExamplePublication,
 } from '../lib/referenceExample.js'
+import { ROUTES } from '../lib/routes.js'
 import { applyTheme } from '../lib/theme.js'
 
 function ReferenceExampleContent({ publication }) {
@@ -38,7 +39,7 @@ function ReferenceExampleContent({ publication }) {
   return (
     <>
       <nav className="report-backnav report-backnav--reference">
-        <Link to="/referencias">
+        <Link to={ROUTES.references}>
           <ArrowLeft size={12} aria-hidden="true" /> Referências
         </Link>
       </nav>
@@ -76,7 +77,7 @@ export default function ReferenceExamplePage() {
         eyebrow="Referência não encontrada"
         title="404"
         message="Este exemplo não existe."
-        backTo="/referencias"
+        backTo={ROUTES.references}
         backLabel="Voltar às referências"
       />
     )

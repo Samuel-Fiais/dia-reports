@@ -9,9 +9,9 @@ Publicações são linhas na tabela `reports` do Postgres (`slug`, `title`, `dat
 jsonb), servidas por `api/reports.js`. Este repositório é apenas renderizador: não há
 fluxo interno nem endpoint para gravar conteúdo.
 
-As exceções são documentos de sistema: `/componentes`, gerado por
-`src/lib/componentCatalog.js`, e os exemplos em `/referencias/viacep-api` e
-`/referencias/school360-api`, gerados por `src/lib/referenceExample.js`. Não trate esses
+As exceções são documentos de sistema: `/components`, gerado por
+`src/lib/componentCatalog.js`, e os exemplos em `/references/viacep-api` e
+`/references/school360-api`, gerados por `src/lib/referenceExample.js`. Não trate esses
 exemplos como conteúdo publicável nem tente persistir suas amostras no banco.
 
 - Para publicar de verdade, um processo externo autorizado precisa gravar/atualizar a linha em

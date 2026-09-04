@@ -17,6 +17,7 @@ import {
 import { fetchReports } from '../lib/registry.js'
 import { formatReportDate } from '../lib/theme.js'
 import { useAppChromeTheme } from '../lib/useAppChromeTheme.js'
+import { ROUTES } from '../lib/routes.js'
 
 const KIND_ICONS = Object.freeze({
   report: FileText,
@@ -130,7 +131,7 @@ export default function Home() {
             <div className="section-header">
               <h2 className="section-heading">Sistema</h2>
             </div>
-            <Link to="/componentes" className="publication-system-card">
+            <Link to={ROUTES.components} className="publication-system-card">
               <LayoutGrid size={18} aria-hidden="true" />
               <span>
                 <strong>Catálogo de componentes</strong>

@@ -239,7 +239,7 @@ export const REFERENCE_EXAMPLE_SUMMARIES = Object.freeze([
     metrics_length: 0,
     sections_length: 2,
     renderMode: 'reference',
-    href: `/referencias/${VIACEP_REFERENCE_EXAMPLE_ID}`,
+    href: `/references/${VIACEP_REFERENCE_EXAMPLE_ID}`,
     system: true,
   }),
   Object.freeze({
@@ -254,7 +254,7 @@ export const REFERENCE_EXAMPLE_SUMMARIES = Object.freeze([
     metrics_length: 0,
     sections_length: 0,
     renderMode: 'reference',
-    href: `/referencias/${SCHOOL360_REFERENCE_EXAMPLE_ID}`,
+    href: `/references/${SCHOOL360_REFERENCE_EXAMPLE_ID}`,
     system: true,
   }),
 ])
